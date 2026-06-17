@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
-namespace DischargeDisposition.Domain.Entities;
+using DischargeDisposition_Backend.Enums;
+namespace DischargeDisposition_Backend.Insurance.Models;
 
 public class AuthorizationDecision
 {
@@ -26,5 +26,5 @@ public class AuthorizationDecision
     // Navigation Property
 
     [ForeignKey(nameof(AuthorizationRequestId))]
-    public AuthorizationRequest AuthorizationRequest { get; set; } = null!;
+    public AuthorizationRequest authorizationRequest { get; set; } = null!;
 }

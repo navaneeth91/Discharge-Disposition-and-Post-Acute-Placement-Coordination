@@ -1,7 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace DischargeDisposition_Backend.Models
+namespace DischargeDisposition_Backend.Hospital.Models
 {
     public class DispositionType
     {

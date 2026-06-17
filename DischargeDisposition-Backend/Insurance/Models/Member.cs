@@ -1,5 +1,4 @@
 ﻿using DischargeDisposition_Backend.Enums;
-using DischargeDisposition_Backend.Hospital.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace DischargeDisposition_Backend.Insurance.Models

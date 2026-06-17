@@ -1,27 +1,29 @@
-﻿using DischargeDisposition_Backend.Models;
+﻿
 using System.ComponentModel.DataAnnotations;
-
-public class Payer
+namespace DischargeDisposition_Backend.Hospital.Models
 {
-    [Key]
-    public int PayerId { get; set; }
+    public class Payer
+    {
+        [Key]
+        public int PayerId { get; set; }
 
-    [Required]
-    [StringLength(150)]
-    public string PayerName { get; set; } = null!;
+        [Required]
+        [StringLength(150)]
+        public string PayerName { get; set; } = null!;
 
-    [Required]
-    [Phone]
-    [StringLength(15)]
-    public string PhoneNumber { get; set; } = null!;
+        [Required]
+        [Phone]
+        [StringLength(15)]
+        public string PhoneNumber { get; set; } = null!;
 
-    [Required]
-    [EmailAddress]
-    [StringLength(255)]
-    public string Email { get; set; } = null!;
+        [Required]
+        [EmailAddress]
+        [StringLength(255)]
+        public string Email { get; set; } = null!;
 
-    public DateTime CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; }
 
-    public virtual ICollection<AuthorizationTracking> AuthorizationTrackings { get; set; }
-        = new List<AuthorizationTracking>();
+        public virtual ICollection<AuthorizationTracking> AuthorizationTrackings { get; set; }
+            = new List<AuthorizationTracking>();
+    }
 }

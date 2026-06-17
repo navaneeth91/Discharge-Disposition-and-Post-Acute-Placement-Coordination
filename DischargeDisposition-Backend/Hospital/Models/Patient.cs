@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
+using DischargeDisposition_Backend.Enums;
 namespace DischargeDisposition_Backend.Hospital.Models
 {
     public class Patient
@@ -60,7 +59,7 @@ namespace DischargeDisposition_Backend.Hospital.Models
 
 
 
-        public LengthOfStayTracking? LengthOfStayTracking { get; set; }
+        public LengthOfStayTracking? lengthOfStayTracking { get; set; }
 
     }
 }
