@@ -7,7 +7,7 @@ namespace DischargeDisposition_Backend.Hospital.Models
         public int DispositionTypeId { get; set; }
         [Required]
         [StringLength(100)]
-        public String DispositionName { get; set; }
+        public string DispositionName { get; set; } 
 
         public virtual ICollection<PostAcuteProvider> PostAcuteProviders { get; set; }
         = new List<PostAcuteProvider>();
