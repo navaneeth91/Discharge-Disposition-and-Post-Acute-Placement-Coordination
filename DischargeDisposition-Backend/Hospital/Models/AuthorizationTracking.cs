@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Net.Mime;
+using DischargeDisposition_Backend.Enums;
 
-namespace DischargeDisposition_Backend.Models
+namespace DischargeDisposition_Backend.Hospital.Models
 {
     public class AuthorizationTracking
     {
@@ -10,7 +10,7 @@ namespace DischargeDisposition_Backend.Models
         public long AuthorizationId { get; set; }
         public int PatientId { get; set; }
         [ForeignKey(nameof(PatientId))]
-        public virtual Patient Patient { get; set; }
+        public virtual Patient Patient { get; set; } = null!;
         public int ReferralId { get; set; }
         [ForeignKey(nameof(ReferralId))]
         public virtual Referral Referral { get; set; } = null!;
