@@ -10,13 +10,13 @@ namespace DischargeDisposition_Backend.Hospital.Models
         public long AuthorizationId { get; set; }
         public int PatientId { get; set; }
         [ForeignKey(nameof(PatientId))]
-        public virtual Patient Patient { get; set; } = null!;
+        public virtual Patient patient { get; set; } = null!;
         public int ReferralId { get; set; }
         [ForeignKey(nameof(ReferralId))]
-        public virtual Referral Referral { get; set; } = null!;
+        public virtual Referral referral { get; set; } = null!;
         public int PayerId { get; set; }
         [ForeignKey(nameof(PayerId))]
-        public virtual Payer Payer { get; set; } = null!;
+        public virtual Payer payer { get; set; } = null!;
         [Required]
         [StringLength(50)]
         public string ExternalAuthorizationId { get; set; } = null!;
