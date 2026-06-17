@@ -1,6 +1,5 @@
-﻿using DischargeDisposition_Backend.Hospital.Models;
+﻿
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DischargeDisposition_Backend.Insurance.Models
 {

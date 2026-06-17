@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using DischargeDisposition_Backend.Enums;
 
 namespace DischargeDisposition_Backend.Hospital.Models
 {
@@ -34,15 +35,15 @@ namespace DischargeDisposition_Backend.Hospital.Models
         // Navigation Properties
 
         [ForeignKey(nameof(PatientId))]
-        public virtual Patient Patient { get; set; }
+        public virtual Patient patient { get; set; } = null!;
 
         [ForeignKey(nameof(DispositionTypeId))]
-        public virtual DispositionType DispositionType { get; set; }
+        public virtual DispositionType dispositionType { get; set; } = null!;
 
         [ForeignKey(nameof(ClinicianId))]
-        public virtual User Clinician { get; set; }
+        public virtual User clinician { get; set; } = null!;
 
         [ForeignKey(nameof(DepartmentId))]
-        public virtual Department Department { get; set; }
+        public virtual Department department { get; set; } = null!;
     }
 }

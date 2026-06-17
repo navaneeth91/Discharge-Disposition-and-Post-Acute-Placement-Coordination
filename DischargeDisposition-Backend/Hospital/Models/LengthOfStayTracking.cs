@@ -18,7 +18,7 @@ namespace DischargeDisposition_Backend.Hospital.Models
         public DateTime LastCalculatedDate { get; set; }
 
         // Navigation Property
-        public Patient Patient { get; set; } = null!;
+        public Patient patient { get; set; } = null!;
 
 
     }

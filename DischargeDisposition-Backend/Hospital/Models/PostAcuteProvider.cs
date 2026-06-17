@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
 
-namespace DischargeDisposition_Backend.Models
+namespace DischargeDisposition_Backend.Hospital.Models
 {
     public class PostAcuteProvider
     {
@@ -38,9 +38,9 @@ namespace DischargeDisposition_Backend.Models
         [StringLength(100)]
         public string? State { get; set; }
 
-       
+
         [ForeignKey(nameof(DispositionTypeId))]
-        public virtual DispositionType DispositionType { get; set; }
+        public virtual DispositionType dispositionType { get; set; } = null!;
 
     }
 }
