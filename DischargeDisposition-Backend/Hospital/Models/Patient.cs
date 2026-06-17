@@ -5,7 +5,7 @@ namespace DischargeDisposition_Backend.Hospital.Models
     public class Patient
     {
         [Key]
-        public long PatientId { get; set; }   // BIGINT PK
+        public int PatientId { get; set; }  
 
         [Required]
         [MaxLength(20)]

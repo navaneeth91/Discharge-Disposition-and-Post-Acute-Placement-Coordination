@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using DischargeDisposition_Backend.Enums;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 
 namespace DischargeDisposition_Backend.Insurance.Models
@@ -20,8 +22,9 @@ namespace DischargeDisposition_Backend.Insurance.Models
         public DateTime RequestedDate { get; set; }
 
         [Required]
-        public string Status {  get; set; } = string.Empty;
+        public AuthorizationStatus Status {  get; set; } 
 
+        [ForeignKey(nameof(MemberId))]
         public Member member { get; set; } = null!;
 
         public ICollection<AuthorizationDecision> AuthorizationDecisions { get; set; } = new List<AuthorizationDecision>();
