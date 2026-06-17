@@ -21,11 +21,9 @@ namespace DischargeDisposition_Backend.Hospital.Models
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
         [Required]
-        [MaxLength(20)]
         public AuthorizationStatus Status { get; set; }
 
         [Required]
-        [MaxLength(10)]
         public Priority Priority { get; set; }
 
         // Navigation Properties

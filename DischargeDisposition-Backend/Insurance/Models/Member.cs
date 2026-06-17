@@ -32,5 +32,7 @@ namespace DischargeDisposition_Backend.Insurance.Models
         public virtual ICollection<MemberCoverage> MemberCoverages { get; set; }
         = new List<MemberCoverage>();
 
+        public virtual ICollection<AuthorizationRequest> AuthorizationRequests { get; set; } = new List<AuthorizationRequest>();
+
     }
 }

@@ -18,7 +18,7 @@ namespace DischargeDisposition_Backend.Hospital.Models
         [Required]
         public int ClinicianId { get; set; }
         [Required]
-        public int DepartmentId { get; set; }
+        public byte DepartmentId { get; set; }
 
         [Required]
         public DateTime DecisionDate { get; set; }

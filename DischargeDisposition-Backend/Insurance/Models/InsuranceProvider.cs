@@ -17,10 +17,12 @@ namespace DischargeDisposition_Backend.Insurance.Models
         public string ProviderCode { get; set; }
 
         [Required]
-        [StringLength(15)]
+        [Phone]
+        [StringLength(20)]
         public string Phone { get; set; }
 
         [Required]
+        [EmailAddress]
         [StringLength(255)]
         public string Email { get; set; }
 

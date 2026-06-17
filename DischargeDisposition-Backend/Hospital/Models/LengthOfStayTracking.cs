@@ -9,7 +9,7 @@ namespace DischargeDisposition_Backend.Hospital.Models
         public long TrackingId { get; set; }
 
         [Required]
-        public long PatientId { get; set; }
+        public int PatientId { get; set; }
 
         [Required]
         public short VarianceDays { get; set; }

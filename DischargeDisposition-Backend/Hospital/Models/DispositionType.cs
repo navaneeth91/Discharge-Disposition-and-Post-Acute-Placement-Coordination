@@ -16,7 +16,6 @@ namespace DischargeDisposition_Backend.Hospital.Models
         public virtual ICollection<DispositionDecision> DispositionDecisions { get; set; }
             = new List<DispositionDecision>();
 
-        public virtual ICollection<AuthorizationTracking> AuthorizationTrackings { get; set; }
-        = new List<AuthorizationTracking>();
+        
     }
 }
