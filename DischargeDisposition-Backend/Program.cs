@@ -4,6 +4,8 @@ using DischargeDisposition_Backend.Hospital.Repositories;
 using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
 using DischargeDisposition_Backend.Hospital.Services;
 using DischargeDisposition_Backend.Hospital.Services.Interfaces;
+using DischargeDisposition_Backend.Insurance.Repositories;
+using DischargeDisposition_Backend.Insurance.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -29,6 +31,9 @@ builder.Services.AddScoped<ILengthOfStayService, LengthOfStayService>();
 builder.Services.AddScoped<IReferralRepository , ReferralRepository>();
 builder.Services.AddScoped<IReferralService, ReferralService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IInsuranceRepository,InsuranceRepository>();
+
+builder.Services.AddScoped<IInsuranceService,InsuranceService>();
 var hospitalConnection =
     builder.Configuration.GetConnectionString("HospitalConnection")
     ?? throw new InvalidOperationException(
