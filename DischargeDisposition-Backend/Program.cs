@@ -1,10 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 using DischargeDisposition_Backend.Data;
-using DischargeDisposition_Backend.Services.Interfaces;
+using DischargeDisposition_Backend.Hospital.Repositories;
+using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
+using DischargeDisposition_Backend.Hospital.Services.Interfaces;
+using DischargeDisposition_Backend.Hospital.Services;
 using DischargeDisposition_Backend.Hospital.DTOs;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddScoped<IReferralRepository , ReferralRepository>();
+builder.Services.AddScoped<IReferralService, ReferralService>();
 var hospitalConnection =
     builder.Configuration.GetConnectionString("HospitalConnection")
     ?? throw new InvalidOperationException(
@@ -47,7 +51,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
