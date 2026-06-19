@@ -12,7 +12,9 @@ builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<ILengthOfStayRepository, LengthOfStayRepository>();
 builder.Services.AddScoped<ILengthOfStayService, LengthOfStayService>();
-
+builder.Services.AddScoped<IReferralRepository , ReferralRepository>();
+builder.Services.AddScoped<IReferralService, ReferralService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 var hospitalConnection =
     builder.Configuration.GetConnectionString("HospitalConnection")
     ?? throw new InvalidOperationException(
@@ -45,6 +47,8 @@ builder.Services.AddDbContext<InsuranceDbContext>(options =>
     });
 });
 
+
+
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -53,7 +57,6 @@ builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

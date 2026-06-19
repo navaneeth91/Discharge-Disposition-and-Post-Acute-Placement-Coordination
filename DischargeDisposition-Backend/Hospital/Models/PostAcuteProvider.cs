@@ -12,6 +12,9 @@ namespace DischargeDisposition_Backend.Hospital.Models
         [Required]
         public int DispositionTypeId { get; set; }
 
+        // FK column added for Users.UserId (nullable because DB ALTER did not specify NOT NULL)
+        public int? UserId { get; set; }
+
         [Required]
         [StringLength(200)]
         public string ProviderName { get; set; }
@@ -42,5 +45,8 @@ namespace DischargeDisposition_Backend.Hospital.Models
         [ForeignKey(nameof(DispositionTypeId))]
         public virtual DispositionType dispositionType { get; set; } = null!;
 
+        // Optional navigation to User
+        [ForeignKey(nameof(UserId))]
+        public virtual User? user { get; set; }
     }
 }

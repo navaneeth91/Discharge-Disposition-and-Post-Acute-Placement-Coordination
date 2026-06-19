@@ -133,6 +133,11 @@ namespace DischargeDisposition_Backend.Data
                     .WithMany(dt => dt.PostAcuteProviders)
                     .HasForeignKey(p => p.DispositionTypeId)
                     .OnDelete(DeleteBehavior.Restrict);
+
+                b.HasOne(p => p.user)
+                    .WithMany(u => u.PostAcuteProviders)
+                    .HasForeignKey(p => p.UserId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<PatientDelay>(b =>
