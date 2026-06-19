@@ -1,12 +1,13 @@
-﻿using DischargeDisposition_Backend.DTOs.Requests;
+﻿using DischargeDisposition_Backend.Hospital.DTOs.Requests;
 using DischargeDisposition_Backend.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using DischargeDisposition_Backend.Hospital.Services.Interfaces;
-using DischargeDisposition_Backend.DTOs.Responses;
+using DischargeDisposition_Backend.Hospital.DTOs.Responses;
 
 
 namespace DischargeDisposition_Backend.Controllers
 {
+   
     [ApiController]
     [Route("api/auth")]
     public class AuthController : ControllerBase

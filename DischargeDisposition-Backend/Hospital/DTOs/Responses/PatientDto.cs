@@ -1,4 +1,4 @@
-namespace DischargeDisposition_Backend.Hospital.DTOs
+namespace DischargeDisposition_Backend.Hospital.DTOs.Responses
 {
     /// <summary>
     /// Data Transfer Object for patient information.
