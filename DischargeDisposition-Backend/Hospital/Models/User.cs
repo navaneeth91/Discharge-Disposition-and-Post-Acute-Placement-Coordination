@@ -29,7 +29,7 @@ namespace DischargeDisposition_Backend.Hospital.Models
 
         [MaxLength(255)]
         [EmailAddress]
-        public string? Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         [Required]
         public byte DeptId { get; set; }
