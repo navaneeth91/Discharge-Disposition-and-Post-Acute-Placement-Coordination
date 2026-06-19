@@ -1,14 +1,20 @@
-using Microsoft.EntityFrameworkCore;
 using DischargeDisposition_Backend.Data;
 using DischargeDisposition_Backend.Hospital.Repositories;
 using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
-using DischargeDisposition_Backend.Hospital.Services.Interfaces;
 using DischargeDisposition_Backend.Hospital.Services;
-using DischargeDisposition_Backend.Hospital.DTOs;
+using DischargeDisposition_Backend.Hospital.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+builder.Services.AddScoped<IPatientService, PatientService>();
+builder.Services.AddScoped<ILengthOfStayRepository, LengthOfStayRepository>();
+builder.Services.AddScoped<ILengthOfStayService, LengthOfStayService>();
 builder.Services.AddScoped<IReferralRepository , ReferralRepository>();
 builder.Services.AddScoped<IReferralService, ReferralService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 var hospitalConnection =
     builder.Configuration.GetConnectionString("HospitalConnection")
     ?? throw new InvalidOperationException(
@@ -41,12 +47,12 @@ builder.Services.AddDbContext<InsuranceDbContext>(options =>
     });
 });
 
-// Register Admin Service
-builder.Services.AddScoped<IAdminService, AdminService>();
+
 
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddOpenApi();
 
 builder.Services.AddSwaggerGen();
 
@@ -62,6 +68,18 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.MapControllers();
+try
+{
+    app.MapControllers();
+}
+catch (ReflectionTypeLoadException ex)
+{
+    foreach (var e in ex.LoaderExceptions)
+    {
+        Console.WriteLine(e?.Message);
+    }
+
+    throw;
+}
 
 app.Run();
