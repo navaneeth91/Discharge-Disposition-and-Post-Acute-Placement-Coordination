@@ -1,5 +1,4 @@
-﻿
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 
@@ -55,5 +54,8 @@ namespace DischargeDisposition_Backend.Hospital.Models
         public ICollection<DispositionDecision> DispositionDecisions { get; set; } = new List<DispositionDecision>();
 
         public ICollection<Referral> Referrals { get; set; } = new List<Referral>();
+
+        // Inverse navigation for PostAcuteProvider.UserId
+        public ICollection<PostAcuteProvider> PostAcuteProviders { get; set; } = new List<PostAcuteProvider>();
     }
 }

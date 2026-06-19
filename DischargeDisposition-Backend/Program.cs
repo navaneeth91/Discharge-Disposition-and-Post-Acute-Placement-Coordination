@@ -21,6 +21,14 @@ builder.Services.AddScoped<IDispositionTypeRepository,DispositionTypeRepository>
 
 builder.Services.AddScoped<IDispositionTypeService,DispositionTypeService>();
 
+
+builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+builder.Services.AddScoped<IPatientService, PatientService>();
+builder.Services.AddScoped<ILengthOfStayRepository, LengthOfStayRepository>();
+builder.Services.AddScoped<ILengthOfStayService, LengthOfStayService>();
+builder.Services.AddScoped<IReferralRepository , ReferralRepository>();
+builder.Services.AddScoped<IReferralService, ReferralService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 var hospitalConnection =
     builder.Configuration.GetConnectionString("HospitalConnection")
     ?? throw new InvalidOperationException(
@@ -107,7 +115,6 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
