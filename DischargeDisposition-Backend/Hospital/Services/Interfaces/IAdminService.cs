@@ -1,6 +1,7 @@
-using DischargeDisposition_Backend.Hospital.DTOs;
+using DischargeDisposition_Backend.Hospital.DTOs.Requests;
+using DischargeDisposition_Backend.Hospital.DTOs.Responses;
 
-namespace DischargeDisposition_Backend.Services.Interfaces
+namespace DischargeDisposition_Backend.Hospital.Services.Interfaces
 {
     /// <summary>
     /// Service interface for administrative operations on users and patients.

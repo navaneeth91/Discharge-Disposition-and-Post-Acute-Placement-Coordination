@@ -1,5 +1,7 @@
-using DischargeDisposition_Backend.Hospital.DTOs;
-using DischargeDisposition_Backend.Services.Interfaces;
+using DischargeDisposition_Backend.Hospital.DTOs.Requests;
+using DischargeDisposition_Backend.Hospital.DTOs.Responses;
+using DischargeDisposition_Backend.Hospital.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DischargeDisposition_Backend.Controllers
@@ -7,6 +9,7 @@ namespace DischargeDisposition_Backend.Controllers
     /// <summary>
     /// Administrative controller for managing users and patients.
     /// </summary>
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class AdminController : ControllerBase

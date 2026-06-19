@@ -1,9 +1,11 @@
 ﻿using DischargeDisposition_Backend.Data;
-using DischargeDisposition_Backend.Hospital.DTOs;
+using DischargeDisposition_Backend.Hospital.DTOs.Requests;
+using DischargeDisposition_Backend.Hospital.DTOs.Responses;
 using DischargeDisposition_Backend.Hospital.Models;
+using DischargeDisposition_Backend.Hospital.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace DischargeDisposition_Backend.Services.Interfaces
+namespace DischargeDisposition_Backend.Hospital.Services
 {
     /// <summary>
     /// Service for administrative operations on users and patients.

@@ -2,10 +2,12 @@ using Microsoft.AspNetCore.Mvc;
 using DischargeDisposition_Backend.Hospital.Services.Interfaces;
 using DischargeDisposition_Backend.Hospital.DTOs.Requests;
 using DischargeDisposition_Backend.Hospital.DTOs.Responses;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace DischargeDisposition_Backend.Api.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/referrals")]
     public class ReferralController : ControllerBase

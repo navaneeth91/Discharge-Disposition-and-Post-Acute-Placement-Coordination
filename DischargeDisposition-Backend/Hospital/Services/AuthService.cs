@@ -1,6 +1,6 @@
 ﻿using DischargeDisposition_Backend.Data;
-using DischargeDisposition_Backend.DTOs.Requests;
-using DischargeDisposition_Backend.DTOs.Responses;
+using DischargeDisposition_Backend.Hospital.DTOs.Requests;
+using DischargeDisposition_Backend.Hospital.DTOs.Responses;
 using DischargeDisposition_Backend.Helpers;
 using DischargeDisposition_Backend.Hospital.Models;
 using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
