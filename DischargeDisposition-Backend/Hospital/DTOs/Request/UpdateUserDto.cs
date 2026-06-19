@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace DischargeDisposition_Backend.Hospital.DTOs
+namespace DischargeDisposition_Backend.Hospital.DTOs.Request
 {
     /// <summary>
     /// Data Transfer Object for updating user information.

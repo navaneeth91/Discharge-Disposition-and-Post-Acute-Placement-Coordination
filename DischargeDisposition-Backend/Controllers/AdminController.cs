@@ -1,5 +1,6 @@
-using DischargeDisposition_Backend.Hospital.DTOs;
-using DischargeDisposition_Backend.Services.Interfaces;
+using DischargeDisposition_Backend.Hospital.DTOs.Request;
+using DischargeDisposition_Backend.Hospital.DTOs.Response;
+using DischargeDisposition_Backend.Hospital.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DischargeDisposition_Backend.Controllers
@@ -44,8 +45,9 @@ namespace DischargeDisposition_Backend.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error retrieving users.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred while retrieving users." });
+                _logger.LogError(ex, $"Error in GetUsers: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new { message = "An error occurred while retrieving users.", error = ex.Message });
             }
         }
 
@@ -61,9 +63,9 @@ namespace DischargeDisposition_Backend.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<UserDto>> GetUserById(int id)
+        public async Task<ActionResult< UserDto>> GetUserById(int id)
         {
-            try
+                    try
             {
                 _logger.LogInformation("GET /api/admin/users/{UserId} - Retrieving user by ID.", id);
 

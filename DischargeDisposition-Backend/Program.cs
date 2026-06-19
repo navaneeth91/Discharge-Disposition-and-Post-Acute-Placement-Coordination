@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using DischargeDisposition_Backend.Data;
-using DischargeDisposition_Backend.Services.Interfaces;
-using DischargeDisposition_Backend.Hospital.DTOs;
+using DischargeDisposition_Backend.Hospital.Services;
+using DischargeDisposition_Backend.Hospital.Services.Interfaces;
+using DischargeDisposition_Backend.Hospital.Repositories;
+using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,7 +39,8 @@ builder.Services.AddDbContext<InsuranceDbContext>(options =>
     });
 });
 
-// Register Admin Service
+// Register Admin Repository and Service
+builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 
 builder.Services.AddControllers();
