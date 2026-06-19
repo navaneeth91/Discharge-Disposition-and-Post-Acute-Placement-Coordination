@@ -27,9 +27,7 @@
 
   <ItemGroup>
     <Folder Include="Helpers\" />
-    <Folder Include="Insurance\DTOs\" />
-    <Folder Include="Insurance\Repositories\Interfaces\" />
-    <Folder Include="Insurance\Services\Interfaces\" />
+    <Folder Include="Insurance\DTOs\Requests\" />
     <Folder Include="Middleware\" />
   </ItemGroup>
 
