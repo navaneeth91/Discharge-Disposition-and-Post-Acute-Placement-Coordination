@@ -4,6 +4,7 @@ using DischargeDisposition_Backend.Hospital.Repositories;
 using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
 using DischargeDisposition_Backend.Hospital.Services.Interfaces;
 using DischargeDisposition_Backend.Hospital.Services;
+using DischargeDisposition_Backend.Hospital.DTOs;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IReferralRepository , ReferralRepository>();
@@ -39,6 +40,9 @@ builder.Services.AddDbContext<InsuranceDbContext>(options =>
             errorNumbersToAdd: null);
     });
 });
+
+// Register Admin Service
+builder.Services.AddScoped<IAdminService, AdminService>();
 
 builder.Services.AddControllers();
 

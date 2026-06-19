@@ -23,10 +23,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
+    <Folder Include="DTOs\Responses\" />
+    <Folder Include="DTOs\Requests\" />
     <Folder Include="Helpers\" />
     <Folder Include="Middleware\" />
-    <Folder Include="Hospital\Repositories\" />
+    <Folder Include="Repositories\Interfaces\" />
+    <Folder Include="Repositories\" />
   </ItemGroup>
 
 </Project>
