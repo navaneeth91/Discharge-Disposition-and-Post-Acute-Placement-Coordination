@@ -3,6 +3,7 @@ using DischargeDisposition_Backend.Hospital.Services.Interfaces;
 using DischargeDisposition_Backend.Hospital.DTOs.Requests;
 using DischargeDisposition_Backend.Hospital.DTOs.Responses;
 using Microsoft.AspNetCore.Authorization;
+using DischargeDisposition_Backend.Enums;
 
 
 namespace DischargeDisposition_Backend.Api.Controllers
@@ -50,6 +51,20 @@ namespace DischargeDisposition_Backend.Api.Controllers
                 _logger.LogError(ex, "Error in GetById");
                 return StatusCode(500, "An error occurred while fetching the referral.");
             }
+        }
+        [HttpPut("{id}/status")]
+        public async Task<IActionResult> UpdateStatus( int id,[FromBody] AuthorizationStatus status,  CancellationToken cancellationToken)
+        {
+            var result =
+                await _service.UpdateStatusAsync(
+                    id,
+                    status,
+                    cancellationToken);
+
+            if (!result)
+                return NotFound();
+
+            return Ok();
         }
 
         [HttpPost]

@@ -18,12 +18,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddSingleton<JwtHelper>();
-
+builder.Services.AddScoped<IDelayReasonCodeRepository,DelayReasonCodeRepository>();
+builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+builder.Services.AddScoped< IDelayReasonCodeService,DelayReasonCodeService>();
 builder.Services.AddScoped<IDispositionTypeRepository,DispositionTypeRepository>();
-
 builder.Services.AddScoped<IDispositionTypeService,DispositionTypeService>();
-
-
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<ILengthOfStayRepository, LengthOfStayRepository>();
