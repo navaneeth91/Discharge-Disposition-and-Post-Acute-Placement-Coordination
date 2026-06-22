@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DischargeDisposition_Backend.Hospital.Repositories
 {
-    public class DispositionTypeRepository : IDispositionTypeRepository
+    public class DispositionsTypeRepository : IDispositionTypeRepository
     {
         private readonly HospitalDbContext _context;
 
-        public DispositionTypeRepository(HospitalDbContext context)
+        public DispositionsTypeRepository(HospitalDbContext context)
         {
             _context = context;
         }

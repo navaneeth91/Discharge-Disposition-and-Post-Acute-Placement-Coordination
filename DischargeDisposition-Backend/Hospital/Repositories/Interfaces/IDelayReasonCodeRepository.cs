@@ -2,9 +2,8 @@
 
 namespace DischargeDisposition_Backend.Hospital.Repositories.Interfaces
 {
-    public interface IDispositionTypeRepository
+    public interface IDelayReasonCodeRepository
     {
-        Task<List<DispositionType>> GetAllAsync();
-       
+        Task<List<DelayReasonCode>> GetAllAsync();
     }
 }
