@@ -4,8 +4,10 @@ using DischargeDisposition_Backend.Hospital.Repositories;
 using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
 using DischargeDisposition_Backend.Hospital.Services;
 using DischargeDisposition_Backend.Hospital.Services.Interfaces;
+using DischargeDisposition_Backend.Insurance.Hospital.Services.Interfaces;
 using DischargeDisposition_Backend.Insurance.Repositories;
 using DischargeDisposition_Backend.Insurance.Services;
+using DischargeDisposition_Backend.Insurance.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -22,6 +24,9 @@ builder.Services.AddScoped<IDelayReasonCodeRepository,DelayReasonCodeRepository>
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped< IDelayReasonCodeService,DelayReasonCodeService>();
 builder.Services.AddScoped<IDispositionTypeRepository,DispositionTypeRepository>();
+
+builder.Services.AddScoped<IDispositionTypeRepository,DispositionsTypeRepository>();
+
 builder.Services.AddScoped<IDispositionTypeService,DispositionTypeService>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IPatientService, PatientService>();
@@ -29,10 +34,35 @@ builder.Services.AddScoped<ILengthOfStayRepository, LengthOfStayRepository>();
 builder.Services.AddScoped<ILengthOfStayService, LengthOfStayService>();
 builder.Services.AddScoped<IReferralRepository , ReferralRepository>();
 builder.Services.AddScoped<IReferralService, ReferralService>();
+builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IInsuranceRepository,InsuranceRepository>();
-
+builder.Services.AddScoped<IDispositionDecisionRepository,DispositionDecisionRepository>();
+builder.Services.AddScoped<IDispositionDecisionService,DispositionDecisionService>();
 builder.Services.AddScoped<IInsuranceService,InsuranceService>();
+builder.Services.AddScoped<IPatientDelayRepository,PatientDelayRepository>();
+builder.Services.AddScoped<IPatientDelayService,PatientDelayService>();
+builder.Services.AddScoped<IDelayReasonCodeRepository, DelayReasonCodeRepository>();
+builder.Services.AddScoped<IDelayReasonCodeService, DelayReasonCodeService>();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IPostAcuteProviderRepository,PostAcuteProviderRepository>();
+
+builder.Services.AddScoped<IPostAcuteProviderService,PostAcuteProviderService>();
+
+builder.Services.AddScoped<IMemberRepository,MemberRepository>();
+
+builder.Services.AddScoped<IAuthorizationRepository,AuthorizationRepository>();
+
+builder.Services.AddScoped<IAuthorizationService,AuthorizationService>();
+
+builder.Services.AddScoped<IWebhookService,WebhookService>();
+
+builder.Services.AddScoped<IInsuranceAuthorizationService,InsuranceAuthorizationService>();
+
+builder.Services.AddHttpClient<IWebhookService,WebhookService>();
+
+builder.Services.AddScoped<IMemberService,MemberService>();
 var hospitalConnection =
     builder.Configuration.GetConnectionString("HospitalConnection")
     ?? throw new InvalidOperationException(

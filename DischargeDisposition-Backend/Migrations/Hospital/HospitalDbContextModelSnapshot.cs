@@ -17,7 +17,7 @@ namespace DischargeDisposition_Backend.Migrations.Hospital
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.0")
+                .HasAnnotation("ProductVersion", "9.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -38,6 +38,9 @@ namespace DischargeDisposition_Backend.Migrations.Hospital
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("InsuranceAuthorizationRequestId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("LastUpdated")
                         .HasColumnType("datetime2");
@@ -393,9 +396,14 @@ namespace DischargeDisposition_Backend.Migrations.Hospital
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("ProviderId");
 
                     b.HasIndex("DispositionTypeId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("PostAcuteProviders");
                 });
@@ -474,6 +482,7 @@ namespace DischargeDisposition_Backend.Migrations.Hospital
                         .HasColumnType("tinyint");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
@@ -637,7 +646,14 @@ namespace DischargeDisposition_Backend.Migrations.Hospital
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("DischargeDisposition_Backend.Hospital.Models.User", "user")
+                        .WithMany("PostAcuteProviders")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("dispositionType");
+
+                    b.Navigation("user");
                 });
 
             modelBuilder.Entity("DischargeDisposition_Backend.Hospital.Models.Referral", b =>
@@ -733,6 +749,8 @@ namespace DischargeDisposition_Backend.Migrations.Hospital
                     b.Navigation("DispositionDecisions");
 
                     b.Navigation("PatientDelays");
+
+                    b.Navigation("PostAcuteProviders");
 
                     b.Navigation("Referrals");
                 });

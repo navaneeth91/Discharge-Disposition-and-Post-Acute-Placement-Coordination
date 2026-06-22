@@ -1,4 +1,4 @@
-﻿using DischargeDisposition_Backend.Data;
+using DischargeDisposition_Backend.Data;
 using DischargeDisposition_Backend.Hospital.Models;
 using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;

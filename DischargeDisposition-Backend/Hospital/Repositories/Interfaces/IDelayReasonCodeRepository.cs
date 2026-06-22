@@ -1,4 +1,4 @@
-﻿using DischargeDisposition_Backend.Hospital.Models;
+using DischargeDisposition_Backend.Hospital.Models;
 
 namespace DischargeDisposition_Backend.Hospital.Repositories.Interfaces
 {

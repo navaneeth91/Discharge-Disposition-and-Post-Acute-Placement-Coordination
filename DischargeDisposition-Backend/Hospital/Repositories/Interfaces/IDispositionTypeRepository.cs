@@ -5,5 +5,6 @@ namespace DischargeDisposition_Backend.Hospital.Repositories.Interfaces
     public interface IDispositionTypeRepository
     {
         Task<List<DispositionType>> GetAllAsync();
+       
     }
 }
