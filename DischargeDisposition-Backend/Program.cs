@@ -30,6 +30,7 @@ builder.Services.AddScoped<ILengthOfStayRepository, LengthOfStayRepository>();
 builder.Services.AddScoped<ILengthOfStayService, LengthOfStayService>();
 builder.Services.AddScoped<IReferralRepository , ReferralRepository>();
 builder.Services.AddScoped<IReferralService, ReferralService>();
+builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IInsuranceRepository,InsuranceRepository>();
 
