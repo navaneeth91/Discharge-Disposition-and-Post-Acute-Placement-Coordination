@@ -20,7 +20,8 @@ namespace DischargeDisposition_Backend.Hospital.Models
         [Required]
         [StringLength(50)]
         public string ExternalAuthorizationId { get; set; } = null!;
-       
+        public int? InsuranceAuthorizationRequestId { get; set; }
+
         //public int DispositionTypeId { get; set; }
         //[ForeignKey(nameof(DispositionTypeId))]
         //public virtual DispositionType DispositionType { get; set; } = null!;

@@ -1,4 +1,4 @@
-﻿namespace DischargeDisposition_Backend.Insurance.DTOs
+﻿namespace DischargeDisposition_Backend.Insurance.DTOs.Responses
 {
 
     public class InsuranceProviderResponse

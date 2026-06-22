@@ -1,4 +1,4 @@
-﻿using DischargeDisposition_Backend.Insurance.DTOs;
+﻿using DischargeDisposition_Backend.Insurance.DTOs.Responses;
 using DischargeDisposition_Backend.Insurance.Repositories;
 
 namespace DischargeDisposition_Backend.Insurance.Services
