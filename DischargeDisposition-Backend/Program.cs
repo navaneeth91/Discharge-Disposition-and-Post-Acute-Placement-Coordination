@@ -19,7 +19,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddSingleton<JwtHelper>();
 
-builder.Services.AddScoped<IDispositionTypeRepository,DispositionTypeRepository>();
+builder.Services.AddScoped<IDispositionTypeRepository,DispositionsTypeRepository>();
 
 builder.Services.AddScoped<IDispositionTypeService,DispositionTypeService>();
 
@@ -32,8 +32,15 @@ builder.Services.AddScoped<IReferralRepository , ReferralRepository>();
 builder.Services.AddScoped<IReferralService, ReferralService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IInsuranceRepository,InsuranceRepository>();
-
+builder.Services.AddScoped<IDispositionDecisionRepository,DispositionDecisionRepository>();
+builder.Services.AddScoped<IDispositionDecisionService,DispositionDecisionService>();
 builder.Services.AddScoped<IInsuranceService,InsuranceService>();
+builder.Services.AddScoped<IPatientDelayRepository,PatientDelayRepository>();
+builder.Services.AddScoped<IPatientDelayService,PatientDelayService>();
+builder.Services.AddScoped<IDelayReasonCodeRepository, DelayReasonCodeRepository>();
+builder.Services.AddScoped<IDelayReasonCodeService, DelayReasonCodeService>();
+
+builder.Services.AddHttpContextAccessor();
 var hospitalConnection =
     builder.Configuration.GetConnectionString("HospitalConnection")
     ?? throw new InvalidOperationException(

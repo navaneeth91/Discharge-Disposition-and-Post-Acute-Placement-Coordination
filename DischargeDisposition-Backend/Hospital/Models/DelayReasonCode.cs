@@ -7,7 +7,7 @@ namespace DischargeDisposition_Backend.Hospital.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public byte Id { get; set; } // TINYINT IDENTITY(1,1)
+        public byte Id { get; set; }
 
         [Required]
         [MaxLength(50)]

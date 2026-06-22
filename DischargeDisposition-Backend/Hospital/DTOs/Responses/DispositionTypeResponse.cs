@@ -1,4 +1,4 @@
-﻿namespace DischargeDisposition_Backend.DTOs.Responses
+﻿namespace DischargeDisposition_Backend.Hospital.DTOs.Responses
 {
     public class DispositionTypeResponse
     {
