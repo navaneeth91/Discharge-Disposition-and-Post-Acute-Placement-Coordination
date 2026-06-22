@@ -4,6 +4,7 @@ using DischargeDisposition_Backend.Hospital.DTOs.Responses;
 using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
 using DischargeDisposition_Backend.Hospital.Models;
 using DischargeDisposition_Backend.Data;
+using DischargeDisposition_Backend.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace DischargeDisposition_Backend.Hospital.Services
@@ -51,6 +52,23 @@ namespace DischargeDisposition_Backend.Hospital.Services
 
             var created = await _repo.CreateAsync(entity, cancellationToken);
             return MapToResponse(created);
+        }
+        public async Task<bool> UpdateStatusAsync(  int referralId,  AuthorizationStatus status, CancellationToken cancellationToken)
+         {
+            var referral =  await _repo.GetByIdAsync(
+                    referralId,
+                    cancellationToken);
+
+            if (referral == null)
+                return false;
+
+            referral.Status = status;
+
+            await _repo.UpdateAsync(
+                referral,
+                cancellationToken);
+
+            return true;
         }
 
         public async Task<bool> UpdateAsync(int id, UpdateReferralDto dto, CancellationToken cancellationToken = default)

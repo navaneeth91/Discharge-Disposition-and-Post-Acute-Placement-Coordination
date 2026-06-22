@@ -1,5 +1,6 @@
 using DischargeDisposition_Backend.Hospital.DTOs.Requests;
 using DischargeDisposition_Backend.Hospital.DTOs.Responses;
+    using DischargeDisposition_Backend.Enums;
 namespace DischargeDisposition_Backend.Hospital.Services.Interfaces
 {
     public interface IReferralService
@@ -13,5 +14,6 @@ namespace DischargeDisposition_Backend.Hospital.Services.Interfaces
         Task<IEnumerable<ReferralResponseDto>> GetByProviderIdAsync(int providerId, CancellationToken cancellationToken = default);
         Task<IEnumerable<ReferralResponseDto>> GetPendingReferralsAsync(CancellationToken cancellationToken = default);
         Task<IEnumerable<ReferralResponseDto>> GetCompletedReferralsAsync(CancellationToken cancellationToken = default);
+        Task<bool> UpdateStatusAsync(int referralId, AuthorizationStatus status, CancellationToken cancellationToken);
     }
 }

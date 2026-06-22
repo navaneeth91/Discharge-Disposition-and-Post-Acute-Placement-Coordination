@@ -13,5 +13,6 @@ namespace DischargeDisposition_Backend.Hospital.Repositories.Interfaces
         Task<IEnumerable<Referral>> GetByProviderIdAsync(int providerId, CancellationToken cancellationToken = default);
         Task<IEnumerable<Referral>> GetPendingReferralsAsync(CancellationToken cancellationToken = default);
         Task<IEnumerable<Referral>> GetCompletedReferralsAsync(CancellationToken cancellationToken = default);
+       
     }
 }

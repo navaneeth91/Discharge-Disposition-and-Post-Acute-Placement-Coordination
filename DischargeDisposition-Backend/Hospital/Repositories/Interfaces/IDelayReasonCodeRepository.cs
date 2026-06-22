@@ -1,9 +1,9 @@
-﻿using DischargeDisposition_Backend.Hospital.Models;
+using DischargeDisposition_Backend.Hospital.Models;
 
 namespace DischargeDisposition_Backend.Hospital.Repositories.Interfaces
 {
     public interface IDelayReasonCodeRepository
     {
-        Task<List<DelayReasonCode>> GetAllAsync();
+        Task<IEnumerable<DelayReasonCode>> GetAllAsync();
     }
 }

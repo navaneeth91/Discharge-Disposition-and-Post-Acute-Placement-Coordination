@@ -30,5 +30,17 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
                 throw new Exception("Failed to retrieve Patient data");
             }
         }
+        public Patient? GetPatientById(int patientId)
+        {
+            return _context.Patients
+                .FirstOrDefault(x => x.PatientId == patientId);
+        }
+
+        public async Task<bool> UpdatePatientAsync(Patient patient)
+        {
+            _context.Patients.Update(patient);
+
+            return await _context.SaveChangesAsync() > 0;
+        }
     }
 }

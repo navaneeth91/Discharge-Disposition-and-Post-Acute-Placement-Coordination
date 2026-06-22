@@ -1,3 +1,4 @@
+﻿using DischargeDisposition_Backend.Hospital.Models;
 ﻿using DischargeDisposition_Backend.DTOs.Responses;
 using DischargeDisposition_Backend.Hospital.DTOs.Responses;
 using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
@@ -5,6 +6,7 @@ using DischargeDisposition_Backend.Hospital.Services.Interfaces;
 
 namespace DischargeDisposition_Backend.Hospital.Services
 {
+    public class DelayReasonCodeService : IDelayReasonCodeService
     public class DelayReasonCodeService
         : IDelayReasonCodeService
     {
@@ -16,6 +18,9 @@ namespace DischargeDisposition_Backend.Hospital.Services
             _repository = repository;
         }
 
+        public async Task<IEnumerable<DelayReasonCode>> GetAllAsync()
+        {
+            return await _repository.GetAllAsync();
         public async Task<ApiResponse<List<DelayReasonCodeResponse>>>
             GetAllAsync()
         {
