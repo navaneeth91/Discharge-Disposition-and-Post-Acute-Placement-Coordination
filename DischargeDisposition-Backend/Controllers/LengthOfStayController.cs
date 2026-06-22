@@ -1,33 +1,37 @@
 ﻿using DischargeDisposition_Backend.Hospital.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
-[ApiController]
-[Route("api/los")]
-public class LengthOfStayController : ControllerBase
+namespace DischargeDisposition_Backend.Controllers
 {
-    private readonly ILengthOfStayService _service;
-
-    public LengthOfStayController(ILengthOfStayService service)
+    [Authorize]
+    [ApiController]
+    [Route("api/los")]
+    public class LengthOfStayController : ControllerBase
     {
-        _service = service;
-    }
+        private readonly ILengthOfStayService _service;
 
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
-    {
-        var data = await _service.GetAllLOSAsync();
+        public LengthOfStayController(ILengthOfStayService service)
+        {
+            _service = service;
+        }
 
-        return Ok(data);
-    }
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var data = await _service.GetAllLOSAsync();
 
-    [HttpGet("{patientId}")]
-    public async Task<IActionResult> GetByPatientId(int patientId)
-    {
-        var result = await _service.GetPatientLOSAsync(patientId);
+            return Ok(data);
+        }
 
-        if (result == null)
-            return NotFound("No patient record found");
+        [HttpGet("{patientId}")]
+        public async Task<IActionResult> GetByPatientId(int patientId)
+        {
+            var result = await _service.GetPatientLOSAsync(patientId);
 
-        return Ok(result);
+            if (result == null)
+                return NotFound("No patient record found");
+
+            return Ok(result);
+        }
     }
 }

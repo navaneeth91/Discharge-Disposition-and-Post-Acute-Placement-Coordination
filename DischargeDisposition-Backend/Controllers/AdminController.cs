@@ -8,6 +8,7 @@ namespace DischargeDisposition_Backend.Controllers
     /// <summary>
     /// Administrative controller for managing users and patients.
     /// </summary>
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class AdminController : ControllerBase
