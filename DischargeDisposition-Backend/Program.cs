@@ -23,7 +23,7 @@ builder.Services.AddSingleton<JwtHelper>();
 builder.Services.AddScoped<IDelayReasonCodeRepository,DelayReasonCodeRepository>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped< IDelayReasonCodeService,DelayReasonCodeService>();
-builder.Services.AddScoped<IDispositionTypeRepository,DispositionTypeRepository>();
+
 
 builder.Services.AddScoped<IDispositionTypeRepository,DispositionsTypeRepository>();
 
