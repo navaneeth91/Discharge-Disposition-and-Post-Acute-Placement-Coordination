@@ -1,7 +1,8 @@
-using DischargeDisposition_Backend.Hospital.DTOs.Request;
-using DischargeDisposition_Backend.Hospital.DTOs.Response;
+using DischargeDisposition_Backend.Hospital.DTOs.Requests;
+using DischargeDisposition_Backend.Hospital.DTOs.Responses;
 using DischargeDisposition_Backend.Hospital.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DischargeDisposition_Backend.Controllers
 {
