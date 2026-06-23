@@ -1,0 +1,28 @@
+:root {
+
+    --primary: #614083;
+
+    --secondary: #79599B;
+
+    --accent: #9470B0;
+
+    --accent-light: #B796CC;
+
+    --sidebar: #4F336D;
+
+    --background: #F7F5FA;
+
+    --card: #FFFFFF;
+
+    --text-primary: #2D1E3E;
+
+    --text-secondary: #6F5D82;
+
+    --border: #DDD2E8;
+
+    --success: #22C55E;
+
+    --warning: #F59E0B;
+
+    --danger: #EF4444;
+}
