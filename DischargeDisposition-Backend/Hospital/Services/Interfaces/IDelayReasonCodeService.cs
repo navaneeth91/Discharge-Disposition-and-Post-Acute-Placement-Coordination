@@ -5,7 +5,8 @@ namespace DischargeDisposition_Backend.Hospital.Services.Interfaces
 {
     public interface IDelayReasonCodeService
     {
-        Task<IEnumerable<DelayReasonCode>> GetAllAsync();
+       Task<ApiResponse<List<DelayReasonCodeResponse>>>
+    GetAllAsync();
         
     }
 }
