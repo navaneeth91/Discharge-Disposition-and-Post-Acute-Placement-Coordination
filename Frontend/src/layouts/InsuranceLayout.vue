@@ -1,32 +1,53 @@
 <script setup>
-import Sidebar from '@/components/dashboard/Sidebar.vue'
-import Navbar from '@/components/dashboard/Navbar.vue'
+import { computed }
+from 'vue'
+
+import Sidebar
+from '@/components/dashboard/Sidebar.vue'
+
+import Navbar
+from '@/components/dashboard/Navbar.vue'
+
+import { useUiStore }
+from '@/stores/ui'
+
+const ui = useUiStore()
+
+const sidebarMargin = computed(() =>
+    ui.sidebarCollapsed
+        ? 'ml-24'
+        : 'ml-72'
+)
 </script>
 
 <template>
 
-    <div class="flex">
+<div class="flex">
 
-        <Sidebar :insurance="true" />
+    <Sidebar :insurance="true" />
 
-        <div class="flex-1">
+    <div
+        :class="[
+            'flex-1',
+            sidebarMargin
+        ]">
 
-            <Navbar />
+        <Navbar />
 
-            <main
-                class="
-                min-h-screen
-                p-8"
-                style="
-                background:
-                var(--background);">
+        <main
+            class="
+            min-h-screen
+            p-8"
+            style="
+            background:
+            var(--background);">
 
-                <slot />
+            <slot />
 
-            </main>
-
-        </div>
+        </main>
 
     </div>
+
+</div>
 
 </template>
