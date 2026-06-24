@@ -10,15 +10,17 @@ namespace DischargeDisposition_Backend.Hospital.Services
         private readonly ILogger<PatientService> _logger;
         private readonly IPatientRepository _repository;
 
-        public PatientService(ILogger<PatientService> logger, IPatientRepository repository)
+        public PatientService(
+            ILogger<PatientService> logger,
+            IPatientRepository repository)
         {
             _logger = logger;
             _repository = repository;
         }
 
-        public IEnumerable<PatientResponseDto> GetPatients()
+        public async Task<IEnumerable<PatientResponseDto>> GetPatientsAsync()
         {
-            var patients = _repository.GetPatients();
+            var patients = await _repository.GetPatientsAsync();
 
             return patients.Select(p => new PatientResponseDto
             {
@@ -26,12 +28,13 @@ namespace DischargeDisposition_Backend.Hospital.Services
                 FirstName = p.FirstName,
                 LastName = p.LastName,
                 AdmissionDate = p.AdmissionDate,
-                IsActive = p.IsActive,
+                IsActive = p.IsActive
             });
         }
-        public PatientResponseDto? GetPatientById(int patientId)
+
+        public async Task<PatientResponseDto?> GetPatientByIdAsync(int patientId)
         {
-            var patient = _repository.GetPatientById(patientId);
+            var patient = await _repository.GetByIdAsync(patientId);
 
             if (patient == null)
                 return null;
@@ -45,21 +48,27 @@ namespace DischargeDisposition_Backend.Hospital.Services
                 IsActive = patient.IsActive
             };
         }
-        public async Task<bool> UpdatePatientAsync(
-    int patientId,
-    UpdateUserDto dto)
+
+
+        public async Task<bool> DischargePatientAsync(
+            int patientId,
+            DateTime actualDischargeDate)
         {
-            var patient =
-                _repository.GetPatientById(patientId);
+            var patient = await _repository.GetByIdAsync(patientId);
 
             if (patient == null)
                 return false;
 
-            patient.FirstName = dto.FirstName;
-            patient.LastName = dto.LastName;
+            if (actualDischargeDate < patient.AdmissionDate)
+                throw new ArgumentException(
+                    "Actual discharge date cannot be earlier than admission date.");
 
-            return await _repository
-                .UpdatePatientAsync(patient);
+            patient.ActualDischargeDate = actualDischargeDate;
+            patient.IsActive = 0;
+
+            await _repository.UpdatePatientAsync(patient);
+
+            return true;
         }
     }
 }
