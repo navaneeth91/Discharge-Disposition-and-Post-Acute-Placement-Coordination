@@ -6,6 +6,9 @@ from 'vue'
 import InsuranceLayout
 from '@/layouts/InsuranceLayout.vue'
 
+import InsuranceChart
+from '@/components/dashboard/InsuranceChart.vue'
+
 import WelcomeCard
 from '@/components/dashboard/WelcomeCard.vue'
 
@@ -40,9 +43,11 @@ onMounted(() => {
             v-if="
             dashboard.insuranceStats"
             class="
-            grid
-            md:grid-cols-4
-            gap-6">
+                grid
+                grid-cols-1
+                sm:grid-cols-2
+                lg:grid-cols-3
+                gap-6">
 
             <StatCard
                 title="Pending"
@@ -65,6 +70,9 @@ onMounted(() => {
                     .denied"
                 color="#C1121F" />
 
+        </div>
+        <div class="mt-8">
+            <InsuranceChart />
         </div>
 
     </div>

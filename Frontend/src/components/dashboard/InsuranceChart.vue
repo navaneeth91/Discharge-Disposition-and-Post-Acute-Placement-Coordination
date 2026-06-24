@@ -16,7 +16,7 @@ import {
 from 'chart.js'
 
 import {
-    getPatientDistribution
+    getInsuranceAnalytics
 }
 from '@/services/dashboardService'
 
@@ -32,9 +32,10 @@ const loading = ref(true)
 
 const chartData = ref({
     labels: [],
+
     datasets: [
         {
-            label: 'Patients',
+            label: 'Requests',
 
             data: [],
 
@@ -42,32 +43,35 @@ const chartData = ref({
                 '#003049',
                 '#669BBC',
                 '#C1121F',
-                '#780000',
-                '#003049',
-                '#669BBC'
+                '#780000'
             ],
 
-            borderRadius: 10
+            borderRadius: 12,
+
+            maxBarThickness: 70
         }
     ]
 })
 
 const chartOptions = {
+
     responsive: true,
+
     maintainAspectRatio: false,
 
     plugins: {
+
         legend: {
             display: false
         }
     },
 
     scales: {
+
         x: {
+
             ticks: {
-                color: '#003049',
-                maxRotation: 0,
-                minRotation: 0
+                color: '#003049'
             },
 
             grid: {
@@ -76,6 +80,7 @@ const chartOptions = {
         },
 
         y: {
+
             beginAtZero: true,
 
             ticks: {
@@ -90,21 +95,26 @@ async function loadChart() {
     try {
 
         const response =
-            await getPatientDistribution()
+            await getInsuranceAnalytics()
+
+        console.log(response.data)
 
         chartData.value.labels =
             response.data.map(
-                x => x.departmentName
+                x => x.serviceType
             )
 
         chartData.value.datasets[0].data =
             response.data.map(
-                x => x.totalPatients
+                x => x.total
             )
     }
     catch (error) {
 
-        console.error(error)
+        console.error(
+            'Insurance chart error:',
+            error
+        )
     }
     finally {
 
@@ -122,8 +132,7 @@ onMounted(loadChart)
     bg-white
     rounded-3xl
     p-6
-    shadow-lg
-    h-[500px]">
+    shadow-lg">
 
     <h2
         class="
@@ -132,25 +141,31 @@ onMounted(loadChart)
         text-[#003049]
         mb-6">
 
-        Patients By Department
+        Service Type Distribution
 
     </h2>
 
     <div
         v-if="loading"
         class="
-        skeleton
-        h-[300px]
-        rounded-2xl">
+        h-[350px]
+        animate-pulse
+        rounded-2xl
+        bg-slate-100">
     </div>
 
     <div
-    class="h-[380px]">
+        v-else
+        class="
+        relative
+        w-full
+        h-[350px]
+        lg:h-[400px]
+        xl:h-[450px]">
 
-    <Bar
-        v-if="!loading"
-        :data="chartData"
-        :options="chartOptions" />
+        <Bar
+            :data="chartData"
+            :options="chartOptions" />
 
     </div>
 
