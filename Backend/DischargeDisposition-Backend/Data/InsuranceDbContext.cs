@@ -21,6 +21,7 @@ namespace DischargeDisposition_Backend.Data
         public DbSet<AuthorizationRequest> AuthorizationRequests { get; set; } = null!;
         public DbSet<AuthorizationDecision> AuthorizationDecisions { get; set; } = null!;
         public DbSet<InsuranceDashboard>InsuranceDashboard{ get; set; }
+        public DbSet<InsuranceAnalytics>InsuranceAnalytics{ get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -121,6 +122,11 @@ namespace DischargeDisposition_Backend.Data
             modelBuilder.Entity<InsuranceDashboard>()
                 .HasNoKey()
                 .ToView("vwInsuranceDashboard");
+            modelBuilder
+                .Entity<InsuranceAnalytics>()
+                .HasNoKey()
+                .ToView("vwInsuranceServiceAnalytics");
+
         }
     }
 }

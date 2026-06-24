@@ -10,17 +10,21 @@ namespace DischargeDisposition_Backend.Insurance.Services
         private readonly IInsuranceDashboardRepository
             _repository;
 
-        public InsuranceDashboardService(
-            IInsuranceDashboardRepository repository)
+        public InsuranceDashboardService(IInsuranceDashboardRepository repository)
         {
             _repository = repository;
         }
 
-        public async Task<InsuranceDashboard>
-            GetInsuranceDashboardAsync()
+        public async Task<InsuranceDashboard>GetInsuranceDashboardAsync()
         {
             return await _repository
                 .GetInsuranceDashboardAsync();
+        }
+
+        public async Task<List<InsuranceAnalytics>>GetServiceAnalyticsAsync()
+        {
+            return await _repository
+                .GetServiceAnalyticsAsync();
         }
     }
 }

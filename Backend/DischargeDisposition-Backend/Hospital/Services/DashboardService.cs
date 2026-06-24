@@ -10,17 +10,26 @@ namespace DischargeDisposition_Backend.Hospital.Services
         private readonly IDashboardRepository
             _repository;
 
-        public DashboardService(
-            IDashboardRepository repository)
+        public DashboardService(IDashboardRepository repository)
         {
             _repository = repository;
         }
 
-        public async Task<HospitalDashboard>
-            GetHospitalDashboardAsync()
+        public async Task<HospitalDashboard>GetHospitalDashboardAsync()
         {
             return await _repository
                 .GetHospitalDashboardAsync();
+        }
+        public async Task<List<PatientDistribution>>GetPatientDistributionAsync()
+        {
+            return await _repository
+                .GetPatientDistributionAsync();
+        }
+
+        public async Task<List<AuthorizationAnalytics>>GetAuthorizationAnalyticsAsync()
+        {
+            return await _repository
+                .GetAuthorizationAnalyticsAsync();
         }
     }
 }
