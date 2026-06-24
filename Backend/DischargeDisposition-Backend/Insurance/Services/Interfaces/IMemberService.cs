@@ -1,7 +1,8 @@
-﻿using DischargeDisposition_Backend.Insurance.DTOs.Responses;
+﻿using DischargeDisposition_Backend.Hospital.DTOs.Responses;
+using DischargeDisposition_Backend.Insurance.DTOs.Responses;
 
 public interface IMemberService
 {
-    Task<MemberDetailsResponse?>
+    Task<ApiResponse<MemberDetailsResponse>>
         GetMemberAsync(int memberId);
 }

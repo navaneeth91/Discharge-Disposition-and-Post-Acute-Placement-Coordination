@@ -2,13 +2,15 @@
 
 public interface IPatientService
 {
-    Task<IEnumerable<PatientResponseDto>> GetPatientsAsync();
+    Task<ApiResponse<IEnumerable<PatientResponseDto>>>
+        GetPatientsAsync();
 
-    Task<PatientResponseDto?> GetPatientByIdAsync(int patientId);
+    Task<ApiResponse<PatientResponseDto>>
+        GetPatientByIdAsync(
+            int patientId);
 
-
-
-    Task<bool> DischargePatientAsync(
-        int patientId,
-        DateTime actualDischargeDate);
+    Task<ApiResponse<object>>
+        DischargePatientAsync(
+            int patientId,
+            DateTime actualDischargeDate);
 }

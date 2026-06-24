@@ -15,6 +15,7 @@ public class LengthOfStayRepository : ILengthOfStayRepository
     public async Task<LengthOfStayTracking?> GetLosByPatientIdAsync(int patientId)
     {
         return await _context.LengthOfStayTrackings
+            .AsNoTracking()
             .Include(x => x.patient)
             .FirstOrDefaultAsync(x => x.PatientId == patientId);
     }
@@ -22,6 +23,7 @@ public class LengthOfStayRepository : ILengthOfStayRepository
     public async Task<List<LengthOfStayTracking>> GetAllLosAsync()
     {
         return await _context.LengthOfStayTrackings
+            .AsNoTracking()
             .Include(x => x.patient)
             .ToListAsync();
     }

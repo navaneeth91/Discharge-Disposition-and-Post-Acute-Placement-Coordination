@@ -4,51 +4,70 @@ using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
 
-
 namespace DischargeDisposition_Backend.Hospital.Repositories
 {
-    public class PatientRepository : IPatientRepository
+    public class PatientRepository
+        : IPatientRepository
     {
-        private readonly ILogger<PatientRepository> _logger;
-        private readonly HospitalDbContext _context;
+        private readonly
+            ILogger<PatientRepository>
+            _logger;
 
+        private readonly
+            HospitalDbContext
+            _context;
 
-        public PatientRepository(ILogger<PatientRepository> logger, HospitalDbContext context)
+        public PatientRepository(
+            ILogger<PatientRepository> logger,
+            HospitalDbContext context)
         {
             _logger = logger;
             _context = context;
         }
 
-
-        public async Task<IEnumerable<Patient>> GetPatientsAsync()
+        public async Task<IEnumerable<Patient>>
+            GetPatientsAsync()
         {
             try
             {
-                _logger.LogInformation("Trying to retrieve patient data from the database....");
-                return await _context.Patients.ToListAsync();
+                _logger.LogInformation(
+                    "Retrieving patient data.");
+
+                return await _context.Patients
+                    .AsNoTracking()
+                    .ToListAsync();
             }
-
-
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to retrieve patient data");
+                _logger.LogError(
+                    ex,
+                    "Failed to retrieve patients.");
+
                 throw;
             }
         }
 
-
-        public async Task<Patient?> GetByIdAsync(int patientId)
+        public async Task<Patient?>
+            GetByIdAsync(int patientId)
         {
             return await _context.Patients
-                .FirstOrDefaultAsync(p => p.PatientId == patientId);
+                .AsNoTracking()
+                .FirstOrDefaultAsync(
+                    p => p.PatientId == patientId);
         }
 
-
-        public async Task UpdatePatientAsync(Patient patient)
+        public async Task<Patient?>
+            GetTrackedByIdAsync(
+                int patientId)
         {
-            _context.Patients.Update(patient);
+            return await _context.Patients
+                .FirstOrDefaultAsync(
+                    p => p.PatientId == patientId);
+        }
 
-
+        public async Task UpdatePatientAsync(
+            Patient patient)
+        {
             await _context.SaveChangesAsync();
         }
     }

@@ -16,147 +16,252 @@ namespace DischargeDisposition_Backend.Hospital.Services
         {
             _repository = repository;
         }
-        public async Task<List<PostAcuteProviderResponse>> GetAllAsync()
+
+        public async Task<
+            ApiResponse<List<PostAcuteProviderResponse>>>
+            GetAllAsync()
         {
-            var providers =
-                await _repository.GetAllAsync();
-
-            return providers.Select(provider =>
-                new PostAcuteProviderResponse
-                {
-                    ProviderId =
-                        provider.ProviderId,
-
-                    ProviderName =
-                        provider.ProviderName,
-
-                    IsActive =
-                        provider.IsActive,
-
-                    Phone =
-                        provider.Phone,
-
-                    Email =
-                        provider.Email,
-
-                    ContactPerson =
-                        provider.ContactPerson,
-
-                    AddressLine =
-                        provider.AddressLine,
-
-                    City =
-                        provider.City,
-
-                    State =
-                        provider.State,
-
-                    DispositionTypeId =
-                        provider.DispositionTypeId,
-
-                    DispositionName =
-                        provider.dispositionType
-                            .DispositionName
-                })
-                .ToList();
-        }
-
-        public async Task<PostAcuteProviderResponse?>
-            GetByIdAsync(int providerId)
-        {
-            var provider =
-                await _repository
-                    .GetByIdAsync(providerId);
-
-            if (provider == null)
-                return null;
-
-            return new PostAcuteProviderResponse
+            try
             {
-                ProviderId =
-                    provider.ProviderId,
+                var providers =
+                    await _repository.GetAllAsync();
 
-                ProviderName =
-                    provider.ProviderName,
+                var result =
+                    providers.Select(provider =>
+                        new PostAcuteProviderResponse
+                        {
+                            ProviderId =
+                                provider.ProviderId,
 
-                IsActive =
-                    provider.IsActive,
+                            ProviderName =
+                                provider.ProviderName,
 
-                Phone =
-                    provider.Phone,
+                            IsActive =
+                                provider.IsActive,
 
-                Email =
-                    provider.Email,
+                            Phone =
+                                provider.Phone,
 
-                ContactPerson =
-                    provider.ContactPerson,
+                            Email =
+                                provider.Email,
 
-                AddressLine =
-                    provider.AddressLine,
+                            ContactPerson =
+                                provider.ContactPerson,
 
-                City =
-                    provider.City,
+                            AddressLine =
+                                provider.AddressLine,
 
-                State =
-                    provider.State,
+                            City =
+                                provider.City,
 
-                DispositionTypeId =
-                    provider.DispositionTypeId,
+                            State =
+                                provider.State,
 
-                DispositionName =
-                    provider.dispositionType
-                        .DispositionName
-            };
+                            DispositionTypeId =
+                                provider.DispositionTypeId,
+
+                            DispositionName =
+                                provider.dispositionType
+                                    .DispositionName
+                        })
+                    .ToList();
+
+                return new ApiResponse<
+                    List<PostAcuteProviderResponse>>
+                {
+                    Success = true,
+                    StatusCode = 200,
+                    Message =
+                        "Providers retrieved successfully",
+
+                    Data = result
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<
+                    List<PostAcuteProviderResponse>>
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message =
+                        "Failed to retrieve providers",
+
+                    Errors = new()
+                    {
+                        ex.Message
+                    }
+                };
+            }
         }
 
-        public async Task<List<PostAcuteProviderResponse>>
+        public async Task<
+            ApiResponse<PostAcuteProviderResponse>>
+            GetByIdAsync(
+                int providerId)
+        {
+            try
+            {
+                var provider =
+                    await _repository
+                        .GetByIdAsync(providerId);
+
+                if (provider == null)
+                {
+                    return new ApiResponse<
+                        PostAcuteProviderResponse>
+                    {
+                        Success = false,
+                        StatusCode = 404,
+                        Message =
+                            "Provider not found"
+                    };
+                }
+
+                return new ApiResponse<
+                    PostAcuteProviderResponse>
+                {
+                    Success = true,
+                    StatusCode = 200,
+                    Message =
+                        "Provider retrieved successfully",
+
+                    Data =
+                        new PostAcuteProviderResponse
+                        {
+                            ProviderId =
+                                provider.ProviderId,
+
+                            ProviderName =
+                                provider.ProviderName,
+
+                            IsActive =
+                                provider.IsActive,
+
+                            Phone =
+                                provider.Phone,
+
+                            Email =
+                                provider.Email,
+
+                            ContactPerson =
+                                provider.ContactPerson,
+
+                            AddressLine =
+                                provider.AddressLine,
+
+                            City =
+                                provider.City,
+
+                            State =
+                                provider.State,
+
+                            DispositionTypeId =
+                                provider.DispositionTypeId,
+
+                            DispositionName =
+                                provider.dispositionType
+                                    .DispositionName
+                        }
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<
+                    PostAcuteProviderResponse>
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message =
+                        "Failed to retrieve provider",
+
+                    Errors = new()
+                    {
+                        ex.Message
+                    }
+                };
+            }
+        }
+
+        public async Task<
+            ApiResponse<List<PostAcuteProviderResponse>>>
             GetByDispositionTypeAsync(
                 int dispositionTypeId)
         {
-            var providers =
-                await _repository
-                    .GetByDispositionTypeAsync(
-                        dispositionTypeId);
+            try
+            {
+                var providers =
+                    await _repository
+                        .GetByDispositionTypeAsync(
+                            dispositionTypeId);
 
-            return providers
-                .Select(provider =>
-                    new PostAcuteProviderResponse
+                var result =
+                    providers.Select(provider =>
+                        new PostAcuteProviderResponse
+                        {
+                            ProviderId =
+                                provider.ProviderId,
+
+                            ProviderName =
+                                provider.ProviderName,
+
+                            IsActive =
+                                provider.IsActive,
+
+                            Phone =
+                                provider.Phone,
+
+                            Email =
+                                provider.Email,
+
+                            ContactPerson =
+                                provider.ContactPerson,
+
+                            AddressLine =
+                                provider.AddressLine,
+
+                            City =
+                                provider.City,
+
+                            State =
+                                provider.State,
+
+                            DispositionTypeId =
+                                provider.DispositionTypeId,
+
+                            DispositionName =
+                                provider.dispositionType
+                                    .DispositionName
+                        })
+                    .ToList();
+
+                return new ApiResponse<
+                    List<PostAcuteProviderResponse>>
+                {
+                    Success = true,
+                    StatusCode = 200,
+                    Message =
+                        "Providers retrieved successfully",
+
+                    Data = result
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<
+                    List<PostAcuteProviderResponse>>
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message =
+                        "Failed to retrieve providers",
+
+                    Errors = new()
                     {
-                        ProviderId =
-                            provider.ProviderId,
-
-                        ProviderName =
-                            provider.ProviderName,
-
-                        IsActive =
-                            provider.IsActive,
-
-                        Phone =
-                            provider.Phone,
-
-                        Email =
-                            provider.Email,
-
-                        ContactPerson =
-                            provider.ContactPerson,
-
-                        AddressLine =
-                            provider.AddressLine,
-
-                        City =
-                            provider.City,
-
-                        State =
-                            provider.State,
-
-                        DispositionTypeId =
-                            provider.DispositionTypeId,
-
-                        DispositionName =
-                            provider.dispositionType
-                                .DispositionName
-                    })
-                .ToList();
+                        ex.Message
+                    }
+                };
+            }
         }
     }
 }

@@ -1,30 +1,34 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using DischargeDisposition_Backend.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-[Authorize]
-[ApiController]
-[Route("api/members")]
-public class MembersController
-    : ControllerBase
+
+namespace DischargeDisposition_Backend.Controllers
 {
-    private readonly IMemberService _service;
-
-    public MembersController(
-        IMemberService service)
+    [Authorize]
+    [ApiController]
+    [Route("api/members")]
+    public class MembersController
+        : ControllerBase
     {
-        _service = service;
-    }
+        private readonly IMemberService
+            _service;
 
-    [HttpGet("{memberId:int}")]
-    public async Task<IActionResult>
-        GetMember(int memberId)
-    {
-        var member =
-            await _service.GetMemberAsync(memberId);
+        public MembersController(
+            IMemberService service)
+        {
+            _service = service;
+        }
 
-        if (member == null)
-            return NotFound(
-                $"Member {memberId} not found.");
+        [HttpGet("{memberId:int}")]
+        public async Task<IActionResult>
+            GetMember(int memberId)
+        {
+            var response =
+                await _service
+                    .GetMemberAsync(memberId);
 
-        return Ok(member);
+            return this
+                .ToHttpResponse(response);
+        }
     }
 }
