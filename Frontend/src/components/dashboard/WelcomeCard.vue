@@ -13,10 +13,16 @@ const auth =
     rounded-3xl
     p-8
     text-white
-    bg-gradient-to-r
-    from-[#614083]
-    to-[#9470B0]
-    shadow-xl">
+    shadow-xl"
+
+    style="
+    background:
+    linear-gradient(
+        135deg,
+        #003049,
+        #0D4A6B,
+        #669BBC
+    );">
 
     <h1
         class="
@@ -31,7 +37,7 @@ const auth =
     <p
         class="
         mt-3
-        text-purple-100">
+        text-blue-100">
 
         Here's today's healthcare overview.
 

@@ -47,26 +47,23 @@ onMounted(() => {
             <StatCard
                 title="Pending"
                 :value="
-                    dashboard
-                    .insuranceStats
+                    dashboard.insuranceStats
                     .pending"
-                color="#614083" />
+                color="#003049" />
 
             <StatCard
                 title="Approved"
                 :value="
-                    dashboard
-                    .insuranceStats
+                    dashboard.insuranceStats
                     .approved"
-                color="#79599B" />
+                color="#669BBC" />
 
             <StatCard
                 title="Denied"
                 :value="
-                    dashboard
-                    .insuranceStats
+                    dashboard.insuranceStats
                     .denied"
-                color="#9470B0" />
+                color="#C1121F" />
 
         </div>
 

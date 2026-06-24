@@ -46,13 +46,17 @@ function logout() {
         ]"
 
         class="
+        fixed
+        left-0
+        top-0
         h-screen
-        bg-[#4F336D]
+        bg-[#003049]
         text-white
         transition-all
         duration-300
         flex
-        flex-col">
+        flex-col
+        z-50">
 
         <div
             class="
@@ -144,16 +148,18 @@ function logout() {
     display: flex;
     align-items: center;
     gap: 14px;
+    font-weight: 500;
     padding: 14px;
     border-radius: 14px;
     transition: all 0.3s;
 }
 
 .menu-item:hover {
-    background: #614083;
+    background: rgba(102,155,188,.25);
 }
 
 .router-link-active {
-    background: #79599B;
+    background: #669BBC;
+    color: white;
 }
 </style>

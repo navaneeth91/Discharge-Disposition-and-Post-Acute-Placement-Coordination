@@ -10,18 +10,22 @@ defineProps({
 
 <div
     class="
-    card-animation
-    bg-white
     rounded-3xl
     p-6
-    shadow-md
-    hover:shadow-xl
-    transition">
+    transition-all
+    duration-300
+    hover:-translate-y-1"
+    style="
+    background:white;
+    box-shadow:var(--card-shadow);">
 
     <p
         class="
         text-sm
-        text-slate-500">
+        font-medium"
+        style="
+        color:
+        var(--text-secondary);">
 
         {{ title }}
 

@@ -1,7 +1,6 @@
 <script setup>
-import {
-    Bar
-} from 'vue-chartjs'
+import { Bar }
+from 'vue-chartjs'
 
 import {
     Chart as ChartJS,
@@ -22,48 +21,67 @@ ChartJS.register(
 )
 
 const chartData = {
-
     labels: [
-        'Medicine',
-        'ICU',
         'Cardiology',
-        'Orthopedics'
+        'ICU',
+        'Orthopedics',
+        'Medicine'
     ],
 
     datasets: [
         {
             label: 'Patients',
 
-            backgroundColor: '#79599B',
+            data: [35, 20, 28, 40],
 
-            data: [35, 18, 28, 14]
+            backgroundColor: [
+                '#003049',
+                '#669BBC',
+                '#C1121F',
+                '#780000'
+            ],
+
+            borderRadius: 10
         }
     ]
+}
+
+const chartOptions = {
+
+    responsive: true,
+
+    plugins: {
+        legend: {
+            display: false
+        }
+    }
 }
 </script>
 
 <template>
 
-    <div
+<div
+    class="
+    bg-white
+    rounded-3xl
+    p-6
+    shadow-lg">
+
+    <h2
         class="
-        bg-white
-        rounded-3xl
-        p-6
-        shadow-md">
+        text-xl
+        font-semibold
+        text-[#003049]
+        mb-6">
 
-        <h2
-            class="
-            text-xl
-            font-semibold
-            mb-5">
+        Patients By Department
 
-            Patients By Department
+    </h2>
 
-        </h2>
+    <Bar
+        :data="chartData"
+        :options="chartOptions" />
 
-        <Bar
-            :data="chartData" />
-
-    </div>
+</div>
 
 </template>

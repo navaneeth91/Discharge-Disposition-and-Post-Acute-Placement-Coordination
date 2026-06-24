@@ -32,20 +32,20 @@ defineEmits(['update:modelValue'])
         'update:modelValue',
         $event.target.value
       )"
-      class="
-w-full
-rounded-xl
-border
-border-slate-300
-bg-white
-px-4
-py-3
-outline-none
-transition
-duration-300
-focus:border-[#79599B]
-focus:ring-4
-focus:ring-purple-100"/>
+     class="
+        w-full
+        rounded-xl
+        border
+        bg-white
+        px-4
+        py-3
+        outline-none
+        transition-all
+        duration-300
+        focus:ring-4"
+        style="
+        border-color: var(--border);
+        "/>
 
     <p
       v-if="error"
@@ -58,3 +58,13 @@ focus:ring-purple-100"/>
   </div>
 
 </template>
+<style scoped>
+
+input:focus {
+    border-color: #003049;
+    box-shadow:
+        0 0 0 4px
+        rgba(102,155,188,.20);
+}
+
+</style>

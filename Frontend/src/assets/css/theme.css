@@ -1,28 +1,31 @@
 :root {
 
-    --primary: #614083;
+    --primary: #003049;
 
-    --secondary: #79599B;
+    --primary-hover: #0B476A;
 
-    --accent: #9470B0;
+    --secondary: #669BBC;
 
-    --accent-light: #B796CC;
+    --background: #FDF0D5;
 
-    --sidebar: #4F336D;
+    --surface: #FFFFFF;
 
-    --background: #F7F5FA;
+    --danger: #C1121F;
 
-    --card: #FFFFFF;
+    --critical: #780000;
 
-    --text-primary: #2D1E3E;
+    --text-primary: #003049;
 
-    --text-secondary: #6F5D82;
+    --text-secondary: #667085;
 
-    --border: #DDD2E8;
+    --border: #D8D3C4;
 
-    --success: #22C55E;
+    --success: #16A34A;
 
-    --warning: #F59E0B;
+    --warning: #D97706;
 
-    --danger: #EF4444;
+    --sidebar: #003049;
+
+    --card-shadow:
+        0 12px 30px rgba(0,48,73,0.08);
 }

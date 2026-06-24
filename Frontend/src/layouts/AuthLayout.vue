@@ -11,9 +11,9 @@
       relative
       overflow-hidden
       bg-gradient-to-br
-      from-[#614083]
-      via-[#79599B]
-      to-[#B796CC]
+      from-[#003049]
+      via-[#0B476A]
+      to-[#669BBC]
       text-white">
 
       <!-- Background Shapes -->
@@ -100,7 +100,7 @@
           class="
           max-w-lg
           text-xl
-          text-purple-100
+          text-blue-100
           leading-relaxed">
 
           Streamlining patient discharge planning,
@@ -122,7 +122,7 @@
       flex
       items-center
       justify-center
-      bg-[#F7F5FA]
+      bg-[#FDF0D5]
       p-8">
 
       <slot />

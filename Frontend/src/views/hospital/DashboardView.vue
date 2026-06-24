@@ -11,7 +11,11 @@ from '@/components/dashboard/WelcomeCard.vue'
 
 import StatCard
 from '@/components/dashboard/StatCard.vue'
+import PatientChart
+from '@/components/dashboard/PatientChart.vue'
 
+import AuthorizationChart
+from '@/components/dashboard/AuthorizationChart.vue'
 import {
     useDashboardStore
 }
@@ -48,34 +52,41 @@ onMounted(() => {
             <StatCard
                 title="Patients"
                 :value="
-                    dashboard
-                    .hospitalStats
+                    dashboard.hospitalStats
                     .totalPatients"
-                color="#614083" />
+                color="#003049" />
 
             <StatCard
                 title="Pending Referrals"
                 :value="
-                    dashboard
-                    .hospitalStats
+                    dashboard.hospitalStats
                     .pendingReferrals"
-                color="#79599B" />
+                color="#669BBC" />
 
             <StatCard
                 title="Pending Authorizations"
                 :value="
-                    dashboard
-                    .hospitalStats
+                    dashboard.hospitalStats
                     .pendingAuthorizations"
-                color="#9470B0" />
+                color="#C1121F" />
 
             <StatCard
                 title="Active Delays"
                 :value="
-                    dashboard
-                    .hospitalStats
+                    dashboard.hospitalStats
                     .activeDelays"
-                color="#B796CC" />
+                color="#780000" />
+
+        </div>
+        <div
+            class="
+            grid
+            lg:grid-cols-2
+            gap-6">
+
+            <PatientChart />
+
+            <AuthorizationChart />
 
         </div>
 
