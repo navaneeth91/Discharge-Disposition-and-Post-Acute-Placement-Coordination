@@ -40,7 +40,7 @@ namespace DischargeDisposition_Backend.Hospital.Services
                };
            }
 
-           var  = int.Parse(userIdClaim);
+           var  reportedBy = int.Parse(userIdClaim);
             var delay = new PatientDelay
             {
                 PatientId = request.PatientId,
