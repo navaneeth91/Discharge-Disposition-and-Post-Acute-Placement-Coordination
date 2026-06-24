@@ -6,28 +6,37 @@ defineProps({
 
 <template>
 
-  <button
+<button
     :disabled="loading"
     class="
-w-full
-rounded-xl
-bg-[#614083]
-py-3
-font-medium
-text-white
-transition
-duration-300
-hover:-translate-y-1
-hover:bg-[#53366F]
-hover:shadow-xl
-disabled:opacity-70">
+    w-full
+    rounded-xl
+    py-3
+    font-semibold
+    text-white
+    transition-all
+    duration-300
+    hover:-translate-y-1
+    hover:shadow-xl
+    disabled:opacity-70"
+
+    style="
+    background: var(--primary);">
 
     <span v-if="loading">
-      Please wait...
+
+        Please wait...
+
     </span>
 
     <slot v-else />
 
-  </button>
+</button>
 
 </template>
+
+<style scoped>
+button:hover {
+    background: var(--primary-hover);
+}
+</style>

@@ -21,18 +21,16 @@ html {
 ::-webkit-scrollbar {
     width: 8px;
 }
-
 ::-webkit-scrollbar-track {
-    background: #F1EDF6;
+    background: #FDF0D5;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #9470B0;
-    border-radius: 10px;
+    background: #669BBC;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #79599B;
+    background: #003049;
 }
 
 @keyframes fadeUp {
@@ -85,4 +83,106 @@ html {
 
 .card-animation {
     animation: card 0.4s ease;
+}
+.table-header {
+    background: #003049;
+    color: white;
+}
+
+.table-row {
+    transition: .3s;
+}
+
+.table-row:hover {
+    background: #FDF0D5;
+}
+
+.table-badge {
+    background: #669BBC;
+    color: white;
+    border-radius: 999px;
+    padding: 4px 12px;
+}
+
+.card-surface {
+    background: white;
+    box-shadow: var(--card-shadow);
+}
+
+.empty-state {
+    color: #669BBC;
+}
+
+.loading-skeleton {
+    background:
+        linear-gradient(
+            90deg,
+            #FDF0D5,
+            #ffffff,
+            #FDF0D5
+        );
+
+    background-size: 200%;
+
+    animation:
+        skeleton 1.4s infinite;
+}
+
+@keyframes skeleton {
+
+    0% {
+        background-position: 200%;
+    }
+
+    100% {
+        background-position: -200%;
+    }
+}
+.status-pending {
+    background: #FFF1E6;
+    color: #C1121F;
+}
+
+.status-approved {
+    background: #EAF7F3;
+    color: #003049;
+}
+
+.status-denied {
+    background: #FFE5E5;
+    color: #780000;
+}
+
+.status-pending,
+.status-approved,
+.status-denied {
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-weight: 600;
+}
+.skeleton {
+
+    background:
+        linear-gradient(
+            90deg,
+            #FDF0D5,
+            #FFFFFF,
+            #FDF0D5
+        );
+
+    background-size: 200%;
+
+    animation:
+        loading 1.5s infinite;
+}
+
+@keyframes loading {
+
+    0% {
+        background-position: 200%;
+    }
+
+    100% {
+        background-position: -200%;
+    }
 }

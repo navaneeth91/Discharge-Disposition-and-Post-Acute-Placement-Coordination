@@ -15,9 +15,11 @@ import Navbar from '@/components/dashboard/Navbar.vue'
 
             <main
                 class="
-                p-8
-                bg-[#F7F5FA]
-                min-h-screen">
+                min-h-screen
+                p-8"
+                style="
+                background:
+                var(--background);">
 
                 <slot />
 

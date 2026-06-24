@@ -217,7 +217,7 @@ const submit = async () => {
                 text-center
                 space-y-2">
 
-                <p class="text-[#6F5D82]">
+                <p class="text-[#003049]">
                     Already have an account?
                 </p>
 
@@ -225,8 +225,8 @@ const submit = async () => {
                     to="/login"
                     class="
                     font-medium
-                    text-[#614083]
-                    hover:text-[#53366F]">
+                    text-[#003049]
+                    hover:text-[#669BBC]">
 
                     ← Back to Login
 

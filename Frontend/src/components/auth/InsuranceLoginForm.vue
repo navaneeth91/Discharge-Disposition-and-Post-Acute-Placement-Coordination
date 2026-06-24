@@ -225,8 +225,8 @@ const submit = async () => {
                     to="/login"
                     class="
                     font-medium
-                    text-[#614083]
-                    hover:text-[#53366F]">
+                    text-[#003049]
+                    hover:text-[#669BBC]">
 
                     ← Back to Login
 
