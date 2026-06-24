@@ -6,6 +6,6 @@ namespace DischargeDisposition_Backend.Hospital.Services.Interfaces
     public interface IAuthService
     {
         Task<ApiResponse<object>> SignupAsync(SignupRequest request);
-        Task<string?> LoginAsync(LoginRequest request);
+        Task<LoginResponse?> LoginAsync(LoginRequest request);
     }
 }

@@ -32,27 +32,32 @@ namespace DischargeDisposition_Backend.Controllers
         public async Task<IActionResult> Login(
             LoginRequest request)
         {
-            var token = await _authService.LoginAsync(request);
-            if (token == null)
+            var response =
+    await _authService.LoginAsync(request);
+
+            if (response == null)
             {
-                return this.ToHttpResponse(new ApiResponse<LoginResponse>
-                {
-                    Success = false,
-                    StatusCode = 401,
-                    Message = "Login failed",
-                    Errors = new List<string>
+                return this.ToHttpResponse(
+                    new ApiResponse<LoginResponse>
                     {
-                        "Invalid email or password"
-                    }
-                });
+                        Success = false,
+                        StatusCode = 401,
+                        Message = "Login failed",
+                        Errors = new List<string>
+                        {
+                "Invalid email or password"
+                        }
+                    });
             }
-            return this.ToHttpResponse(new ApiResponse<LoginResponse>
-            {
-                Success = true,
-                StatusCode = 200,
-                Message = "Login successful",
-                Data = new LoginResponse{ Token = token }
-            });
+
+            return this.ToHttpResponse(
+                new ApiResponse<LoginResponse>
+                {
+                    Success = true,
+                    StatusCode = 200,
+                    Message = "Login successful",
+                    Data = response
+                });
         }
     }
 }

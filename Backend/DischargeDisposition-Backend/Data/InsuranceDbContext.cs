@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using DischargeDisposition_Backend.Insurance.DTOs.Responses;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using DischargeDisposition_Backend.Insurance.Models;
 
@@ -19,7 +20,7 @@ namespace DischargeDisposition_Backend.Data
         public DbSet<CoverageRule> CoverageRules { get; set; } = null!;
         public DbSet<AuthorizationRequest> AuthorizationRequests { get; set; } = null!;
         public DbSet<AuthorizationDecision> AuthorizationDecisions { get; set; } = null!;
-
+        public DbSet<InsuranceDashboard>InsuranceDashboard{ get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -117,6 +118,9 @@ namespace DischargeDisposition_Backend.Data
                     .HasForeignKey(ad => ad.AuthorizationRequestId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
+            modelBuilder.Entity<InsuranceDashboard>()
+                .HasNoKey()
+                .ToView("vwInsuranceDashboard");
         }
     }
 }

@@ -3,7 +3,7 @@ using DischargeDisposition_Backend.Hospital.DTOs.Responses;
 
 namespace DischargeDisposition_Backend.Hospital.Services.Interfaces
 {
-    public interface IAuthorizationService
+    public interface IAuthorizedService
     {
         Task<long> CreateAsync(CreateAuthorizationRequest dto);
 
