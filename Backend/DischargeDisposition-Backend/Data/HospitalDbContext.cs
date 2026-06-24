@@ -1,4 +1,5 @@
 using DischargeDisposition_Backend.Hospital.Models;
+using DischargeDisposition_Backend.Hospital.DTOs.Responses;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -24,6 +25,7 @@ namespace DischargeDisposition_Backend.Data
         public DbSet<Referral> Referrals { get; set; } = null!;
         public DbSet<PatientDelay> PatientDelays { get; set; } = null!;
         public DbSet<LengthOfStayTracking> LengthOfStayTrackings { get; set; } = null!;
+        public DbSet<HospitalDashboard>HospitalDashboard{ get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -208,6 +210,9 @@ namespace DischargeDisposition_Backend.Data
                     .HasForeignKey<AuthorizationTracking>(a => a.ReferralId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
+            modelBuilder.Entity<HospitalDashboard>()
+            .HasNoKey()
+            .ToView("vwHospitalDashboard");
         }
     }
 }

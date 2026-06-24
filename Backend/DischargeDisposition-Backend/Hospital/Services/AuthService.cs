@@ -126,28 +126,45 @@ namespace DischargeDisposition_Backend.Hospital.Services
                 };
             }
         }
-        public async Task<string?> LoginAsync(LoginRequest request)
+        public async Task<LoginResponse?> LoginAsync(LoginRequest request)
         {
-            var user = await _userRepository.GetByEmailAsync(request.Email);
+            var user =
+                await _userRepository
+                    .GetByEmailAsync(request.Email);
+
             if (user == null)
             {
                 return null;
             }
+
             var isPasswordValid =
-                PasswordHasher.VerifyPassword(request.Password, user.PasswordHash);
+                PasswordHasher.VerifyPassword(
+                    request.Password,
+                    user.PasswordHash);
+
             if (!isPasswordValid)
             {
                 return null;
             }
-            var token = _jwt.GenerateToken(
-                        user.UserId,
-                        user.UserName,
-                        user.role?.Name ?? "UNASSIGNED",
-                        null,
-                        null);
-            return token;
 
+            var roleName =
+                user.role?.Name ?? "UNASSIGNED";
 
+            var token =
+                _jwt.GenerateToken(
+                    user.UserId,
+                    user.UserName,
+                    roleName,
+                    null,
+                    null);
+
+            return new LoginResponse
+            {
+                Token = token,
+                UserId = user.UserId,
+                FirstName = user.FirstName,
+                Role = roleName
+            };
         }
     }
 }

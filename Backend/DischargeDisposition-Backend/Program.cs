@@ -6,6 +6,7 @@ using DischargeDisposition_Backend.Hospital.Services;
 using DischargeDisposition_Backend.Hospital.Services.Interfaces;
 using DischargeDisposition_Backend.Insurance.Hospital.Services.Interfaces;
 using DischargeDisposition_Backend.Insurance.Repositories;
+using DischargeDisposition_Backend.Insurance.Repositories.Interfaces;
 using DischargeDisposition_Backend.Insurance.Services;
 using DischargeDisposition_Backend.Insurance.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -14,6 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Text;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,11 +56,18 @@ builder.Services.AddScoped<IMemberRepository,MemberRepository>();
 
 builder.Services.AddScoped<IAuthorizationRepository,AuthorizationRepository>();
 
-builder.Services.AddScoped<IAuthorizationService,AuthorizationService>();
+builder.Services.AddScoped<IAuthorizedService,AuthorizedService>();
 
 builder.Services.AddScoped<IWebhookService,WebhookService>();
 
 builder.Services.AddScoped<IInsuranceAuthorizationService,InsuranceAuthorizationService>();
+builder.Services.AddScoped<IDashboardRepository,DashboardRepository>();
+
+builder.Services.AddScoped<IDashboardService,DashboardService>();
+
+builder.Services.AddScoped<IInsuranceDashboardRepository,InsuranceDashboardRepository>();
+
+builder.Services.AddScoped<IInsuranceDashboardService,InsuranceDashboardService>();
 
 builder.Services.AddHttpClient<IWebhookService,WebhookService>();
 

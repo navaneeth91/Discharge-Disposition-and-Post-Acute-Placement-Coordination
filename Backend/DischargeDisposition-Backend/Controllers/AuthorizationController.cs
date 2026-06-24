@@ -1,19 +1,20 @@
 ﻿using DischargeDisposition_Backend.Hospital.DTOs.Requests;
 using DischargeDisposition_Backend.Hospital.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DischargeDisposition_Backend.Hospital.Controllers
+namespace DischargeDisposition_Backend.Controllers
 {
+    //[Authorize(Roles ="Administrator,Care Manager")]
     [ApiController]
     [Route("api/authorizations")]
     public class AuthorizationsController
         : ControllerBase
     {
-        private readonly IAuthorizationService
-            _service;
+        private readonly IAuthorizedService _service;
 
         public AuthorizationsController(
-            IAuthorizationService service)
+            IAuthorizedService service)
         {
             _service = service;
         }

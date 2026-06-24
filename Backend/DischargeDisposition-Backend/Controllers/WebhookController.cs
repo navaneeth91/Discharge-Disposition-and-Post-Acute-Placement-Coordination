@@ -9,11 +9,11 @@ namespace DischargeDisposition_Backend.Hospital.Controllers
     public class WebhookController
         : ControllerBase
     {
-        private readonly IAuthorizationService
+        private readonly IAuthorizedService
             _service;
 
         public WebhookController(
-            IAuthorizationService service)
+            IAuthorizedService service)
         {
             _service = service;
         }

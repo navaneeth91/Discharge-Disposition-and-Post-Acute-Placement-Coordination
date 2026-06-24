@@ -9,14 +9,14 @@ using DischargeDisposition_Backend.Insurance.Models;
 
 namespace DischargeDisposition_Backend.Hospital.Services
 {
-    public class AuthorizationService
-        : IAuthorizationService
+    public class AuthorizedService
+        : IAuthorizedService
     {
         private readonly IAuthorizationRepository _repository;
 
         private readonly InsuranceDbContext _insuranceContext;
 
-        public AuthorizationService(
+        public AuthorizedService(
             IAuthorizationRepository repository,
             InsuranceDbContext insuranceContext)
         {
