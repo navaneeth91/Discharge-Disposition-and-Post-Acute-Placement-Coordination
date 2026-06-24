@@ -1,41 +1,61 @@
-﻿using DischargeDisposition_Backend.Hospital.Services.Interfaces;
+﻿using DischargeDisposition_Backend.Helpers;
+using DischargeDisposition_Backend.Hospital.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 namespace DischargeDisposition_Backend.Controllers
 {
-    [Authorize(Roles ="Administrator,Care Manager,Physician")]
+    [Authorize(
+        Roles =
+        "Administrator,Care Manager,Physician")]
     [ApiController]
     [Route("api/dashboard")]
-    
-    public class DashboardController: ControllerBase
+    public class DashboardController
+        : ControllerBase
     {
         private readonly IDashboardService
             _service;
 
-        public DashboardController(IDashboardService service)
+        public DashboardController(
+            IDashboardService service)
         {
             _service = service;
         }
 
         [HttpGet("hospital")]
-        public async Task<IActionResult>GetHospitalDashboard()
+        public async Task<IActionResult>
+            GetHospitalDashboard()
         {
-            return Ok(
+            var response =
                 await _service
-                    .GetHospitalDashboardAsync());
+                    .GetHospitalDashboardAsync();
+
+            return this
+                .ToHttpResponse(response);
         }
+
         [HttpGet("patient-distribution")]
-        public async Task<IActionResult>GetPatientDistribution()
+        public async Task<IActionResult>
+            GetPatientDistribution()
         {
-            return Ok(await _service
-                    .GetPatientDistributionAsync());
+            var response =
+                await _service
+                    .GetPatientDistributionAsync();
+
+            return this
+                .ToHttpResponse(response);
         }
 
         [HttpGet("authorization-analytics")]
-        public async Task<IActionResult>GetAuthorizationAnalytics()
+        public async Task<IActionResult>
+            GetAuthorizationAnalytics()
         {
-            return Ok(await _service
-                    .GetAuthorizationAnalyticsAsync());
+            var response =
+                await _service
+                    .GetAuthorizationAnalyticsAsync();
+
+            return this
+                .ToHttpResponse(response);
         }
     }
 }

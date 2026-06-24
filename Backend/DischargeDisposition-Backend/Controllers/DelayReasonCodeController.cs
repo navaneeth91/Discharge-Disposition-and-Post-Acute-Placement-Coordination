@@ -1,4 +1,5 @@
-﻿using DischargeDisposition_Backend.Hospital.Services.Interfaces;
+﻿using DischargeDisposition_Backend.Helpers;
+using DischargeDisposition_Backend.Hospital.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,7 +8,8 @@ namespace DischargeDisposition_Backend.Controllers
     [Authorize]
     [ApiController]
     [Route("api/delay-reason-codes")]
-    public class DelayReasonCodeController : ControllerBase
+    public class DelayReasonCodeController
+        : ControllerBase
     {
         private readonly IDelayReasonCodeService _service;
 
@@ -18,11 +20,14 @@ namespace DischargeDisposition_Backend.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult>
+            GetAll()
         {
-            var result = await _service.GetAllAsync();
+            var response =
+                await _service.GetAllAsync();
 
-            return Ok(result);
+            return this
+                .ToHttpResponse(response);
         }
     }
 }

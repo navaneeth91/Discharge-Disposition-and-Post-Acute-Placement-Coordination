@@ -1,4 +1,4 @@
-﻿using DischargeDisposition_Backend.DTOs.Requests;
+using DischargeDisposition_Backend.DTOs.Requests;
 using DischargeDisposition_Backend.DTOs.Responses;
 using DischargeDisposition_Backend.Hospital.DTOs.Requests;
 using DischargeDisposition_Backend.Hospital.DTOs.Responses;
@@ -24,28 +24,28 @@ namespace DischargeDisposition_Backend.Hospital.Services
             CreateAsync(
                 CreatePatientDelayRequest request)
         {
-        //    var userIdClaim =
-        //_httpContextAccessor.HttpContext?
-        //.User
-        //.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)
-        //?.Value;
+           var userIdClaim =
+        _httpContextAccessor.HttpContext?
+        .User
+        .FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)
+        ?.Value;
 
-        //    if (string.IsNullOrEmpty(userIdClaim))
-        //    {
-        //        return new ApiResponse<PatientDelayResponse>
-        //        {
-        //            Success = false,
-        //            StatusCode = 401,
-        //            Message = "User not authenticated"
-        //        };
-        //    }
+           if (string.IsNullOrEmpty(userIdClaim))
+           {
+               return new ApiResponse<PatientDelayResponse>
+               {
+                   Success = false,
+                   StatusCode = 401,
+                   Message = "User not authenticated"
+               };
+           }
 
-        //    var reportedBy = int.Parse(userIdClaim);
+           var  = int.Parse(userIdClaim);
             var delay = new PatientDelay
             {
                 PatientId = request.PatientId,
                 DelayReasonId = request.DelayReasonId,
-                ReportedBy = request.ReportedBy,
+                ReportedBy = reportedBy,
                 StartDate = DateTime.UtcNow
             };
 

@@ -15,26 +15,63 @@ namespace DischargeDisposition_Backend.Hospital.Services
             _repository = repository;
         }
 
-        public async Task<ApiResponse<List<DispositionTypeResponse>>> GetAllAsync()
+        public async Task< ApiResponse<List<DispositionTypeResponse>>>GetAllAsync()
         {
-            var dispositionTypes =
-                await _repository.GetAllAsync();
-
-            var result = dispositionTypes
-                .Select(x => new DispositionTypeResponse
-                {
-                    DispositionTypeId = x.DispositionTypeId,
-                    DispositionName = x.DispositionName
-                })
-                .ToList();
-
-            return new ApiResponse<List<DispositionTypeResponse>>
+            try
             {
-                Success = true,
-                StatusCode = 200,
-                Message = "Disposition types retrieved successfully",
-                Data = result
-            };
+                var dispositionTypes =
+                    await _repository.GetAllAsync();
+
+                var result =
+                    dispositionTypes
+                    .Select(x =>
+                        new DispositionTypeResponse
+                        {
+                            DispositionTypeId =
+                                x.DispositionTypeId,
+
+                            DispositionName =
+                                x.DispositionName
+                        })
+                    .ToList();
+
+                if (!result.Any())
+                {
+                    return new ApiResponse<List<DispositionTypeResponse>>
+                    {
+                        Success = false,
+                        StatusCode = 404,
+                        Message =
+                            "No disposition types found"
+                    };
+                }
+
+                return new ApiResponse<List<DispositionTypeResponse>>
+                {
+                    Success = true,
+                    StatusCode = 200,
+                    Message =
+                        "Disposition types retrieved successfully",
+
+                    Data = result
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<
+                    List<DispositionTypeResponse>>
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message =
+                        "Failed to retrieve disposition types",
+
+                    Errors = new()
+                    {
+                        ex.Message
+                    }
+                };
+            }
         }
     }
 }

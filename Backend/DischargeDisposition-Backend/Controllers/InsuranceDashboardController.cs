@@ -1,15 +1,16 @@
-﻿
+﻿using DischargeDisposition_Backend.Helpers;
 using DischargeDisposition_Backend.Insurance.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 namespace DischargeDisposition_Backend.Controllers
 {
-    [Authorize(Roles ="Authorization Coordinator")]
+    [Authorize(
+        Roles = "Authorization Coordinator")]
     [ApiController]
     [Route("api/insurance-dashboard")]
-    
     public class InsuranceDashboardController
-    : ControllerBase
+        : ControllerBase
     {
         private readonly
             IInsuranceDashboardService
@@ -20,18 +21,29 @@ namespace DischargeDisposition_Backend.Controllers
         {
             _service = service;
         }
+
         [HttpGet("insurance")]
-        public async Task<IActionResult> GetInsuranceDashboard()
+        public async Task<IActionResult>
+            GetInsuranceDashboard()
         {
-            return Ok(
+            var response =
                 await _service
-                    .GetInsuranceDashboardAsync());
+                    .GetInsuranceDashboardAsync();
+
+            return this
+                .ToHttpResponse(response);
         }
+
         [HttpGet("service-analytics")]
-        public async Task<IActionResult>GetServiceAnalytics()
+        public async Task<IActionResult>
+            GetServiceAnalytics()
         {
-            return Ok(await _service
-                    .GetServiceAnalyticsAsync());
+            var response =
+                await _service
+                    .GetServiceAnalyticsAsync();
+
+            return this
+                .ToHttpResponse(response);
         }
     }
 }

@@ -17,6 +17,7 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
         public async Task<IEnumerable<DelayReasonCode>> GetAllAsync()
         {
             return await _context.DelayReasonCodes
+                .AsNoTracking()
                 .OrderBy(x => x.Id)
                 .ToListAsync();
         }

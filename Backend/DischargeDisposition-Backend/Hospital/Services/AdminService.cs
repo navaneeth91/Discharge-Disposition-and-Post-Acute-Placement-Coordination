@@ -19,62 +19,94 @@ namespace DischargeDisposition_Backend.Hospital.Services
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
+        public async Task<ApiResponse<IEnumerable<UserDto>>>GetAllUsersAsync()
         {
             try
             {
-                _logger.LogInformation("Retrieving all users");
+                var users =await _repository
+                        .GetAllUsersAsync();
 
-                var users = await _repository.GetAllUsersAsync();
-
-                return users.Select(MapUserToDto);
+                return new ApiResponse<IEnumerable<UserDto>>
+                {
+                    Success = true,
+                    StatusCode = 200,
+                    Message = "Users retrieved successfully",
+                    Data = users.Select(MapUserToDto)
+                };
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error retrieving users");
-                throw;
+                _logger.LogError(ex,"Error retrieving users");
+
+                return new ApiResponse<IEnumerable<UserDto>>
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message = "Failed to retrieve users",
+                    Errors = new()
+                    {
+                        ex.Message
+                    }
+                };
             }
         }
 
-        public async Task<UserDto?> GetUserByIdAsync(int userId)
+        public async Task<ApiResponse<UserDto>>GetUserByIdAsync(int userId)
         {
             try
             {
-                _logger.LogInformation("Retrieving user with ID {UserId}", userId);
-
-                var user = await _repository.GetUserByIdAsync(userId);
+                var user =await _repository
+                        .GetUserByIdAsync(userId);
 
                 if (user == null)
                 {
-                    _logger.LogWarning("User with ID {UserId} not found", userId);
-                    return null;
+                    return new ApiResponse<UserDto>
+                    {
+                        Success = false,
+                        StatusCode = 404,
+                        Message = "User not found"
+                    };
                 }
 
-                return MapUserToDto(user);
+                return new ApiResponse<UserDto>
+                {
+                    Success = true,
+                    StatusCode = 200,
+                    Message = "User retrieved successfully",
+                    Data = MapUserToDto(user)
+                };
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error retrieving user with ID {UserId}", userId);
-                throw;
+                _logger.LogError(ex,"Error retrieving user");
+
+                return new ApiResponse<UserDto>
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message = "Failed to retrieve user",
+                    Errors = new()
+                    {
+                        ex.Message
+                    }
+                };
             }
         }
 
-        public async Task<UserDto> UpdateUserAsync(
-            int userId,
-            UpdateUserDto updateUserDto)
+        public async Task<ApiResponse<UserDto>> UpdateUserAsync(int userId,UpdateUserDto updateUserDto)
         {
             try
             {
-                _logger.LogInformation(
-                    "Updating user with ID {UserId}",
-                    userId);
-
-                var user = await _repository.GetUserByIdAsync(userId);
+                var user =await _repository.GetUserByIdAsync(userId);
 
                 if (user == null)
                 {
-                    throw new ArgumentException(
-                        $"User with ID {userId} not found.");
+                    return new ApiResponse<UserDto>
+                    {
+                        Success = false,
+                        StatusCode = 404,
+                        Message = $"User with ID {userId} not found"
+                    };
                 }
 
                 if (!string.IsNullOrWhiteSpace(updateUserDto.UserName))
@@ -98,14 +130,15 @@ namespace DischargeDisposition_Backend.Hospital.Services
                 if (updateUserDto.RoleId.HasValue)
                     user.RoleId = updateUserDto.RoleId.Value;
 
-                var updatedUser =
-                    await _repository.UpdateUserAsync(user);
+                var updatedUser = await _repository.UpdateUserAsync(user);
 
-                _logger.LogInformation(
-                    "User updated successfully with ID {UserId}",
-                    userId);
-
-                return MapUserToDto(updatedUser);
+                return new ApiResponse<UserDto>
+                {
+                    Success = true,
+                    StatusCode = 200,
+                    Message = "User updated successfully",
+                    Data = MapUserToDto(updatedUser)
+                };
             }
             catch (Exception ex)
             {
@@ -114,82 +147,118 @@ namespace DischargeDisposition_Backend.Hospital.Services
                     "Error updating user with ID {UserId}",
                     userId);
 
-                throw;
+                return new ApiResponse<UserDto>
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message = "Failed to update user",
+                    Errors = new()
+                    {
+                        ex.Message
+                    }
+                };
             }
         }
 
-        public async Task DeleteUserAsync(int userId)
+        public async Task<ApiResponse<object>>DeleteUserAsync(int userId)
         {
             try
             {
-                _logger.LogInformation(
-                    "Deleting user with ID {UserId}",
-                    userId);
-
-                var user = await _repository.GetUserByIdAsync(userId);
+                var user =
+                    await _repository.GetUserByIdAsync(userId);
 
                 if (user == null)
                 {
-                    throw new ArgumentException(
-                        $"User with ID {userId} not found.");
+                    return new ApiResponse<object>
+                    {
+                        Success = false,
+                        StatusCode = 404,
+                        Message = "User not found"
+                    };
                 }
 
-                await _repository.DeleteUserAsync(userId);
+                await _repository
+                    .DeleteUserAsync(userId);
 
-                _logger.LogInformation(
-                    "User deleted successfully with ID {UserId}",
-                    userId);
+                return new ApiResponse<object>
+                {
+                    Success = true,
+                    StatusCode = 200,
+                    Message = "User deleted successfully"
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<object>
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message = "Failed to delete user",
+                    Errors = new()
+                    {
+                        ex.Message
+                    }
+                };
+            }
+        }
+
+        public async Task<ApiResponse<IEnumerable<PatientDto>>>GetAllPatientsAsync()
+        {
+            try
+            {
+                var patients =
+                    await _repository.GetAllPatientsAsync();
+
+                return new ApiResponse<IEnumerable<PatientDto>>
+                {
+                    Success = true,
+                    StatusCode = 200,
+                    Message = "Patients retrieved successfully",
+                    Data = patients.Select(MapPatientToDto)
+                };
             }
             catch (Exception ex)
             {
                 _logger.LogError(
                     ex,
-                    "Error deleting user with ID {UserId}",
-                    userId);
+                    "Error retrieving patients");
 
-                throw;
+                return new ApiResponse<IEnumerable<PatientDto>>
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message = "Failed to retrieve patients",
+                    Errors = new()
+                    {
+                        ex.Message
+                    }
+                };
             }
         }
 
-        public async Task<IEnumerable<PatientDto>> GetAllPatientsAsync()
+        public async Task<ApiResponse<PatientDto>>GetPatientByIdAsync(int patientId)
         {
             try
             {
-                _logger.LogInformation("Retrieving all patients");
-
-                var patients =
-                    await _repository.GetAllPatientsAsync();
-
-                return patients.Select(MapPatientToDto);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving patients");
-                throw;
-            }
-        }
-
-        public async Task<PatientDto?> GetPatientByIdAsync(int patientId)
-        {
-            try
-            {
-                _logger.LogInformation(
-                    "Retrieving patient with ID {PatientId}",
-                    patientId);
-
-                var patient =
-                    await _repository.GetPatientByIdAsync(patientId);
+                var patient =await _repository.GetPatientByIdAsync(patientId);
 
                 if (patient == null)
                 {
-                    _logger.LogWarning(
-                        "Patient with ID {PatientId} not found",
-                        patientId);
-
-                    return null;
+                    return new ApiResponse<PatientDto>
+                    {
+                        Success = false,
+                        StatusCode = 404,
+                        Message = "Patient not found"
+                    };
                 }
 
-                return MapPatientToDto(patient);
+                return new ApiResponse<PatientDto>
+                {
+                    Success = true,
+                    StatusCode = 200,
+                    Message = "Patient retrieved successfully",
+                    Data = MapPatientToDto(patient)
+                };
             }
             catch (Exception ex)
             {
@@ -198,7 +267,16 @@ namespace DischargeDisposition_Backend.Hospital.Services
                     "Error retrieving patient with ID {PatientId}",
                     patientId);
 
-                throw;
+                return new ApiResponse<PatientDto>
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message = "Failed to retrieve patient",
+                    Errors = new()
+                    {
+                        ex.Message
+                    }
+                };
             }
         }
 
