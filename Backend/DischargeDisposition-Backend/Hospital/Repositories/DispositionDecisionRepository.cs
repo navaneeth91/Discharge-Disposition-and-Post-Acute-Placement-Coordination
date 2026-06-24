@@ -28,6 +28,7 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
     int patientId)
         {
             return await _context.DispositionDecisions
+                .AsNoTracking()
                 .Include(x => x.patient)
                 .Include(x => x.dispositionType)
                 .Include(x => x.clinician)
@@ -39,6 +40,7 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
     int decisionId)
         {
             return await _context.DispositionDecisions
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x =>
                     x.DecisionId == decisionId);
         }

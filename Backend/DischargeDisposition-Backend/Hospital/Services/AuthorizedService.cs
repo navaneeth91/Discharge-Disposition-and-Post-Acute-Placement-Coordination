@@ -24,150 +24,222 @@ namespace DischargeDisposition_Backend.Hospital.Services
             _insuranceContext = insuranceContext;
         }
 
-        public async Task<long> CreateAsync(
-            CreateAuthorizationRequest dto)
+        public async Task<ApiResponse<long>>CreateAsync(CreateAuthorizationRequest dto)
         {
-            var externalId =
-                $"AUTH-{Guid.NewGuid():N}"
-                .Substring(0, 12);
-
-            var tracking =
-                new AuthorizationTracking
-                {
-                    PatientId = dto.PatientId,
-                    ReferralId = dto.ReferralId,
-                    PayerId = dto.PayerId,
-                    ExternalAuthorizationId =
-                        externalId,
-
-                    Status =
-                        AuthorizationStatus.Pending,
-
-                    RequestedDate =
-                        DateTime.UtcNow,
-
-                    LastUpdated =
-                        DateTime.UtcNow
-                };
-
-            await _repository.AddAsync(tracking);
-
-            await _repository.SaveAsync();
-
-            var request =
-                new AuthorizationRequest
-                {
-                    MemberId =
-                        dto.MemberId,
-
-                    RequestingOrganization =
-                        dto.RequestingOrganization,
-
-                    ServiceType =
-                        dto.ServiceType,
-
-                    RequestedDate =
-                        DateTime.UtcNow,
-
-                    Status =
-                        AuthorizationStatus.Pending
-                };
-
-            _insuranceContext.AuthorizationRequests
-                .Add(request);
-
-            await _insuranceContext
-                .SaveChangesAsync();
-
-            tracking.InsuranceAuthorizationRequestId =
-                request.AuthorizationRequestId;
-
-            await _repository.SaveAsync();
-
-            return tracking.AuthorizationId;
-        }
-
-        public async Task<AuthorizationResponse?>
-            GetAsync(long authorizationId)
-        {
-            var authorization =
-                await _repository.GetAsync(
-                    authorizationId);
-
-            if (authorization == null)
-                return null;
-
-            return new AuthorizationResponse
+            try
             {
-                AuthorizationId =
-                    authorization.AuthorizationId,
+                var externalId =
+                    $"AUTH-{Guid.NewGuid():N}"
+                    .Substring(0, 12);
 
-                ExternalAuthorizationId =
-                    authorization.ExternalAuthorizationId,
-
-                Status =
-                    authorization.Status,
-
-                RequestedDate =
-                    authorization.RequestedDate,
-
-                ResponseDate =
-                    authorization.ResponseDate,
-
-                PayerName =
-                    authorization.payer.PayerName,
-
-                PatientName =
-                    authorization.patient.FirstName
-                    + " "
-                    + authorization.patient.LastName,
-
-                DenialReason =
-                    authorization.DenialReason
-            };
-        }
-
-        public async Task<List<AuthorizationResponse>>
-            GetPatientAuthorizationsAsync(
-                int patientId)
-        {
-            var authorizations =
-                await _repository
-                    .GetByPatientAsync(patientId);
-
-            return authorizations
-                .Select(a =>
-                    new AuthorizationResponse
+                var tracking =
+                    new AuthorizationTracking
                     {
-                        AuthorizationId =
-                            a.AuthorizationId,
-
+                        PatientId = dto.PatientId,
+                        ReferralId = dto.ReferralId,
+                        PayerId = dto.PayerId,
                         ExternalAuthorizationId =
-                            a.ExternalAuthorizationId,
+                            externalId,
 
                         Status =
-                            a.Status,
+                            AuthorizationStatus.Pending,
 
                         RequestedDate =
-                            a.RequestedDate,
+                            DateTime.UtcNow,
 
-                        ResponseDate =
-                            a.ResponseDate,
+                        LastUpdated =
+                            DateTime.UtcNow
+                    };
 
-                        PayerName =
-                            a.payer.PayerName,
+                await _repository.AddAsync(tracking);
 
-                        PatientName =
-                            a.patient.FirstName
-                            + " "
-                            + a.patient.LastName,
+                await _repository.SaveAsync();
 
-                        DenialReason =
-                            a.DenialReason
-                    })
-                .ToList();
+                var request =
+                    new AuthorizationRequest
+                    {
+                        MemberId =
+                            dto.MemberId,
+
+                        RequestingOrganization =
+                            dto.RequestingOrganization,
+
+                        ServiceType =
+                            dto.ServiceType,
+
+                        RequestedDate =
+                            DateTime.UtcNow,
+
+                        Status =
+                            AuthorizationStatus.Pending
+                    };
+
+                _insuranceContext.AuthorizationRequests.Add(request);
+
+                await _insuranceContext
+                    .SaveChangesAsync();
+
+                tracking.InsuranceAuthorizationRequestId = request.AuthorizationRequestId;
+
+                await _repository.SaveAsync();
+
+                return new ApiResponse<long>
+                {
+                    Success = true,
+                    StatusCode = 201,
+                    Message = "Authorization created successfully",
+                    Data = tracking.AuthorizationId
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<long>
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message = "Failed to create authorization",
+                    Errors = new()
+                    {
+                        ex.Message
+                    }
+                };
+            }
         }
 
+        public async Task<ApiResponse<AuthorizationResponse>>GetAsync(long authorizationId)
+        {
+            try
+            {
+                var authorization =
+                    await _repository.GetAsync(
+                        authorizationId);
+
+                if (authorization == null)
+                {
+                    return new ApiResponse<AuthorizationResponse>
+                    {
+                        Success = false,
+                        StatusCode = 404,
+                        Message = "Authorization not found"
+                    };
+                }
+
+                return new ApiResponse<AuthorizationResponse>
+                {
+                    Success = true,
+                    StatusCode = 200,
+                    Message = "Authorization retrieved successfully",
+                    Data = new AuthorizationResponse
+                    {
+                        AuthorizationId =
+                            authorization.AuthorizationId,
+
+                        ExternalAuthorizationId =
+                            authorization.ExternalAuthorizationId,
+
+                        Status =
+                            authorization.Status,
+
+                        RequestedDate =
+                            authorization.RequestedDate,
+
+                        ResponseDate =
+                            authorization.ResponseDate,
+
+                        PayerName =
+                            authorization.payer.PayerName,
+
+                        PatientName =
+                            authorization.patient.FirstName
+                            + " "
+                            + authorization.patient.LastName,
+
+                        DenialReason =
+                            authorization.DenialReason
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<AuthorizationResponse>
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message = "Failed to retrieve authorization",
+                    Errors = new()
+                    {
+                        ex.Message
+                    }
+                };
+            }
+        }
+
+        public async Task<ApiResponse<List<AuthorizationResponse>>>GetPatientAuthorizationsAsync(int patientId)
+        {
+            try
+            {
+                var authorizations = await _repository
+                        .GetByPatientAsync(patientId);
+
+                var result =
+                    authorizations
+                    .Select(a =>
+                        new AuthorizationResponse
+                        {
+                            AuthorizationId =
+                                a.AuthorizationId,
+
+                            ExternalAuthorizationId =
+                                a.ExternalAuthorizationId,
+
+                            Status =
+                                a.Status,
+
+                            RequestedDate =
+                                a.RequestedDate,
+
+                            ResponseDate =
+                                a.ResponseDate,
+
+                            PayerName =
+                                a.payer.PayerName,
+
+                            PatientName =
+                                a.patient.FirstName
+                                + " "
+                                + a.patient.LastName,
+
+                            DenialReason =
+                                a.DenialReason
+                        })
+                    .ToList();
+
+                return new ApiResponse<List<AuthorizationResponse>>
+                {
+                    Success = true,
+                    StatusCode = 200,
+                    Message =
+                        "Authorizations retrieved successfully",
+
+                    Data = result
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<List<AuthorizationResponse>>
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message =
+                        "Failed to retrieve authorizations",
+
+                    Errors = new()
+                    {
+                        ex.Message
+                    }
+                };
+            }
+        }
         public async Task ProcessWebhookAsync(
             AuthorizationWebhook dto)
         {

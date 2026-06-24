@@ -24,8 +24,7 @@ namespace DischargeDisposition_Backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateDelay(
-            CreatePatientDelayRequest request)
+        public async Task<IActionResult> CreateDelay(CreatePatientDelayRequest request)
         {
             var response =
                 await _patientDelayService
@@ -35,8 +34,7 @@ namespace DischargeDisposition_Backend.Controllers
         }
 
         [HttpGet("patient/{patientId}")]
-        public async Task<IActionResult> GetPatientDelays(
-    int patientId)
+        public async Task<IActionResult> GetPatientDelays(int patientId)
         {
             var response =
                 await _patientDelayService

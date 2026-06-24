@@ -18,28 +18,64 @@ namespace DischargeDisposition_Backend.Hospital.Services
             _repository = repository;
         }
 
-        
-        public async Task<ApiResponse<List<DelayReasonCodeResponse>>>
-            GetAllAsync()
+
+        public async Task<
+     ApiResponse<List<DelayReasonCodeResponse>>>
+     GetAllAsync()
         {
-            var reasons =
-                await _repository.GetAllAsync();
-
-            var result = reasons
-                .Select(x => new DelayReasonCodeResponse
-                {
-                    Id = x.Id,
-                    ReasonName = x.ReasonName
-                })
-                .ToList();
-
-            return new ApiResponse<List<DelayReasonCodeResponse>>
+            try
             {
-                Success = true,
-                StatusCode = 200,
-                Message = "Delay reasons retrieved successfully",
-                Data = result
-            };
+                var reasons =
+                    await _repository.GetAllAsync();
+
+                var result =
+                    reasons.Select(x =>
+                        new DelayReasonCodeResponse
+                        {
+                            Id = x.Id,
+                            ReasonName = x.ReasonName
+                        })
+                    .ToList();
+
+                if (!result.Any())
+                {
+                    return new ApiResponse<
+                        List<DelayReasonCodeResponse>>
+                    {
+                        Success = false,
+                        StatusCode = 404,
+                        Message =
+                            "No delay reason codes found"
+                    };
+                }
+
+                return new ApiResponse<
+                    List<DelayReasonCodeResponse>>
+                {
+                    Success = true,
+                    StatusCode = 200,
+                    Message =
+                        "Delay reasons retrieved successfully",
+
+                    Data = result
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<
+                    List<DelayReasonCodeResponse>>
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message =
+                        "Failed to retrieve delay reasons",
+
+                    Errors = new()
+                    {
+                        ex.Message
+                    }
+                };
+            }
         }
     }
 }

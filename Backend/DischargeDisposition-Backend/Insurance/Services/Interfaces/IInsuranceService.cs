@@ -1,14 +1,14 @@
-﻿using DischargeDisposition_Backend.Insurance.DTOs.Responses;
+﻿using DischargeDisposition_Backend.Hospital.DTOs.Responses;
+using DischargeDisposition_Backend.Insurance.DTOs.Responses;
 
 namespace DischargeDisposition_Backend.Insurance.Services
 {
-
     public interface IInsuranceService
     {
-        Task<List<InsuranceProviderResponse>>
+        Task<ApiResponse<List<InsuranceProviderResponse>>>
             GetProvidersAsync();
 
-        Task<List<PlanResponse>>
+        Task<ApiResponse<List<PlanResponse>>>
             GetPlansAsync(int? providerId);
     }
 }

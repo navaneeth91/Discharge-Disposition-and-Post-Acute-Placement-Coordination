@@ -5,11 +5,11 @@ namespace DischargeDisposition_Backend.Hospital.Services.Interfaces
 {
     public interface IAuthorizedService
     {
-        Task<long> CreateAsync(CreateAuthorizationRequest dto);
+        Task<ApiResponse<long>>CreateAsync(CreateAuthorizationRequest dto);
 
-        Task<AuthorizationResponse?>GetAsync(long authorizationId);
+        Task<ApiResponse<AuthorizationResponse>>GetAsync(long authorizationId);
 
-        Task<List<AuthorizationResponse>>GetPatientAuthorizationsAsync(int patientId);
+        Task<ApiResponse<List<AuthorizationResponse>>>GetPatientAuthorizationsAsync(int patientId);
 
         Task ProcessWebhookAsync(AuthorizationWebhook dto);
     }
