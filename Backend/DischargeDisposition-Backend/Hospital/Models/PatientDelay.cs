@@ -31,5 +31,5 @@ public class PatientDelay
     public DelayReasonCode delayReason { get; set; } = null!;
 
     [ForeignKey(nameof(ReportedBy))]
-    public User reportedUser { get; set; } = null!;
+    public User ReportedUser { get; set; } = null!;
 }

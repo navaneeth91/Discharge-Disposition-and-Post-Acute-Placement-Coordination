@@ -180,7 +180,7 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
                 _logger.LogInformation("Repository: Retrieving all active patients from database.");
 
                 var patients = await _context.Patients
-                    .Include(p => p.department)
+                    .Include(p => p.Department)
                     .Where(p => p.IsActive == 1)
                     .AsNoTracking()
                     .ToListAsync();
@@ -212,7 +212,7 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
                 }
 
                 var patient = await _context.Patients
-                    .Include(p => p.department)
+                    .Include(p => p.Department)
                     .AsNoTracking()
                     .FirstOrDefaultAsync(p => p.PatientId == patientId && p.IsActive == 1);
 

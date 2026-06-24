@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using DischargeDisposition_Backend.Enums;
 namespace DischargeDisposition_Backend.Hospital.Models
 {
@@ -32,7 +33,7 @@ namespace DischargeDisposition_Backend.Hospital.Models
         public DateTime? ActualDischargeDate { get; set; }
 
         [Required]
-        public Gender Gender { get; set; }   // M, F, O
+        public Gender Gender { get; set; }
 
         [MaxLength(255)]
         [EmailAddress]
@@ -47,7 +48,8 @@ namespace DischargeDisposition_Backend.Hospital.Models
         [Required]
         public byte DeptId { get; set; }
 
-        public Department department { get; set; } = null!;
+        [ForeignKey(nameof(DeptId))]
+        public Department Department { get; set; } = null!;
 
         public ICollection<DispositionDecision> DispositionDecisions { get; set; } = new List<DispositionDecision>();
 
@@ -56,9 +58,6 @@ namespace DischargeDisposition_Backend.Hospital.Models
         public ICollection<AuthorizationTracking> AuthorizationTrackings { get; set; } = new List<AuthorizationTracking>();
 
         public ICollection<PatientDelay> PatientDelays { get; set; }  = new List<PatientDelay>();
-
-
-
         public LengthOfStayTracking? lengthOfStayTracking { get; set; }
 
     }
