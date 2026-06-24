@@ -49,7 +49,6 @@ namespace DischargeDisposition_Backend.Hospital.Services
             };
         }
 
-
         public async Task<bool> DischargePatientAsync(
             int patientId,
             DateTime actualDischargeDate)

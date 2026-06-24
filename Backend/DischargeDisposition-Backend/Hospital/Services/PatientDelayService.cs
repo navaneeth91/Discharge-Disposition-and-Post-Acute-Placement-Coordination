@@ -82,7 +82,7 @@ namespace DischargeDisposition_Backend.Hospital.Services
                     DelayReason = x.delayReason.ReasonName,
                     ReportedBy = x.ReportedBy,
                     ReportedByName =
-                        $"{x.reportedUser.FirstName} {x.reportedUser.LastName}",
+                        $"{x.ReportedUser.FirstName} {x.ReportedUser.LastName}",
                     StartDate = x.StartDate,
                     EndDate = x.EndDate
                 })

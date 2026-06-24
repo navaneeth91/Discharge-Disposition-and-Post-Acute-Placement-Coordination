@@ -29,7 +29,7 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
         {
             return await _context.PatientDelays
                 .Include(x => x.delayReason)
-                .Include(x => x.reportedUser)
+                .Include(x => x.ReportedUser)
                 .Where(x => x.PatientId == patientId)
                 .OrderByDescending(x => x.StartDate)
                 .ToListAsync();

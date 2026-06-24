@@ -25,7 +25,7 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
             try
             {
                 _logger.LogInformation("Trying to retrieve patient data from the database....");
-                return await _context.Patients.ToListAsync();
+                return await _context.Patients.AsNoTracking().ToListAsync();
             }
 
 
@@ -40,6 +40,7 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
         public async Task<Patient?> GetByIdAsync(int patientId)
         {
             return await _context.Patients
+                .AsNoTracking()
                 .FirstOrDefaultAsync(p => p.PatientId == patientId);
         }
 

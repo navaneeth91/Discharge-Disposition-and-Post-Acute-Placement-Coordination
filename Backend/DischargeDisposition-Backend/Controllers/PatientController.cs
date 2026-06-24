@@ -28,9 +28,9 @@ namespace DischargeDisposition_Backend.Controllers
             return Ok(patients);
         }
         [HttpGet("{id}")]
-        public IActionResult GetPatientById(int id)
+        public async Task<IActionResult> GetPatientByIdAsync(int id)
         {
-            var patient =
+            var patient = await 
                 _service.GetPatientByIdAsync(id);
 
             if (patient == null)

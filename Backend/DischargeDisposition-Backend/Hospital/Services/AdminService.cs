@@ -236,7 +236,7 @@ namespace DischargeDisposition_Backend.Hospital.Services
                 Email = patient.Email,
                 PhoneNumber = patient.PhoneNumber,
                 DeptId = patient.DeptId,
-                DepartmentName = patient.department?.Name
+                DepartmentName = patient.Department?.Name
             };
         }
     }
