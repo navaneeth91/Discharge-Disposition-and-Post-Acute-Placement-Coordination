@@ -19,11 +19,11 @@ namespace DischargeDisposition_Backend.Controllers
             _service = service;
         }
 
-        
+
         [HttpGet]
         public async Task<IActionResult> GetPatients()
         {
-            var patients = _service.GetPatients();
+            var patients = await _service.GetPatientsAsync();
 
             return Ok(patients);
         }
@@ -31,27 +31,25 @@ namespace DischargeDisposition_Backend.Controllers
         public IActionResult GetPatientById(int id)
         {
             var patient =
-                _service.GetPatientById(id);
+                _service.GetPatientByIdAsync(id);
 
             if (patient == null)
                 return NotFound();
 
             return Ok(patient);
         }
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePatient(
-    int id,
-    UpdateUserDto dto)
+        [HttpPatch("{id}/discharge")]
+        public async Task<IActionResult> DischargePatient(int id, [FromBody] DischargePatientDto dto)
         {
             var result =
-                await _service.UpdatePatientAsync(
-                    id,
-                    dto);
+                await _service.DischargePatientAsync(id, dto.ActualDischargeDate);
+
 
             if (!result)
                 return NotFound();
 
-            return Ok();
+
+            return NoContent();
         }
     }
 }

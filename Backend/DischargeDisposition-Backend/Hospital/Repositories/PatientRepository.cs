@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
 
+
 namespace DischargeDisposition_Backend.Hospital.Repositories
 {
     public class PatientRepository : IPatientRepository
@@ -11,36 +12,44 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
         private readonly ILogger<PatientRepository> _logger;
         private readonly HospitalDbContext _context;
 
+
         public PatientRepository(ILogger<PatientRepository> logger, HospitalDbContext context)
         {
             _logger = logger;
             _context = context;
         }
 
-        public IEnumerable<Patient> GetPatients()
+
+        public async Task<IEnumerable<Patient>> GetPatientsAsync()
         {
             try
             {
                 _logger.LogInformation("Trying to retrieve patient data from the database....");
-                return _context.Patients.ToList();
+                return await _context.Patients.ToListAsync();
             }
+
 
             catch (Exception ex)
             {
-                throw new Exception("Failed to retrieve Patient data");
+                _logger.LogError(ex, "Failed to retrieve patient data");
+                throw;
             }
         }
-        public Patient? GetPatientById(int patientId)
+
+
+        public async Task<Patient?> GetByIdAsync(int patientId)
         {
-            return _context.Patients
-                .FirstOrDefault(x => x.PatientId == patientId);
+            return await _context.Patients
+                .FirstOrDefaultAsync(p => p.PatientId == patientId);
         }
 
-        public async Task<bool> UpdatePatientAsync(Patient patient)
+
+        public async Task UpdatePatientAsync(Patient patient)
         {
             _context.Patients.Update(patient);
 
-            return await _context.SaveChangesAsync() > 0;
+
+            await _context.SaveChangesAsync();
         }
     }
 }
