@@ -1,4 +1,4 @@
-﻿using DischargeDisposition_Backend.Helpers;
+using DischargeDisposition_Backend.Helpers;
 using DischargeDisposition_Backend.Hospital.DTOs.Requests;
 using DischargeDisposition_Backend.Hospital.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
