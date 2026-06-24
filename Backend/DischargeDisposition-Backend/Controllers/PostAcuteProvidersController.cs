@@ -1,4 +1,5 @@
-﻿using DischargeDisposition_Backend.Hospital.Services.Interfaces;
+﻿using DischargeDisposition_Backend.Helpers;
+using DischargeDisposition_Backend.Hospital.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,27 +20,30 @@ namespace DischargeDisposition_Backend.Hospital.Controllers
         {
             _service = service;
         }
+
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult>
+            GetAll()
         {
-            var providers =
+            var response =
                 await _service.GetAllAsync();
 
-            return Ok(providers);
+            return this
+                .ToHttpResponse(response);
         }
 
         [HttpGet("{providerId:int}")]
         public async Task<IActionResult>
-            GetProvider(int providerId)
+            GetProvider(
+                int providerId)
         {
-            var provider =
+            var response =
                 await _service
-                    .GetByIdAsync(providerId);
+                    .GetByIdAsync(
+                        providerId);
 
-            if (provider == null)
-                return NotFound();
-
-            return Ok(provider);
+            return this
+                .ToHttpResponse(response);
         }
 
         [HttpGet("disposition/{dispositionTypeId:int}")]
@@ -47,12 +51,13 @@ namespace DischargeDisposition_Backend.Hospital.Controllers
             GetByDisposition(
                 int dispositionTypeId)
         {
-            var providers =
+            var response =
                 await _service
                     .GetByDispositionTypeAsync(
                         dispositionTypeId);
 
-            return Ok(providers);
+            return this
+                .ToHttpResponse(response);
         }
     }
 }

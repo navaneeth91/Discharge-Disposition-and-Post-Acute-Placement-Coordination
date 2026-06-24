@@ -20,110 +20,544 @@ namespace DischargeDisposition_Backend.Hospital.Services
             _db = db;
         }
 
-        public async Task<IEnumerable<ReferralResponseDto>> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<ApiResponse<List<ReferralResponseDto>>>
+    GetAllAsync(
+        CancellationToken cancellationToken = default)
         {
-            var items = await _repo.GetAllAsync(cancellationToken);
-            return items.Select(MapToResponse).ToList();
-        }
-
-        public async Task<ReferralResponseDto?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
-        {
-            var entity = await _repo.GetByIdAsync(id, cancellationToken);
-            return entity is null ? null : MapToResponse(entity);
-        }
-
-        public async Task<ReferralResponseDto> CreateAsync(CreateReferralDto dto, CancellationToken cancellationToken = default)
-        {
-            // Business validations:
-            await ValidateRelationsExist(dto.PatientId, dto.ProviderId, dto.CareManagerId, cancellationToken);
-
-            if (dto.CreatedDate.HasValue && dto.CreatedDate.Value > DateTime.UtcNow)
-                throw new ArgumentException("CreatedDate cannot be in the future.");
-
-            var entity = new Referral
+            try
             {
-                PatientId = dto.PatientId,
-                ProviderId = dto.ProviderId,
-                CareManagerId = dto.CareManagerId,
-                CreatedDate = dto.CreatedDate ?? DateTime.UtcNow,
-                Status = dto.Status,
-                Priority = dto.Priority
-            };
+                var items =
+                    await _repo.GetAllAsync(
+                        cancellationToken);
 
-            var created = await _repo.CreateAsync(entity, cancellationToken);
-            return MapToResponse(created);
+                return new ApiResponse<
+                    List<ReferralResponseDto>>
+                {
+                    Success = true,
+                    StatusCode = 200,
+                    Message =
+                        "Referrals retrieved successfully",
+
+                    Data =
+                        items.Select(MapToResponse)
+                             .ToList()
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<
+                    List<ReferralResponseDto>>
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message =
+                        "Failed to retrieve referrals",
+
+                    Errors = new()
+                    {
+                        ex.Message
+                    }
+                };
+            }
         }
-        public async Task<bool> UpdateStatusAsync(  int referralId,  AuthorizationStatus status, CancellationToken cancellationToken)
-         {
-            var referral =  await _repo.GetByIdAsync(
-                    referralId,
+
+        public async Task<ApiResponse<ReferralResponseDto>>
+    GetByIdAsync(
+        int id,
+        CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var entity =
+                    await _repo.GetByIdAsync(
+                        id,
+                        cancellationToken);
+
+                if (entity == null)
+                {
+                    return new ApiResponse<
+                        ReferralResponseDto>
+                    {
+                        Success = false,
+                        StatusCode = 404,
+                        Message =
+                            "Referral not found"
+                    };
+                }
+
+                return new ApiResponse<
+                    ReferralResponseDto>
+                {
+                    Success = true,
+                    StatusCode = 200,
+                    Message =
+                        "Referral retrieved successfully",
+
+                    Data =
+                        MapToResponse(entity)
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<
+                    ReferralResponseDto>
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message =
+                        "Failed to retrieve referral",
+
+                    Errors = new()
+                    {
+                        ex.Message
+                    }
+                };
+            }
+        }
+
+        public async Task<ApiResponse<ReferralResponseDto>>
+     CreateAsync(
+         CreateReferralDto dto,
+         CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                await ValidateRelationsExist(
+                    dto.PatientId,
+                    dto.ProviderId,
+                    dto.CareManagerId,
                     cancellationToken);
 
-            if (referral == null)
-                return false;
+                if (dto.CreatedDate.HasValue &&
+                    dto.CreatedDate.Value > DateTime.UtcNow)
+                {
+                    return new ApiResponse<
+                        ReferralResponseDto>
+                    {
+                        Success = false,
+                        StatusCode = 400,
+                        Message =
+                            "CreatedDate cannot be in the future."
+                    };
+                }
 
-            referral.Status = status;
+                var entity = new Referral
+                {
+                    PatientId = dto.PatientId,
+                    ProviderId = dto.ProviderId,
+                    CareManagerId = dto.CareManagerId,
+                    CreatedDate =
+                        dto.CreatedDate ??
+                        DateTime.UtcNow,
+                    Status = dto.Status,
+                    Priority = dto.Priority
+                };
 
-            await _repo.UpdateAsync(
-                referral,
-                cancellationToken);
+                var created =
+                    await _repo.CreateAsync(
+                        entity,
+                        cancellationToken);
 
-            return true;
+                var referral =
+                    await _repo.GetByIdAsync(
+                        created.ReferralId,
+                        cancellationToken);
+
+                return new ApiResponse<
+                    ReferralResponseDto>
+                {
+                    Success = true,
+                    StatusCode = 201,
+                    Message =
+                        "Referral created successfully",
+
+                    Data =
+                        MapToResponse(referral!)
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<
+                    ReferralResponseDto>
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message =
+                        "Failed to create referral",
+
+                    Errors = new()
+                    {
+                        ex.Message
+                    }
+                };
+            }
+        }
+        public async Task<ApiResponse<object>>UpdateStatusAsync(
+         int referralId,
+         AuthorizationStatus status,
+         CancellationToken cancellationToken)
+        {
+            try
+            {
+                var referral =
+                    await _repo.GetByIdAsync(
+                        referralId,
+                        cancellationToken);
+
+                if (referral == null)
+                {
+                    return new ApiResponse<object>
+                    {
+                        Success = false,
+                        StatusCode = 404,
+                        Message =
+                            "Referral not found"
+                    };
+                }
+
+                referral.Status = status;
+
+                await _repo.UpdateAsync(
+                    referral,
+                    cancellationToken);
+
+                return new ApiResponse<object>
+                {
+                    Success = true,
+                    StatusCode = 200,
+                    Message =
+                        "Referral status updated successfully"
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<object>
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message =
+                        "Failed to update status",
+
+                    Errors = new()
+                    {
+                        ex.Message
+                    }
+                };
+            }
         }
 
-        public async Task<bool> UpdateAsync(int id, UpdateReferralDto dto, CancellationToken cancellationToken = default)
+        public async Task<ApiResponse<object>>
+    UpdateAsync(
+        int id,
+        UpdateReferralDto dto,
+        CancellationToken cancellationToken = default)
         {
-            var existing = await _repo.GetByIdAsync(id, cancellationToken);
-            if (existing is null) return false;
+            try
+            {
+                var existing =
+                    await _repo.GetByIdAsync(
+                        id,
+                        cancellationToken);
 
-            await ValidateRelationsExist(dto.PatientId, dto.ProviderId, dto.CareManagerId, cancellationToken);
+                if (existing == null)
+                {
+                    return new ApiResponse<object>
+                    {
+                        Success = false,
+                        StatusCode = 404,
+                        Message =
+                            "Referral not found"
+                    };
+                }
 
-            if (dto.CreatedDate.HasValue && dto.CreatedDate.Value > DateTime.UtcNow)
-                throw new ArgumentException("CreatedDate cannot be in the future.");
+                await ValidateRelationsExist(
+                    dto.PatientId,
+                    dto.ProviderId,
+                    dto.CareManagerId,
+                    cancellationToken);
 
-            // update allowed fields
-            existing.PatientId = dto.PatientId;
-            existing.ProviderId = dto.ProviderId;
-            existing.CareManagerId = dto.CareManagerId;
-            existing.CreatedDate = dto.CreatedDate ?? existing.CreatedDate;
-            existing.Status = dto.Status;
-            existing.Priority = dto.Priority;
+                if (dto.CreatedDate.HasValue &&
+                    dto.CreatedDate.Value >
+                    DateTime.UtcNow)
+                {
+                    return new ApiResponse<object>
+                    {
+                        Success = false,
+                        StatusCode = 400,
+                        Message =
+                            "CreatedDate cannot be in the future."
+                    };
+                }
 
-            await _repo.UpdateAsync(existing, cancellationToken);
-            return true;
+                existing.PatientId =
+                    dto.PatientId;
+
+                existing.ProviderId =
+                    dto.ProviderId;
+
+                existing.CareManagerId =
+                    dto.CareManagerId;
+
+                existing.CreatedDate =
+                    dto.CreatedDate ??
+                    existing.CreatedDate;
+
+                existing.Status =
+                    dto.Status;
+
+                existing.Priority =
+                    dto.Priority;
+
+                await _repo.UpdateAsync(
+                    existing,
+                    cancellationToken);
+
+                return new ApiResponse<object>
+                {
+                    Success = true,
+                    StatusCode = 200,
+                    Message =
+                        "Referral updated successfully"
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<object>
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message =
+                        "Failed to update referral",
+
+                    Errors = new()
+                        {
+                            ex.Message
+                        }
+                };
+            }
         }
 
-        public async Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<ApiResponse<object>>DeleteAsync(
+         int id,
+         CancellationToken cancellationToken = default)
         {
-            var entity = await _repo.GetByIdAsync(id, cancellationToken);
-            if (entity is null) return false;
+            try
+            {
+                var entity =
+                    await _repo.GetByIdAsync(
+                        id,
+                        cancellationToken);
 
-            await _repo.DeleteAsync(id, cancellationToken);
-            return true;
+                if (entity == null)
+                {
+                    return new ApiResponse<object>
+                    {
+                        Success = false,
+                        StatusCode = 404,
+                        Message =
+                            "Referral not found"
+                    };
+                }
+
+                await _repo.DeleteAsync(
+                    id,
+                    cancellationToken);
+
+                return new ApiResponse<object>
+                {
+                    Success = true,
+                    StatusCode = 200,
+                    Message =
+                        "Referral deleted successfully"
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<object>
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message =
+                        "Failed to delete referral",
+
+                    Errors = new()
+                    {
+                        ex.Message
+                    }
+                };
+            }
         }
 
-        public async Task<IEnumerable<ReferralResponseDto>> GetByPatientIdAsync(int patientId, CancellationToken cancellationToken = default)
+        public async Task<
+    ApiResponse<List<ReferralResponseDto>>>
+    GetByPatientIdAsync(
+        int patientId,
+        CancellationToken cancellationToken = default)
         {
-            var items = await _repo.GetByPatientIdAsync(patientId, cancellationToken);
-            return items.Select(MapToResponse).ToList();
+            try
+            {
+                var items =
+                    await _repo.GetByPatientIdAsync(
+                        patientId,
+                        cancellationToken);
+
+                return new ApiResponse<
+                    List<ReferralResponseDto>>
+                {
+                    Success = true,
+                    StatusCode = 200,
+                    Message =
+                        "Patient referrals retrieved successfully",
+
+                    Data =
+                        items.Select(MapToResponse)
+                             .ToList()
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<
+                    List<ReferralResponseDto>>
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message =
+                        "Failed to retrieve referrals",
+
+                    Errors = new()
+            {
+                ex.Message
+            }
+                };
+            }
         }
 
-        public async Task<IEnumerable<ReferralResponseDto>> GetByProviderIdAsync(int providerId, CancellationToken cancellationToken = default)
+        public async Task<
+    ApiResponse<List<ReferralResponseDto>>>
+    GetByProviderIdAsync(
+        int providerId,
+        CancellationToken cancellationToken = default)
         {
-            var items = await _repo.GetByProviderIdAsync(providerId, cancellationToken);
-            return items.Select(MapToResponse).ToList();
+            try
+            {
+                var items =
+                    await _repo.GetByProviderIdAsync(
+                        providerId,
+                        cancellationToken);
+
+                return new ApiResponse<
+                    List<ReferralResponseDto>>
+                {
+                    Success = true,
+                    StatusCode = 200,
+                    Message =
+                        "Provider referrals retrieved successfully",
+
+                    Data =
+                        items.Select(MapToResponse)
+                             .ToList()
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<
+                    List<ReferralResponseDto>>
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message =
+                        "Failed to retrieve referrals",
+
+                    Errors = new()
+                    {
+                        ex.Message
+                    }
+                };
+            }
         }
 
-        public async Task<IEnumerable<ReferralResponseDto>> GetPendingReferralsAsync(CancellationToken cancellationToken = default)
+        public async Task<
+    ApiResponse<List<ReferralResponseDto>>>
+    GetPendingReferralsAsync(
+        CancellationToken cancellationToken = default)
         {
-            var items = await _repo.GetPendingReferralsAsync(cancellationToken);
-            return items.Select(MapToResponse).ToList();
+            try
+            {
+                var items =
+                    await _repo.GetPendingReferralsAsync(
+                        cancellationToken);
+
+                return new ApiResponse<
+                    List<ReferralResponseDto>>
+                {
+                    Success = true,
+                    StatusCode = 200,
+                    Message =
+                        "Pending referrals retrieved successfully",
+
+                    Data =
+                        items.Select(MapToResponse)
+                             .ToList()
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<
+                    List<ReferralResponseDto>>
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message =
+                        "Failed to retrieve referrals",
+
+                    Errors = new()
+                    {
+                        ex.Message
+                    }
+                };
+            }
         }
 
-        public async Task<IEnumerable<ReferralResponseDto>> GetCompletedReferralsAsync(CancellationToken cancellationToken = default)
+        public async Task<
+    ApiResponse<List<ReferralResponseDto>>>
+    GetCompletedReferralsAsync(
+        CancellationToken cancellationToken = default)
         {
-            var items = await _repo.GetCompletedReferralsAsync(cancellationToken);
-            return items.Select(MapToResponse).ToList();
+            try
+            {
+                var items =
+                    await _repo.GetCompletedReferralsAsync(
+                        cancellationToken);
+
+                return new ApiResponse<
+                    List<ReferralResponseDto>>
+                {
+                    Success = true,
+                    StatusCode = 200,
+                    Message =
+                        "Completed referrals retrieved successfully",
+
+                    Data =
+                        items.Select(MapToResponse)
+                             .ToList()
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<
+                    List<ReferralResponseDto>>
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message =
+                        "Failed to retrieve referrals",
+
+                    Errors = new()
+                    {
+                        ex.Message
+                    }
+                };
+            }
         }
 
         private ReferralResponseDto MapToResponse(Referral r)

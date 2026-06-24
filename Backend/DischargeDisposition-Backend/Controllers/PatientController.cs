@@ -1,4 +1,5 @@
-﻿using DischargeDisposition_Backend.Hospital.DTOs.Requests;
+using DischargeDisposition_Backend.Helpers;
+using DischargeDisposition_Backend.Hospital.DTOs.Requests;
 using DischargeDisposition_Backend.Hospital.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,48 +9,62 @@ namespace DischargeDisposition_Backend.Controllers
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class PatientController : ControllerBase
+    public class PatientController
+        : ControllerBase
     {
-        private readonly ILogger<PatientController> _logger;
-        private readonly IPatientService _service;
+        private readonly ILogger<PatientController>
+            _logger;
 
-        public PatientController(ILogger<PatientController> logger, IPatientService service)
+        private readonly IPatientService
+            _service;
+
+        public PatientController(
+            ILogger<PatientController> logger,
+            IPatientService service)
         {
             _logger = logger;
             _service = service;
         }
 
-
         [HttpGet]
-        public async Task<IActionResult> GetPatients()
+        public async Task<IActionResult>
+            GetPatients()
         {
-            var patients = await _service.GetPatientsAsync();
+            var response =
+                await _service
+                    .GetPatientsAsync();
 
-            return Ok(patients);
+            return this
+                .ToHttpResponse(response);
         }
+
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetPatientByIdAsync(int id)
+        public async Task<IActionResult>
+            GetPatientById(int id)
         {
-            var patient = await 
-                _service.GetPatientByIdAsync(id);
+            var response =
+                await _service
+                    .GetPatientByIdAsync(id);
 
-            if (patient == null)
-                return NotFound();
-
-            return Ok(patient);
+            return this
+                .ToHttpResponse(response);
         }
+
         [HttpPatch("{id}/discharge")]
-        public async Task<IActionResult> DischargePatient(int id, [FromBody] DischargePatientDto dto)
+        public async Task<IActionResult>
+            DischargePatient(
+                int id,
+                [FromBody]
+                DischargePatientDto dto)
         {
-            var result =
-                await _service.DischargePatientAsync(id, dto.ActualDischargeDate);
+            var response =
+                await _service
+                    .DischargePatientAsync(
+                        id,
+                        dto.ActualDischargeDate);
 
-
-            if (!result)
-                return NotFound();
-
-
-            return NoContent();
+            return this
+                .ToHttpResponse(response);
         }
     }
 }
