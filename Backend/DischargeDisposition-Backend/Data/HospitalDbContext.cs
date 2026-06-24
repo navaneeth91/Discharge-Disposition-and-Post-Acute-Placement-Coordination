@@ -153,7 +153,7 @@ namespace DischargeDisposition_Backend.Data
                     .OnDelete(DeleteBehavior.Cascade);
 
                 b.HasOne(pd => pd.ReportedUser)
-                    .WithMany()
+                    .WithMany(u => u.PatientDelays)
                     .HasForeignKey(pd => pd.ReportedBy)
                     .OnDelete(DeleteBehavior.Restrict);
 
