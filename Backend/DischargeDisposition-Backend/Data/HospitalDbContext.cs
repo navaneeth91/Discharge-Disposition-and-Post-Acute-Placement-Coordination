@@ -26,6 +26,9 @@ namespace DischargeDisposition_Backend.Data
         public DbSet<PatientDelay> PatientDelays { get; set; } = null!;
         public DbSet<LengthOfStayTracking> LengthOfStayTrackings { get; set; } = null!;
         public DbSet<HospitalDashboard>HospitalDashboard{ get; set; }
+        public DbSet<PatientDistribution>PatientDistribution{ get; set; }
+
+        public DbSet<AuthorizationAnalytics> AuthorizationAnalytics{ get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -213,6 +216,15 @@ namespace DischargeDisposition_Backend.Data
             modelBuilder.Entity<HospitalDashboard>()
             .HasNoKey()
             .ToView("vwHospitalDashboard");
+            modelBuilder
+                .Entity<PatientDistribution>()
+                .HasNoKey()
+                .ToView("vwPatientDistribution");
+
+            modelBuilder
+                .Entity<AuthorizationAnalytics>()
+                .HasNoKey()
+                .ToView("vwAuthorizationAnalytics");
         }
     }
 }

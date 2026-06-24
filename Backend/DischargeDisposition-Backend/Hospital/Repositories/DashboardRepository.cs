@@ -20,4 +20,19 @@ public class DashboardRepository : IDashboardRepository
             .AsNoTracking()
             .FirstAsync();
     }
+    public async Task<List<PatientDistribution>>GetPatientDistributionAsync()
+    {
+        return await _context
+            .PatientDistribution
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
+    public async Task<List<AuthorizationAnalytics>>GetAuthorizationAnalyticsAsync()
+    {
+        return await _context
+            .AuthorizationAnalytics
+            .AsNoTracking()
+            .ToListAsync();
+    }
 }

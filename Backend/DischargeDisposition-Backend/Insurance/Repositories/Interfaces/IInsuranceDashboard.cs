@@ -3,7 +3,7 @@ namespace DischargeDisposition_Backend.Insurance.Repositories.Interfaces
 {
     public interface IInsuranceDashboardRepository
     {
-        Task<InsuranceDashboard>
-            GetInsuranceDashboardAsync();
+        Task<InsuranceDashboard>GetInsuranceDashboardAsync();
+        Task<List<InsuranceAnalytics>> GetServiceAnalyticsAsync();
     }
 }
