@@ -13,6 +13,7 @@ namespace DischargeDisposition_Backend.Helpers
             {
                 200 => controller.Ok(response),
                 201 => controller.StatusCode(201, response),
+                204 => controller.NoContent(),
                 400 => controller.BadRequest(response),
                 401 => controller.Unauthorized(response),
                 404 => controller.NotFound(response),

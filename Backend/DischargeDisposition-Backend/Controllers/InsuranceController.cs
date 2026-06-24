@@ -1,15 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DischargeDisposition_Backend.Helpers;
 using DischargeDisposition_Backend.Insurance.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DischargeDisposition_Backend.Controllers
 {
     [Authorize]
     [ApiController]
     [Route("api/insurance")]
-    public class InsuranceController : ControllerBase
+    public class InsuranceController
+        : ControllerBase
     {
-        private readonly IInsuranceService _service;
+        private readonly IInsuranceService
+            _service;
 
         public InsuranceController(
             IInsuranceService service)
@@ -21,21 +24,26 @@ namespace DischargeDisposition_Backend.Controllers
         public async Task<IActionResult>
             GetProviders()
         {
-            var result =
-                await _service.GetProvidersAsync();
+            var response =
+                await _service
+                    .GetProvidersAsync();
 
-            return Ok(result);
+            return this
+                .ToHttpResponse(response);
         }
 
         [HttpGet("plans")]
         public async Task<IActionResult>
             GetPlans(
-                [FromQuery] int? providerId)
+                [FromQuery]
+                int? providerId)
         {
-            var result =
-                await _service.GetPlansAsync(providerId);
+            var response =
+                await _service
+                    .GetPlansAsync(providerId);
 
-            return Ok(result);
+            return this
+                .ToHttpResponse(response);
         }
     }
 }
