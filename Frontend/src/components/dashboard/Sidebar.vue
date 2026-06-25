@@ -4,10 +4,11 @@ import {
     Users,
     ClipboardList,
     ShieldCheck,
-    BarChart3,
-    Settings,
+    Building2,
+    Activity,
     LogOut
-} from 'lucide-vue-next'
+}
+from 'lucide-vue-next'
 
 import { useUiStore }
 from '@/stores/ui'
@@ -65,13 +66,17 @@ function logout() {
             items-center
             justify-center
             text-2xl
-            font-bold">
+            font-bold
+            border-b
+            border-[#669BBC]/20">
 
             DDS
 
         </div>
 
         <nav class="flex-1 p-4 space-y-2">
+
+            <!-- DASHBOARD -->
 
             <RouterLink
                 to="/administrator/dashboard"
@@ -88,7 +93,96 @@ function logout() {
 
             </RouterLink>
 
-            <template v-if="!insurance">
+            <!-- ADMINISTRATOR -->
+
+            <template
+                v-if="
+                auth.role === 'Administrator'
+                && !insurance">
+
+                <RouterLink
+                    to="/administrator/users"
+                    class="menu-item">
+
+                    <ShieldCheck />
+
+                    <span
+                        v-if="!ui.sidebarCollapsed">
+
+                        Users
+
+                    </span>
+
+                </RouterLink>
+
+                <RouterLink
+                    to="/patients"
+                    class="menu-item">
+
+                    <Users />
+
+                    <span
+                        v-if="!ui.sidebarCollapsed">
+
+                        Patients
+
+                    </span>
+
+                </RouterLink>
+
+                <RouterLink
+                    to="/referrals"
+                    class="menu-item">
+
+                    <ClipboardList />
+
+                    <span
+                        v-if="!ui.sidebarCollapsed">
+
+                        Referrals
+
+                    </span>
+
+                </RouterLink>
+
+                <RouterLink
+                    to="/providers"
+                    class="menu-item">
+
+                    <Building2 />
+
+                    <span
+                        v-if="!ui.sidebarCollapsed">
+
+                        Providers
+
+                    </span>
+
+                </RouterLink>
+
+                <RouterLink
+                    to="/los"
+                    class="menu-item">
+
+                    <Activity />
+
+                    <span
+                        v-if="!ui.sidebarCollapsed">
+
+                        Length Of Stay
+
+                    </span>
+
+                </RouterLink>
+
+            </template>
+
+            <!-- CARE MANAGER -->
+
+            <template
+                v-if="
+                auth.role === 'Care Manager'
+                && !insurance">
 
                 <RouterLink
                     to="/patients"
@@ -121,6 +215,101 @@ function logout() {
                 </RouterLink>
 
             </template>
+
+            <!-- PHYSICIAN -->
+
+            <template
+                v-if="
+                auth.role === 'Physician'
+                && !insurance">
+
+                <RouterLink
+                    to="/patients"
+                    class="menu-item">
+
+                    <Users />
+
+                    <span
+                        v-if="!ui.sidebarCollapsed">
+
+                        Patients
+
+                    </span>
+
+                </RouterLink>
+
+            </template>
+
+            <!-- POST ACUTE PROVIDER -->
+
+            <template
+                v-if="
+                auth.role === 'Post-Acute Provider'
+                && !insurance">
+
+                <RouterLink
+                    to="/providers"
+                    class="menu-item">
+
+                    <Building2 />
+
+                    <span
+                        v-if="!ui.sidebarCollapsed">
+
+                        Providers
+
+                    </span>
+
+                </RouterLink>
+
+            </template>
+
+            <!-- AUTHORIZATION COORDINATOR -->
+
+            <template
+                v-if="
+                auth.role ===
+                'Authorization Coordinator'
+                && !insurance">
+
+                <RouterLink
+                    to="/referrals"
+                    class="menu-item">
+
+                    <ClipboardList />
+
+                    <span
+                        v-if="!ui.sidebarCollapsed">
+
+                        Referrals
+
+                    </span>
+
+                </RouterLink>
+
+            </template>
+
+            <!-- UNASSIGNED -->
+
+            <template
+                v-if="
+                auth.role === 'Unassigned'
+                && !insurance">
+
+                <div
+                    class="
+                    p-4
+                    text-center
+                    text-sm
+                    text-gray-300">
+
+                    Awaiting role assignment
+
+                </div>
+
+            </template>
+
+            <!-- LOGOUT -->
 
             <button
                 @click="logout"
@@ -156,6 +345,7 @@ function logout() {
 
 .menu-item:hover {
     background: rgba(102,155,188,.25);
+    transform: translateX(4px);
 }
 
 .router-link-active {
