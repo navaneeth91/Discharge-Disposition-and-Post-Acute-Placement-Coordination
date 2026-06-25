@@ -63,4 +63,45 @@ public class MemberService
             };
         }
     }
-}
+
+    public async Task<ApiResponse<List<MemberSearchResponse>>> SearchMembersAsync(string query, int take)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return new ApiResponse<List<MemberSearchResponse>>
+                {
+                    Success = false,
+                    StatusCode = 400,
+                    Message = "Search query is required"
+                };
+            }
+
+            take = take < 1 ? 20 : take;
+
+            var members = await _repository.SearchMembersAsync(query, take);
+
+            return new ApiResponse<List<MemberSearchResponse>>
+            {
+                Success = true,
+                StatusCode = 200,
+                Message = "Members retrieved successfully",
+                Data = members
+            };
+        }
+        catch (Exception ex)
+        {
+            return new ApiResponse<List<MemberSearchResponse>>
+            {
+                Success = false,
+                StatusCode = 500,
+                Message = "Failed to search members",
+                Errors = new()
+                {
+                    ex.Message
+                }
+            };
+        }
+    }
+    }

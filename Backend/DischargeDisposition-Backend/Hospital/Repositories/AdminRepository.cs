@@ -58,9 +58,6 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
                         (double)pageSize)
             };
         }
-        /// <summary>
-        /// Retrieves a specific user by ID with related information.
-        /// </summary>
         public async Task<User?> GetUserByIdAsync(int userId)
         {
             try
@@ -97,7 +94,7 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
             }
         }
 
-        public async Task<User>UpdateUserAsync(User user)
+        public async Task<User> UpdateUserAsync(User user)
         {
             try
             {
@@ -123,7 +120,6 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
                 throw;
             }
         }
-
         public async Task<bool> DeleteUserAsync(int userId)
         {
             try
@@ -223,9 +219,7 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
                         (double)pageSize)
             };
         }
-
-        public async Task<Patient?> GetPatientByIdAsync(
-    int patientId)
+        public async Task<Patient?> GetPatientByIdAsync(int patientId)
         {
             try
             {
@@ -271,7 +265,6 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
                 throw;
             }
         }
-
         public async Task<bool> RoleExistsAsync(byte roleId)
         {
             try

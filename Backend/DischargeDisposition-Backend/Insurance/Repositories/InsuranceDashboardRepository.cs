@@ -29,5 +29,39 @@ namespace DischargeDisposition_Backend.Insurance.Repositories
                 .AsNoTracking()
                 .ToListAsync();
         }
+
+        public async Task<List<AuthorizationRequestListItemResponse>> GetRecentAuthorizationRequestsAsync(int take)
+        {
+            return await _context.AuthorizationRequests
+                .AsNoTracking()
+                .Include(x => x.member)
+                .Include(x => x.AuthorizationDecisions)
+                .OrderByDescending(x => x.RequestedDate)
+                .Take(take)
+                .Select(x => new AuthorizationRequestListItemResponse
+                {
+                    AuthorizationRequestId = x.AuthorizationRequestId,
+                    MemberId = x.MemberId,
+                    MemberName = x.member.FirstName + " " + x.member.LastName,
+                    PolicyNumber = x.member.PolicyNumber,
+                    RequestingOrganization = x.RequestingOrganization,
+                    ServiceType = x.ServiceType,
+                    RequestedDate = x.RequestedDate,
+                    Status = x.Status,
+                    LatestDecisionDate = x.AuthorizationDecisions
+                        .OrderByDescending(d => d.DecisionDate)
+                        .Select(d => (DateTime?)d.DecisionDate)
+                        .FirstOrDefault(),
+                    ReasonCode = x.AuthorizationDecisions
+                        .OrderByDescending(d => d.DecisionDate)
+                        .Select(d => d.ReasonCode)
+                        .FirstOrDefault(),
+                    Notes = x.AuthorizationDecisions
+                        .OrderByDescending(d => d.DecisionDate)
+                        .Select(d => d.Notes)
+                        .FirstOrDefault()
+                })
+                .ToListAsync();
+        }
     }
 }

@@ -9,7 +9,9 @@ export const useDashboardStore =
         state: () => ({
             hospitalStats: null,
             insuranceStats: null,
-            loading: false
+            recentInsuranceAuthorizations: [],
+            loading: false,
+            recentLoading: false
         }),
 
         actions: {
@@ -25,7 +27,7 @@ export const useDashboardStore =
                             .getHospitalDashboard()
 
                     this.hospitalStats =
-                        response.data
+                        response.data.data
 
                 }
                 finally {
@@ -46,12 +48,40 @@ export const useDashboardStore =
                             .getInsuranceDashboard()
 
                     this.insuranceStats =
-                        response.data
+                        response.data.data
 
                 }
                 finally {
 
                     this.loading = false
+
+                }
+            },
+
+            async loadRecentInsuranceAuthorizations() {
+
+                this.recentLoading = true
+
+                try {
+
+                    const response =
+                        await dashboardService
+                            .getRecentInsuranceAuthorizations()
+
+                    this.recentInsuranceAuthorizations =
+                        response.data.data ?? []
+
+                }
+                catch (error) {
+
+                    this.recentInsuranceAuthorizations = []
+
+                    console.error(error)
+
+                }
+                finally {
+
+                    this.recentLoading = false
 
                 }
             }

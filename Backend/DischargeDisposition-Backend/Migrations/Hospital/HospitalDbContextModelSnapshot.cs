@@ -324,6 +324,47 @@ namespace DischargeDisposition_Backend.Migrations.Hospital
                     b.ToTable("Patients");
                 });
 
+            modelBuilder.Entity("DischargeDisposition_Backend.Hospital.Models.PatientAssignment", b =>
+                {
+                    b.Property<long>("AssignmentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("AssignmentId"));
+
+                    b.Property<int>("AssignedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("AssignedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CareManagerId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UnassignedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("AssignmentId");
+
+                    b.HasIndex("AssignedBy");
+
+                    b.HasIndex("CareManagerId");
+
+                    b.HasIndex("PatientId");
+
+                    b.ToTable("PatientAssignments");
+                });
+
             modelBuilder.Entity("DischargeDisposition_Backend.Hospital.Models.PatientDelay", b =>
                 {
                     b.Property<int>("PatientDelayId")
@@ -347,9 +388,6 @@ namespace DischargeDisposition_Backend.Migrations.Hospital
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("PatientDelayId");
 
                     b.HasIndex("DelayReasonId");
@@ -357,8 +395,6 @@ namespace DischargeDisposition_Backend.Migrations.Hospital
                     b.HasIndex("PatientId");
 
                     b.HasIndex("ReportedBy");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("PatientDelays");
                 });
@@ -651,6 +687,33 @@ namespace DischargeDisposition_Backend.Migrations.Hospital
                     b.Navigation("Department");
                 });
 
+            modelBuilder.Entity("DischargeDisposition_Backend.Hospital.Models.PatientAssignment", b =>
+                {
+                    b.HasOne("DischargeDisposition_Backend.Hospital.Models.User", "AssignedByUser")
+                        .WithMany()
+                        .HasForeignKey("AssignedBy")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DischargeDisposition_Backend.Hospital.Models.User", "CareManager")
+                        .WithMany()
+                        .HasForeignKey("CareManagerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DischargeDisposition_Backend.Hospital.Models.Patient", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AssignedByUser");
+
+                    b.Navigation("CareManager");
+
+                    b.Navigation("Patient");
+                });
+
             modelBuilder.Entity("DischargeDisposition_Backend.Hospital.Models.PatientDelay", b =>
                 {
                     b.HasOne("DischargeDisposition_Backend.Hospital.Models.DelayReasonCode", "delayReason")
@@ -666,14 +729,10 @@ namespace DischargeDisposition_Backend.Migrations.Hospital
                         .IsRequired();
 
                     b.HasOne("DischargeDisposition_Backend.Hospital.Models.User", "ReportedUser")
-                        .WithMany()
+                        .WithMany("PatientDelays")
                         .HasForeignKey("ReportedBy")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("DischargeDisposition_Backend.Hospital.Models.User", null)
-                        .WithMany("PatientDelays")
-                        .HasForeignKey("UserId");
 
                     b.Navigation("ReportedUser");
 
