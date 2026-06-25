@@ -10,7 +10,8 @@ namespace DischargeDisposition_Backend.Hospital.Repositories.Interfaces
         Task UpdateAsync(Referral referral, CancellationToken cancellationToken = default);
         Task DeleteAsync(int id, CancellationToken cancellationToken = default);
         Task<IEnumerable<Referral>> GetByPatientIdAsync(int patientId, CancellationToken cancellationToken = default);
-        Task<IEnumerable<Referral>> GetByProviderIdAsync(int providerId, CancellationToken cancellationToken = default);
+        Task<IEnumerable<Referral>> GetByProviderIdAsync(int userId, CancellationToken cancellationToken = default);
+        Task<IEnumerable<Referral>> GetPendingByProviderIdAsync(int userId, CancellationToken cancellationToken = default);
         Task<IEnumerable<Referral>> GetPendingReferralsAsync(CancellationToken cancellationToken = default);
         Task<IEnumerable<Referral>> GetCompletedReferralsAsync(CancellationToken cancellationToken = default);
        

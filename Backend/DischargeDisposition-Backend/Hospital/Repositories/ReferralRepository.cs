@@ -66,10 +66,39 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<IEnumerable<Referral>> GetByProviderIdAsync(int providerId, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<Referral>> GetByProviderIdAsync(int userId, CancellationToken cancellationToken = default)
         {
+            var provider =
+        await _db.PostAcuteProviders
+            .FirstOrDefaultAsync(
+                p => p.UserId == userId);
+
+            if (provider.ProviderId == null)
+            {
+                return new List<Referral>();
+            }
             return await _db.Referrals
-                .Where(r => r.ProviderId == providerId)
+                .Where(r => r.ProviderId == provider.ProviderId)
+                .Include(r => r.patient)
+                .Include(r => r.careManager)
+                .AsNoTracking()
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task<IEnumerable<Referral>> GetPendingByProviderIdAsync(int userId, CancellationToken cancellationToken = default)
+        {
+            var provider =
+        await _db.PostAcuteProviders
+            .FirstOrDefaultAsync(
+                p => p.UserId == userId);
+
+            if (provider.ProviderId == null)
+            {
+                return new List<Referral>();
+            }
+            return await _db.Referrals
+                .Where(r => r.ProviderId == provider.ProviderId)
+                .Where(r => r.Status == AuthorizationStatus.Pending)
                 .Include(r => r.patient)
                 .Include(r => r.careManager)
                 .AsNoTracking()
