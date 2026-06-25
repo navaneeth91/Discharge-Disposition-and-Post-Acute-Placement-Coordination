@@ -37,7 +37,11 @@ namespace DischargeDisposition_Backend.Insurance.Services
                                 x.ProviderName,
 
                             ProviderCode =
-                                x.ProviderCode
+                                x.ProviderCode,
+
+                            Phone = x.Phone,
+
+                            Email = x.Email
                         })
                     .ToList();
 
@@ -99,11 +103,17 @@ namespace DischargeDisposition_Backend.Insurance.Services
                             PlanId =
                                 x.PlanId,
 
+                            InsuranceProviderId =
+                                x.InsuranceProviderId,
+
                             PlanName =
                                 x.PlanName,
 
                             PlanType =
                                 x.PlanType,
+
+                            ProviderName =
+                                x.insuranceProvider.ProviderName,
 
                             IsActive =
                                 x.IsActive

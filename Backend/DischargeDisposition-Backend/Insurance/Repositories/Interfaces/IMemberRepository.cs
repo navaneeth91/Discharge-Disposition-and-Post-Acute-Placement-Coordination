@@ -4,4 +4,6 @@ public interface IMemberRepository
 {
     Task<MemberDetailsResponse?>
         GetMemberAsync(int memberId);
+
+    Task<List<MemberSearchResponse>> SearchMembersAsync(string query, int take);
 }

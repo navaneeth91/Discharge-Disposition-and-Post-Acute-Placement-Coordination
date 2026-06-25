@@ -10,6 +10,10 @@ import DashboardView from '@/views/hospital/DashboardView.vue'
 
 // Insurance Views
 import InsuranceDashboardView from '@/views/insurance/InsuranceDashboardView.vue'
+import AuthorizationRequestsView from '@/views/insurance/AuthorizationRequestsView.vue'
+import MemberSearchView from '@/views/insurance/MemberSearchView.vue'
+import ProvidersView from '@/views/insurance/ProvidersView.vue'
+import PlansView from '@/views/insurance/PlansView.vue'
 
 //Patient Views
 import PatientsView from '@/views/hospital/PatientsView.vue'
@@ -105,6 +109,42 @@ const routes = [
         }
     },
     // Patients view
+    {
+        path: '/insurance/authorizations',
+        name: 'InsuranceAuthorizations',
+        component: AuthorizationRequestsView,
+        meta: {
+            requiresAuth: true,
+            role: 'Authorization Coordinator'
+        }
+    },
+    {
+        path: '/insurance/members',
+        name: 'InsuranceMembers',
+        component: MemberSearchView,
+        meta: {
+            requiresAuth: true,
+            role: 'Authorization Coordinator'
+        }
+    },
+    {
+        path: '/insurance/providers',
+        name: 'InsuranceProviders',
+        component: ProvidersView,
+        meta: {
+            requiresAuth: true,
+            role: 'Authorization Coordinator'
+        }
+    },
+    {
+        path: '/insurance/plans',
+        name: 'InsurancePlans',
+        component: PlansView,
+        meta: {
+            requiresAuth: true,
+            role: 'Authorization Coordinator'
+        }
+    },
     {
         path: '/patients',
 

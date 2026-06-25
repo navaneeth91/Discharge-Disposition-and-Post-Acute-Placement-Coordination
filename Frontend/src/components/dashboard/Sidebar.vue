@@ -6,6 +6,7 @@ import {
     ShieldCheck,
     Building2,
     Activity,
+    BarChart3,
     LogOut
 }
 from 'lucide-vue-next'
@@ -79,8 +80,10 @@ function logout() {
             <!-- DASHBOARD -->
 
             <RouterLink
-                to="/administrator/dashboard"
-                class="menu-item">
+               :to="insurance
+                     ? '/insurance/dashboard'
+                    : '/administrator/dashboard'"
+                     class="menu-item">
 
                 <LayoutDashboard />
 
@@ -287,6 +290,36 @@ function logout() {
 
                 </RouterLink>
 
+                <RouterLink
+                    to="/providers"
+                    class="menu-item">
+
+                    <Building2 />
+
+                    <span
+                        v-if="!ui.sidebarCollapsed">
+
+                        Providers
+
+                    </span>
+
+                </RouterLink>
+
+                <RouterLink
+                    to="/los"
+                    class="menu-item">
+
+                    <Activity />
+
+                    <span
+                        v-if="!ui.sidebarCollapsed">
+
+                        Length Of Stay
+
+                    </span>
+
+                </RouterLink>
+
             </template>
 
             <!-- UNASSIGNED -->
@@ -308,6 +341,71 @@ function logout() {
                 </div>
 
             </template>
+            <!-- INSURANCE -->
+
+<template v-if="insurance">
+
+    <RouterLink
+        to="/insurance/authorizations"
+        class="menu-item">
+
+        <ClipboardList />
+
+        <span
+            v-if="!ui.sidebarCollapsed">
+
+            Authorizations
+
+        </span>
+
+    </RouterLink>
+
+    <RouterLink
+        to="/insurance/members"
+        class="menu-item">
+
+        <Users />
+
+        <span
+            v-if="!ui.sidebarCollapsed">
+
+            Members
+
+        </span>
+
+    </RouterLink>
+
+    <RouterLink
+        to="/insurance/providers"
+        class="menu-item">
+
+        <BarChart3 />
+
+        <span
+            v-if="!ui.sidebarCollapsed">
+
+            Providers
+
+        </span>
+
+    </RouterLink>
+
+    <RouterLink
+        to="/insurance/plans"
+        class="menu-item">
+
+        <ShieldCheck />
+
+        <span
+            v-if="!ui.sidebarCollapsed">
+
+            Plans
+
+        </span>
+
+    </RouterLink>
+
+</template>
 
             <!-- LOGOUT -->
 
