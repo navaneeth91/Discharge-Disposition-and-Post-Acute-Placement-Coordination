@@ -162,20 +162,16 @@ const statusClass = (status) => {
                         v-if="authorization.status?.toLowerCase() === 'pending'"
                         class="mt-6 flex gap-3">
 
-                        <button
-                            class="rounded-xl bg-green-500 px-5 py-2 font-semibold text-white hover:bg-green-600"
+                       <button
+                            class="rounded-xl bg-green-500 px-4 py-2 text-white"
                             @click="$emit('approve', authorization)">
-
                             Approve
-
                         </button>
 
                         <button
-                            class="rounded-xl bg-red-500 px-5 py-2 font-semibold text-white hover:bg-red-600"
+                            class="rounded-xl bg-red-500 px-4 py-2 text-white"
                             @click="$emit('deny', authorization)">
-
                             Deny
-
                         </button>
 
                     </div>

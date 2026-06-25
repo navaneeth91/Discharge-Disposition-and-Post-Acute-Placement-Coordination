@@ -80,29 +80,49 @@ const viewAuthorization =
         showDrawer.value = true
     }
 
-const approveAuthorization =
-    async (authorization) => {
+const approveAuthorization = async (authorization) => {
+    try {
 
-        authorization.status =
-            'Approved'
+        await store.approveAuthorization(
+            authorization.authorizationRequestId
+        )
 
-        // TODO:
-        // Call API here
-
-        showDrawer.value = false
-    }
-
-const denyAuthorization =
-    async (authorization) => {
-
-        authorization.status =
-            'Denied'
-
-        // TODO:
-        // Call API here
+        await loadPage(page.value)
 
         showDrawer.value = false
+
     }
+    catch (error) {
+
+        console.error(
+            'Approve failed:',
+            error
+        )
+    }
+}
+
+const denyAuthorization = async (authorization) => {
+    try {
+
+        await store.denyAuthorization(
+            authorization.authorizationRequestId,
+            'Coverage Denied',
+            'Authorization denied by insurance coordinator'
+        )
+
+        await loadPage(page.value)
+
+        showDrawer.value = false
+
+    }
+    catch (error) {
+
+        console.error(
+            'Deny failed:',
+            error
+        )
+    }
+}
 
 watch(
     search,

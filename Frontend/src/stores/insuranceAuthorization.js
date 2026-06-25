@@ -17,6 +17,7 @@ export const useInsuranceAuthorizationStore = defineStore('insuranceAuthorizatio
         error: ''
     }),
     actions: {
+        
         async loadAuthorizations({ search = '', status = '', page = 1, pageSize = 10 } = {}) {
             this.loading = true
             this.error = ''
@@ -80,6 +81,31 @@ export const useInsuranceAuthorizationStore = defineStore('insuranceAuthorizatio
             finally {
                 this.loading = false
             }
+        },
+        async approveAuthorization(authorizationRequestId) {
+    await authorizationService.updateAuthorizationStatus(
+        authorizationRequestId,
+        {
+            status: 'Approved',
+            reasonCode: null,
+            notes: 'Approved by Insurance Coordinator'
+        }
+    )
+},
+
+        async denyAuthorization(
+            authorizationRequestId,
+            reasonCode = 'Denied',
+            notes = ''
+        ) {
+            await authorizationService.updateAuthorizationStatus(
+                authorizationRequestId,
+                {
+                    status: 'Denied',
+                    reasonCode,
+                    notes
+                }
+            )
         }
     }
 })
