@@ -290,6 +290,36 @@ function logout() {
 
                 </RouterLink>
 
+                <RouterLink
+                    to="/providers"
+                    class="menu-item">
+
+                    <Building2 />
+
+                    <span
+                        v-if="!ui.sidebarCollapsed">
+
+                        Providers
+
+                    </span>
+
+                </RouterLink>
+
+                <RouterLink
+                    to="/los"
+                    class="menu-item">
+
+                    <Activity />
+
+                    <span
+                        v-if="!ui.sidebarCollapsed">
+
+                        Length Of Stay
+
+                    </span>
+
+                </RouterLink>
+
             </template>
 
             <!-- UNASSIGNED -->

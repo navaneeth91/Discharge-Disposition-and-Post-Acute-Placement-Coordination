@@ -26,10 +26,7 @@ builder.Services.AddSingleton<JwtHelper>();
 builder.Services.AddScoped<IDelayReasonCodeRepository,DelayReasonCodeRepository>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped< IDelayReasonCodeService,DelayReasonCodeService>();
-
-
 builder.Services.AddScoped<IDispositionTypeRepository,DispositionsTypeRepository>();
-
 builder.Services.AddScoped<IDispositionTypeService,DispositionTypeService>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IPatientService, PatientService>();
@@ -48,32 +45,22 @@ builder.Services.AddScoped<IPatientDelayRepository,PatientDelayRepository>();
 builder.Services.AddScoped<IPatientDelayService,PatientDelayService>();
 builder.Services.AddScoped<IDelayReasonCodeRepository, DelayReasonCodeRepository>();
 builder.Services.AddScoped<IDelayReasonCodeService, DelayReasonCodeService>();
-
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IPostAcuteProviderRepository,PostAcuteProviderRepository>();
-
 builder.Services.AddScoped<IPostAcuteProviderService,PostAcuteProviderService>();
-
 builder.Services.AddScoped<IMemberRepository,MemberRepository>();
-
 builder.Services.AddScoped<IAuthorizationRepository,AuthorizationRepository>();
-
 builder.Services.AddScoped<IAuthorizedService,AuthorizedService>();
-
 builder.Services.AddScoped<IWebhookService,WebhookService>();
-
 builder.Services.AddScoped<IInsuranceAuthorizationService,InsuranceAuthorizationService>();
 builder.Services.AddScoped<IDashboardRepository,DashboardRepository>();
-
 builder.Services.AddScoped<IDashboardService,DashboardService>();
-
 builder.Services.AddScoped<IInsuranceDashboardRepository,InsuranceDashboardRepository>();
-
 builder.Services.AddScoped<IInsuranceDashboardService,InsuranceDashboardService>();
-
 builder.Services.AddHttpClient<IWebhookService,WebhookService>();
-
 builder.Services.AddScoped<IMemberService,MemberService>();
+builder.Services.AddScoped<IPatientAssignmentRepository,PatientAssignmentRepository>();
+builder.Services.AddScoped<IPatientAssignmentService,PatientAssignmentService>();
 var hospitalConnection =
     builder.Configuration.GetConnectionString("HospitalConnection")
     ?? throw new InvalidOperationException(
