@@ -25,3 +25,12 @@ export const getInsuranceAnalytics = () => {
         '/insurance-dashboard/service-analytics'
     )
 }
+
+export const getRecentInsuranceAuthorizations = (take = 5) => {
+    return api.get(
+        '/insurance-dashboard/recent-authorizations',
+        {
+            params: { take }
+        }
+    )
+}
