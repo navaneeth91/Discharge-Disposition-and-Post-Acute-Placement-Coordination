@@ -5,28 +5,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DischargeDisposition_Backend.Hospital.Repositories
 {
-    /// <summary>
-    /// Repository for administrative data access operations.
-    /// </summary>
     public class AdminRepository : IAdminRepository
     {
         private readonly HospitalDbContext _context;
         private readonly ILogger<AdminRepository> _logger;
-
-        /// <summary>
-        /// Initializes a new instance of the AdminRepository class.
-        /// </summary>
-        /// <param name="context">The hospital database context.</param>
-        /// <param name="logger">The logger instance.</param>
         public AdminRepository(HospitalDbContext context, ILogger<AdminRepository> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
-
-        /// <summary>
-        /// Retrieves all users with their related department and role information.
-        /// </summary>
         public async Task<IEnumerable<User>> GetAllUsersAsync()
         {
             try
@@ -49,10 +36,6 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
                 throw;
             }
         }
-
-        /// <summary>
-        /// Retrieves a specific user by ID with related information.
-        /// </summary>
         public async Task<User?> GetUserByIdAsync(int userId)
         {
             try
@@ -89,9 +72,6 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
             }
         }
 
-        /// <summary>
-        /// Updates a user in the database.
-        /// </summary>
         public async Task<User> UpdateUserAsync(User user)
         {
             try
@@ -107,11 +87,6 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
                 await _context.SaveChangesAsync();
 
                 _logger.LogInformation($"Repository: Successfully updated user with ID {user.UserId}.");
-
-                // Reload navigation properties
-                await _context.Entry(user).Reference(u => u.department).LoadAsync();
-                await _context.Entry(user).Reference(u => u.role).LoadAsync();
-
                 return user;
             }
             catch (Exception ex)
@@ -120,10 +95,6 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
                 throw;
             }
         }
-
-        /// <summary>
-        /// Deletes a user from the database.
-        /// </summary>
         public async Task<bool> DeleteUserAsync(int userId)
         {
             try
@@ -151,10 +122,6 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
                 throw;
             }
         }
-
-        /// <summary>
-        /// Checks if a user exists by ID.
-        /// </summary>
         public async Task<bool> UserExistsAsync(int userId)
         {
             try
@@ -169,10 +136,6 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
                 throw;
             }
         }
-
-        /// <summary>
-        /// Retrieves all active patients with their related department information.
-        /// </summary>
         public async Task<IEnumerable<Patient>> GetAllPatientsAsync()
         {
             try
@@ -195,10 +158,6 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
                 throw;
             }
         }
-
-        /// <summary>
-        /// Retrieves a specific patient by ID with related information.
-        /// </summary>
         public async Task<Patient?> GetPatientByIdAsync(int patientId)
         {
             try
@@ -234,9 +193,6 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
             }
         }
 
-        /// <summary>
-        /// Checks if a department exists by ID.
-        /// </summary>
         public async Task<bool> DepartmentExistsAsync(byte deptId)
         {
             try
@@ -251,10 +207,6 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
                 throw;
             }
         }
-
-        /// <summary>
-        /// Checks if a role exists by ID.
-        /// </summary>
         public async Task<bool> RoleExistsAsync(byte roleId)
         {
             try
