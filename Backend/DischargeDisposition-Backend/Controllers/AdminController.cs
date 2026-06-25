@@ -20,15 +20,37 @@ namespace DischargeDisposition_Backend.Controllers
         }
 
         [HttpGet("users")]
-        public async Task<IActionResult>
-            GetUsers()
+        public async Task<IActionResult>GetUsers(
+        int page = 1,
+        int pageSize = 10,
+        string? search = null)
         {
             var response =
                 await _adminService
-                    .GetAllUsersAsync();
+                    .GetAllUsersAsync(
+                        page,
+                        pageSize,
+                        search);
 
-            return this
-                .ToHttpResponse(response);
+            return this.ToHttpResponse(response);
+        }
+
+        [HttpGet("patients")]
+        public async Task<IActionResult> GetPatients(
+        int page = 1,
+        int pageSize = 10,
+        string? search = null,
+        string? status = null)
+        {
+            var response =
+                await _adminService
+                    .GetAllPatientsAsync(
+                        page,
+                        pageSize,
+                        search,
+                        status);
+
+            return this.ToHttpResponse(response);
         }
 
         [HttpGet("users/{id}")]
@@ -72,17 +94,7 @@ namespace DischargeDisposition_Backend.Controllers
                 .ToHttpResponse(response);
         }
 
-        [HttpGet("patients")]
-        public async Task<IActionResult>
-            GetPatients()
-        {
-            var response =
-                await _adminService
-                    .GetAllPatientsAsync();
-
-            return this
-                .ToHttpResponse(response);
-        }
+        
 
         [HttpGet("patients/{id}")]
         public async Task<IActionResult>
