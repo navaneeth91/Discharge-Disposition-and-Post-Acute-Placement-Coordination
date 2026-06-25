@@ -1,9 +1,18 @@
 <script setup>
-import { ref, computed, onMounted }
+import {
+    ref,
+    computed,
+    onMounted,
+    watch
+}
 from 'vue'
 
-import HospitalLayout from '@/layouts/HospitalLayout.vue'
-import PatientDrawer from '@/components/patients/PatientDrawer.vue'
+import HospitalLayout
+from '@/layouts/HospitalLayout.vue'
+
+import PatientDrawer
+from '@/components/patients/PatientDrawer.vue'
+
 import {
     usePatientStore
 }
@@ -17,8 +26,10 @@ const selected =
 
 const showDrawer =
     ref(false)
+
 const search =
     ref('')
+
 async function viewPatient(id) {
 
     await store.loadPatient(id)
@@ -40,49 +51,46 @@ async function discharge(date) {
     showDrawer.value =
         false
 }
+
+watch(search, async value => {
+
+    await store.searchPatients(
+        value
+    )
+})
+
 onMounted(async () => {
 
     await store.loadPatients()
-
 })
 
-const filtered =
+const patients =
     computed(() => {
 
-        return store.patients.filter(
-            p =>
-
-                p.firstName
-                    ?.toLowerCase()
-                    .includes(
-                        search.value
-                        .toLowerCase()
-                    )
-
-                ||
-
-                p.lastName
-                    ?.toLowerCase()
-                    .includes(
-                        search.value
-                        .toLowerCase()
-                    )
-        )
+        return store.patients
     })
+
+function initials(patient) {
+
+    return (
+        patient.firstName[0] +
+        patient.lastName[0]
+    ).toUpperCase()
+}
 </script>
 
 <template>
 
 <HospitalLayout>
 
-<div class="space-y-6 fade-up">
+<div class="space-y-6">
 
     <div
         class="
-        bg-white
-        rounded-3xl
-        p-6
-        shadow-md">
+        bg-white 
+        rounded-3xl 
+        p-8 
+        shadow-lg">
 
         <div
             class="
@@ -91,58 +99,161 @@ const filtered =
             items-center
             mb-6">
 
-            <h1
-                class="
-                text-3xl
-                font-bold
-                text-[#2D1E3E]">
+            <div>
 
-                Patients
+                <h1
+                    class="
+                    text-3xl
+                    font-bold
+                    text-[#2D1E3E]">
 
-            </h1>
+                    Patients
+
+                </h1>
+
+                <p class="text-slate-500">
+
+                    {{ store.totalCount }}
+                    patients
+
+                </p>
+
+            </div>
 
             <input
                 v-model="search"
-                placeholder="Search patient..."
+                placeholder="Search patients..."
+
                 class="
-                w-80
                 border
-                border-[#DDD2E8]
+                border-slate-200
                 rounded-xl
-                px-4
-                py-3
+                p-3
+                w-80
                 outline-none
                 focus:ring-4
-                focus:ring-purple-100">
+                focus:ring-[#669BBC]/30">
         </div>
 
-        <div class="overflow-x-auto">
+        <div class="flex gap-3 mb-6">
 
-            <table
+            <button
+                @click="
+                store.setStatus(
+                    'all'
+                )"
+
+                :class="
+                store.status === 'all'
+                ? 'bg-[#003049] text-white'
+                : 'bg-slate-100'
+                "
+
                 class="
-                w-full">
+                px-4
+                py-2
+                rounded-xl">
 
-                <thead>
+                All
 
-                    <tr
-                        class="
-                        border-b">
+            </button>
 
-                        <th class="text-left py-4">
-                            Name
+            <button
+                @click="
+                store.setStatus(
+                    'active'
+                )"
+
+                :class="
+                store.status === 'active'
+                ? 'bg-green-600 text-white'
+                : 'bg-slate-100'
+                "
+
+                class="
+                px-4
+                py-2
+                rounded-xl">
+
+                Active
+
+            </button>
+
+            <button
+                @click="
+                store.setStatus(
+                    'discharged'
+                )"
+
+                :class="
+                store.status === 'discharged'
+                ? 'bg-red-600 text-white'
+                : 'bg-slate-100'
+                "
+
+                class="
+                px-4
+                py-2
+                rounded-xl">
+
+                Discharged
+
+            </button>
+
+        </div>
+
+        <div
+            class="
+            overflow-hidden
+            rounded-2xl
+            border
+            border-gray-100">
+
+            <table class="w-full">
+
+                <thead
+                    class="
+                    bg-gray-50">
+
+                    <tr>
+
+                        <th
+                            class="
+                            text-left
+                            px-6
+                            py-4
+                            font-semibold">
+                            Patient
                         </th>
 
-                        <th>
-                            Admission
+                        <th
+                            class="
+                            text-left
+                            px-6
+                            py-4
+                            font-semibold">
+                            Department
                         </th>
 
-                        <th>
+                        <th
+                            class="
+                            text-left
+                            px-6
+                            py-4
+                            font-semibold">
                             Status
                         </th>
 
-                        <th>
-                            Actions
+                        <th
+                            class="
+                            text-left
+                            px-6
+                            py-4
+                            font-semibold">
+                            Admission
                         </th>
+
+                        <th></th>
 
                     </tr>
 
@@ -151,43 +262,111 @@ const filtered =
                 <tbody>
 
                     <tr
-                        v-for="patient in filtered"
-                        :key="
-                            patient.patientId"
+                        v-for="patient in patients"
+                        :key="patient.patientId"
 
                         class="
-                        border-b
-                        hover:bg-purple-50
+                        border-t
+                        hover:bg-blue-50
                         transition">
 
                         <td
-                            class="py-5">
+                            class="
+                            px-6
+                            py-5">
 
-                            {{ patient.firstName }}
-                            {{ patient.lastName }}
+                            <div
+                                class="
+                                flex
+                                items-center
+                                gap-4">
+
+                                <div
+                                    class="
+                                    w-12
+                                    h-12
+                                    rounded-full
+                                    bg-[#003049]
+                                    text-white
+                                    flex
+                                    items-center
+                                    justify-center
+                                    font-semibold">
+
+                                    {{
+                                        patient.firstName[0]
+                                    }}
+                                    {{
+                                        patient.lastName[0]
+                                    }}
+
+                                </div>
+
+                                <div
+                                        class="
+                                        font-semibold
+                                        text-[#003049]">
+                                        {{
+                                            patient.firstName
+                                        }}
+                                        {{
+                                            patient.lastName
+                                        }}
+
+                                    
+
+                                    <div
+                                        class="
+                                        text-sm
+                                        text-gray-500">
+
+                                        {{
+                                            patient.mrn
+                                        }}
+
+                                    </div>
+
+                                </div>
+
+                            </div>
 
                         </td>
 
-                        <td>
+                        <td
+                            class="
+                            px-6
+                            py-5">
+                            <span
+                                class="
+                                px-3
+                                py-1
+                                rounded-full
+                                bg-blue-100
+                                text-blue-700
+                                text-sm">
 
-                            {{
-                                patient.admissionDate
-                            }}
+                                {{
+                                    patient.departmentName
+                                }}
+                                </span>
 
                         </td>
 
-                        <td>
+                        <td
+                            class="
+                            px-6
+                            py-5">
 
                             <span
-                                v-if="
-                                patient.isActive"
+                                v-if="patient.isActive"
 
                                 class="
                                 px-3
                                 py-1
                                 rounded-full
                                 bg-green-100
-                                text-green-600">
+                                text-green-700
+                                text-sm">
 
                                 Active
 
@@ -197,11 +376,12 @@ const filtered =
                                 v-else
 
                                 class="
-                                px-3
+                                px-4
                                 py-1
                                 rounded-full
                                 bg-red-100
-                                text-red-600">
+                                text-red-700
+                                text-sm">
 
                                 Discharged
 
@@ -211,6 +391,16 @@ const filtered =
 
                         <td>
 
+                            {{
+                                new Date(
+                                    patient.admissionDate
+                                ).toLocaleDateString()
+                            }}
+
+                        </td>
+
+                        <td class="text-right">
+
                             <button
                                 @click="
                                 viewPatient(
@@ -218,8 +408,13 @@ const filtered =
                                 )"
 
                                 class="
-                                text-[#614083]
-                                font-medium">
+                                px-5
+                                py-2
+                                rounded-xl
+                                bg-[#003049]
+                                text-white
+                                hover:bg-[#00243A]
+                                transition">
 
                                 View
 
@@ -229,20 +424,78 @@ const filtered =
 
                     </tr>
 
-                </tbody>
+                    </tbody>
 
             </table>
+
+        </div>
+
+        <div
+            class="
+            flex
+            justify-between
+            items-center
+            mt-8">
+
+            <button
+                @click="
+                store.previousPage()
+                "
+
+                :disabled="
+                store.page === 1"
+
+                class="
+                px-4
+                py-2
+                rounded-xl
+                bg-slate-100">
+
+                Previous
+
+            </button>
+
+            <p>
+
+                Page
+                {{ store.page }}
+                of
+                {{ store.totalPages }}
+
+            </p>
+
+            <button
+                @click="
+                store.nextPage()
+                "
+
+                :disabled="
+                store.page ===
+                store.totalPages"
+
+                class="
+                px-4
+                py-2
+                rounded-xl
+                bg-[#003049]
+                text-white">
+
+                Next
+
+            </button>
 
         </div>
 
     </div>
 
 </div>
+
 <PatientDrawer
     :patient="selected"
     :show="showDrawer"
     @close="showDrawer=false"
     @discharge="discharge" />
+
 </HospitalLayout>
 
 </template>

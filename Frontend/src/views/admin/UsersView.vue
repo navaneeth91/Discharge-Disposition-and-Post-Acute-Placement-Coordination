@@ -1,7 +1,6 @@
 <script setup>
 import {
     ref,
-    computed,
     onMounted
 }
 from 'vue'
@@ -35,29 +34,12 @@ onMounted(() => {
 
 })
 
-const filtered =
-    computed(() => {
+async function performSearch() {
 
-        return store.users.filter(
-            x =>
-
-                x.firstName
-                    ?.toLowerCase()
-                    .includes(
-                        search.value
-                            .toLowerCase()
-                    )
-
-                ||
-
-                x.email
-                    ?.toLowerCase()
-                    .includes(
-                        search.value
-                            .toLowerCase()
-                    )
-        )
-    })
+    await store.searchUsers(
+        search.value
+    )
+}
 
 async function edit(id) {
 
@@ -72,13 +54,26 @@ async function edit(id) {
 
 async function save(data) {
 
+    console.log(data)
+
+    console.log(
+        selected.value.userId
+    )
+
     await store.updateUser(
         selected.value.userId,
         data
     )
 
-    showModal.value =
-        false
+    showModal.value = false
+}
+
+function initials(user) {
+
+    return (
+        user.firstName?.charAt(0) +
+        user.lastName?.charAt(0)
+    ).toUpperCase()
 }
 </script>
 
@@ -86,121 +81,415 @@ async function save(data) {
 
 <HospitalLayout>
 
-<div class="space-y-6">
+<div class="space-y-6 fade-up">
 
     <div
         class="
         bg-white
         rounded-3xl
-        p-6
-        shadow-md">
+        p-8
+        shadow-lg">
 
         <div
             class="
             flex
-            justify-between
-            mb-6">
+            flex-col
+            md:flex-row
+            md:justify-between
+            md:items-center
+            gap-4
+            mb-8">
 
-            <h1
-                class="
-                text-3xl
-                font-bold">
+            <div>
 
-                Users
+                <h1
+                    class="
+                    text-3xl
+                    font-bold
+                    text-[#003049]">
 
-            </h1>
+                    Users
+
+                </h1>
+
+                <p
+                    class="
+                    text-gray-500
+                    mt-1">
+
+                    {{
+                        store.totalCount
+                    }}
+                    registered users
+
+                </p>
+
+            </div>
 
             <input
                 v-model="search"
-                placeholder="Search"
+                @input="performSearch"
+                placeholder="Search users..."
+
                 class="
-                border
+                w-full
+                md:w-80
+                px-4
+                py-3
                 rounded-xl
-                p-3
-                w-80">
+                border
+                border-gray-200
+                outline-none
+                focus:ring-4
+                focus:ring-blue-100">
         </div>
 
-        <table
-            class="w-full">
+        <div
+            class="
+            overflow-hidden
+            rounded-2xl
+            border
+            border-gray-100">
 
-            <thead>
+            <table class="w-full">
 
-                <tr>
+                <thead
+                    class="
+                    bg-gray-50">
 
-                    <th>Name</th>
+                    <tr>
 
-                    <th>Email</th>
+                        <th
+                            class="
+                            text-left
+                            px-6
+                            py-4
+                            font-semibold">
 
-                    <th>Department</th>
+                            User
 
-                    <th>Role</th>
+                        </th>
 
-                    <th></th>
+                        <th
+                            class="
+                            text-left
+                            px-6
+                            py-4
+                            font-semibold">
 
-                </tr>
+                            Department
 
-            </thead>
+                        </th>
 
-            <tbody>
+                        <th
+                            class="
+                            text-left
+                            px-6
+                            py-4
+                            font-semibold">
 
-                <tr
-                    v-for="
-                    user in filtered"
+                            Role
 
-                    :key="
-                    user.userId"
+                        </th>
+
+                        <th
+                            class="
+                            text-left
+                            px-6
+                            py-4
+                            font-semibold">
+
+                            Created
+
+                        </th>
+
+                        <th></th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr
+                        v-for="
+                        user in
+                        store.users"
+
+                        :key="
+                        user.userId"
+
+                        class="
+                        border-t
+                        hover:bg-blue-50
+                        transition">
+
+                        <td
+                            class="
+                            px-6
+                            py-5">
+
+                            <div
+                                class="
+                                flex
+                                items-center
+                                gap-4">
+
+                                <div
+                                    class="
+                                    w-12
+                                    h-12
+                                    rounded-full
+                                    bg-[#003049]
+                                    text-white
+                                    flex
+                                    items-center
+                                    justify-center
+                                    font-semibold">
+
+                                    {{
+                                        initials(user)
+                                    }}
+
+                                </div>
+
+                                <div>
+
+                                    <div
+                                        class="
+                                        font-semibold
+                                        text-[#003049]">
+
+                                        {{
+                                            user.firstName
+                                        }}
+                                        {{
+                                            user.lastName
+                                        }}
+
+                                    </div>
+
+                                    <div
+                                        class="
+                                        text-sm
+                                        text-gray-500">
+
+                                        {{
+                                            user.email
+                                        }}
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+                        <td
+                            class="
+                            px-6
+                            py-5">
+
+                            <span
+                                class="
+                                px-3
+                                py-1
+                                rounded-full
+                                bg-blue-100
+                                text-blue-700
+                                text-sm">
+
+                                {{
+                                    user.departmentName
+                                }}
+
+                            </span>
+
+                        </td>
+
+                        <td
+                            class="
+                            px-6
+                            py-5">
+
+                            <span
+                                class="
+                                px-3
+                                py-1
+                                rounded-full
+                                bg-green-100
+                                text-green-700
+                                text-sm">
+
+                                {{
+                                    user.roleName
+                                }}
+
+                            </span>
+
+                        </td>
+
+                        <td
+                            class="
+                            px-6
+                            py-5
+                            text-gray-500">
+
+                            {{
+                                new Date(
+                                    user.createdAt
+                                )
+                                .toLocaleDateString()
+                            }}
+
+                        </td>
+
+                        <td
+                            class="
+                            px-6
+                            py-5
+                            text-right">
+
+                            <button
+                                @click="
+                                edit(
+                                    user.userId
+                                )"
+
+                                class="
+                                px-4
+                                py-2
+                                rounded-xl
+                                bg-[#003049]
+                                text-white
+                                hover:bg-[#669BBC]
+                                transition">
+
+                                Edit
+
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+                    <tr
+                        v-if="
+                        !store.loading &&
+                        store.users.length === 0">
+
+                        <td
+                            colspan="5"
+                            class="
+                            text-center
+                            py-10
+                            text-gray-500">
+
+                            No users found.
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <div
+            class="
+            flex
+            flex-col
+            md:flex-row
+            justify-between
+            items-center
+            gap-4
+            mt-8">
+
+            <div
+                class="
+                text-sm
+                text-gray-500">
+
+                Page
+                {{ store.page }}
+                of
+                {{ store.totalPages }}
+
+            </div>
+
+            <div
+                class="
+                flex
+                gap-2">
+
+                <button
+                    @click="
+                    store.previousPage()"
+
+                    :disabled="
+                    store.page === 1"
 
                     class="
-                    border-b
-                    hover:bg-purple-50">
+                    px-4
+                    py-2
+                    rounded-xl
+                    border
+                    disabled:opacity-50">
 
-                    <td>
+                    Previous
 
-                        {{ user.firstName }}
-                        {{ user.lastName }}
+                </button>
 
-                    </td>
+                <button
+                    v-for="
+                    page in
+                    store.totalPages"
 
-                    <td>
+                    :key="page"
 
-                        {{ user.email }}
+                    @click="
+                    store.goToPage(
+                        page
+                    )"
 
-                    </td>
+                    :class="[
+                        page ===
+                        store.page
+                        ? 'bg-[#003049] text-white'
+                        : 'bg-gray-100',
 
-                    <td>
+                        'w-10 h-10 rounded-lg transition'
+                    ]">
 
-                        {{ user.departmentName }}
+                    {{ page }}
 
-                    </td>
+                </button>
 
-                    <td>
+                <button
+                    @click="
+                    store.nextPage()"
 
-                        {{ user.roleName }}
+                    :disabled="
+                    store.page ===
+                    store.totalPages"
 
-                    </td>
+                    class="
+                    px-4
+                    py-2
+                    rounded-xl
+                    border
+                    disabled:opacity-50">
 
-                    <td>
+                    Next
 
-                        <button
-                            @click="
-                            edit(
-                                user.userId
-                            )"
+                </button>
 
-                            class="
-                            text-[#614083]">
+            </div>
 
-                            Edit
-
-                        </button>
-
-                    </td>
-
-                </tr>
-
-            </tbody>
-
-        </table>
+        </div>
 
     </div>
 
