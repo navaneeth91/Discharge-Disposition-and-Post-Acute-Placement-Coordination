@@ -5,4 +5,6 @@ public interface IMemberService
 {
     Task<ApiResponse<MemberDetailsResponse>>
         GetMemberAsync(int memberId);
+
+    Task<ApiResponse<List<MemberSearchResponse>>> SearchMembersAsync(string query, int take);
 }

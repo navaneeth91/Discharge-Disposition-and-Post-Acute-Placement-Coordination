@@ -5,5 +5,6 @@ namespace DischargeDisposition_Backend.Insurance.Repositories.Interfaces
     {
         Task<InsuranceDashboard>GetInsuranceDashboardAsync();
         Task<List<InsuranceAnalytics>> GetServiceAnalyticsAsync();
+        Task<List<AuthorizationRequestListItemResponse>> GetRecentAuthorizationRequestsAsync(int take);
     }
 }
