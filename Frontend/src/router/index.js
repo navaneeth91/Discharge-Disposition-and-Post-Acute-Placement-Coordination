@@ -11,6 +11,9 @@ import DashboardView from '@/views/hospital/DashboardView.vue'
 // Insurance Views
 import InsuranceDashboardView from '@/views/insurance/InsuranceDashboardView.vue'
 
+//Patient Views
+import PatientsView from '@/views/hospital/PatientsView.vue'
+
 const routes = [
 
     // Default Redirect
@@ -98,7 +101,16 @@ const routes = [
             role: 'Authorization Coordinator'
         }
     },
+    {
+        path: '/patients',
 
+        component:
+            PatientsView,
+
+        meta: {
+            requiresAuth: true
+        }
+    },
     // 404
 
     {

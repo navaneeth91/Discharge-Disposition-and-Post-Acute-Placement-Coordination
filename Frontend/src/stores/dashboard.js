@@ -25,7 +25,7 @@ export const useDashboardStore =
                             .getHospitalDashboard()
 
                     this.hospitalStats =
-                        response.data
+                        response.data.data
 
                 }
                 finally {
@@ -46,7 +46,7 @@ export const useDashboardStore =
                             .getInsuranceDashboard()
 
                     this.insuranceStats =
-                        response.data
+                        response.data.data
 
                 }
                 finally {

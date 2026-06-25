@@ -75,13 +75,16 @@ async function loadChart() {
         const response =
             await getAuthorizationAnalytics()
 
+        const analytics =
+            response.data.data
+
         chartData.value.labels =
-            response.data.map(
+            analytics.map(
                 x => x.status
             )
 
         chartData.value.datasets[0].data =
-            response.data.map(
+            analytics.map(
                 x => x.total
             )
     }
