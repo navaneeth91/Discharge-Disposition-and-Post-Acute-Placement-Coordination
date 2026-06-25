@@ -435,14 +435,14 @@ namespace DischargeDisposition_Backend.Hospital.Services
         public async Task<
     ApiResponse<List<ReferralResponseDto>>>
     GetByProviderIdAsync(
-        int providerId,
+        int userId,
         CancellationToken cancellationToken = default)
         {
             try
             {
                 var items =
                     await _repo.GetByProviderIdAsync(
-                        providerId,
+                        userId,
                         cancellationToken);
 
                 return new ApiResponse<
@@ -476,6 +476,49 @@ namespace DischargeDisposition_Backend.Hospital.Services
             }
         }
 
+        public async Task<
+    ApiResponse<List<ReferralResponseDto>>>
+    GetPendingByProviderIdAsync(
+        int userId,
+        CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var items =
+                    await _repo.GetPendingByProviderIdAsync(
+                        userId,
+                        cancellationToken);
+
+                return new ApiResponse<
+                    List<ReferralResponseDto>>
+                {
+                    Success = true,
+                    StatusCode = 200,
+                    Message =
+                        "Pending Provider referrals retrieved successfully",
+
+                    Data =
+                        items.Select(MapToResponse)
+                             .ToList()
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<
+                    List<ReferralResponseDto>>
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message =
+                        "Failed to retrieve pending referrals",
+
+                    Errors = new()
+                    {
+                        ex.Message
+                    }
+                };
+            }
+        }
         public async Task<
     ApiResponse<List<ReferralResponseDto>>>
     GetPendingReferralsAsync(
@@ -574,6 +617,35 @@ namespace DischargeDisposition_Backend.Hospital.Services
                 PatientName = r.patient is null ? null : $"{r.patient.FirstName} {r.patient.LastName}",
                 ProviderName = r.provider?.ProviderName,
                 CareManagerName = r.careManager is null ? null : $"{r.careManager.FirstName} {r.careManager.LastName}"
+            };
+        }
+
+
+        public async Task<ApiResponse<ReferralResponseDto>> AcceptReferralAsync(int referralId)
+        {
+            var referral = await _repo.GetByIdAsync(referralId);
+
+            if (referral == null)
+            {
+                return new ApiResponse<ReferralResponseDto>
+                {
+                    Success = false,
+                    StatusCode = 404,
+                    Message = "Referral not found"
+                };
+            }
+
+            referral.Status = AuthorizationStatus.Approved;
+
+            
+                await _repo.UpdateAsync(referral);
+
+            return new ApiResponse<ReferralResponseDto>
+            {
+                Success = true,
+                StatusCode = 200,
+                Message = "Referral accepted successfully",
+                
             };
         }
 

@@ -130,19 +130,42 @@ namespace DischargeDisposition_Backend.Api.Controllers
                 .ToHttpResponse(response);
         }
 
-        [HttpGet("provider/{providerId:int}")]
+        [HttpGet("provider/{userId:int}")]
         public async Task<IActionResult>
             GetByProviderId(
-                int providerId,
+                int userId,
                 CancellationToken cancellationToken)
         {
             var response =
                 await _service.GetByProviderIdAsync(
-                    providerId,
+                    userId,
                     cancellationToken);
 
             return this
                 .ToHttpResponse(response);
+        }
+
+        [HttpGet("provider/pending/{userId:int}")]
+        public async Task<IActionResult>
+            GetPendingByProviderId(
+                int userId,
+                CancellationToken cancellationToken)
+        {
+            var response =
+                await _service.GetPendingByProviderIdAsync(
+                    userId,
+                    cancellationToken);
+
+            return this
+                .ToHttpResponse(response);
+        }
+
+        [HttpPatch("/provider/{id}/accept")]
+        public async Task<IActionResult> AcceptReferral(int id)
+        {
+            var response = await _service.AcceptReferralAsync(id);
+
+            return this.ToHttpResponse(response);
         }
 
         [HttpGet("pending")]
@@ -170,5 +193,8 @@ namespace DischargeDisposition_Backend.Api.Controllers
             return this
                 .ToHttpResponse(response);
         }
+
+
+        
     }
 }
