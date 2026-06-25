@@ -1,15 +1,20 @@
 <script setup>
-import { ref } from 'vue'
+import { ref }
+from 'vue'
 
-const props = defineProps({
-    patient: Object,
-    show: Boolean
-})
+const props =
+    defineProps({
 
-const emit = defineEmits([
-    'close',
-    'discharge'
-])
+        patient: Object,
+
+        show: Boolean
+    })
+
+const emit =
+    defineEmits([
+        'close',
+        'discharge'
+    ])
 
 const dischargeDate =
     ref(
@@ -28,19 +33,19 @@ const dischargeDate =
     class="
     fixed
     inset-0
-    bg-black/30
+    bg-black/40
     z-50
     flex
     justify-end">
 
     <div
         class="
-        w-[500px]
+        w-[550px]
         h-full
         bg-white
         shadow-2xl
-        p-8
-        overflow-y-auto">
+        overflow-y-auto
+        p-8">
 
         <div
             class="
@@ -52,14 +57,18 @@ const dischargeDate =
                 class="
                 text-3xl
                 font-bold
-                text-[#2D1E3E]">
+                text-[#003049]">
 
                 Patient Details
 
             </h2>
 
             <button
-                @click="$emit('close')">
+                @click="
+                $emit('close')"
+
+                class="
+                text-2xl">
 
                 ✕
 
@@ -69,52 +78,150 @@ const dischargeDate =
 
         <div
             v-if="patient"
-            class="space-y-4">
+            class="space-y-6">
 
             <div>
-
-                <p class="text-slate-500">
-                    Name
-                </p>
 
                 <h3
-                    class="text-xl font-semibold">
+                    class="
+                    text-2xl
+                    font-bold">
 
-                    {{ patient.firstName }}
-                    {{ patient.lastName }}
+                    {{
+                        patient.firstName
+                    }}
+                    {{
+                        patient.lastName
+                    }}
 
                 </h3>
 
-            </div>
+                <p
+                    class="
+                    text-slate-500">
 
-            <div>
+                    MRN:
+                    {{
+                        patient.mrn
+                    }}
 
-                <p class="text-slate-500">
-                    Admission Date
                 </p>
 
-                <h3>
+            </div>
 
-                    {{ patient.admissionDate }}
+            <div class="grid grid-cols-2 gap-6">
 
-                </h3>
+                <div>
+
+                    <p class="text-slate-500">
+                        Gender
+                    </p>
+
+                    <h4>
+                        {{
+                            patient.gender
+                        }}
+                    </h4>
+
+                </div>
+
+                <div>
+
+                    <p class="text-slate-500">
+                        Department
+                    </p>
+
+                    <h4>
+                        {{
+                            patient.departmentName
+                        }}
+                    </h4>
+
+                </div>
+
+                <div>
+
+                    <p class="text-slate-500">
+                        Email
+                    </p>
+
+                    <h4>
+                        {{
+                            patient.email
+                        }}
+                    </h4>
+
+                </div>
+
+                <div>
+
+                    <p class="text-slate-500">
+                        Phone
+                    </p>
+
+                    <h4>
+                        {{
+                            patient.phoneNumber
+                        }}
+                    </h4>
+
+                </div>
+
+                <div>
+
+                    <p class="text-slate-500">
+                        Admission
+                    </p>
+
+                    <h4>
+
+                        {{
+                            new Date(
+                                patient.admissionDate
+                            )
+                            .toLocaleDateString()
+                        }}
+
+                    </h4>
+
+                </div>
+
+                <div>
+
+                    <p class="text-slate-500">
+                        Expected Discharge
+                    </p>
+
+                    <h4>
+
+                        {{
+                            patient.expectedDischargeDate
+                        }}
+
+                    </h4>
+
+                </div>
 
             </div>
 
             <div>
 
-                <p class="text-slate-500">
+                <p class="text-slate-500 mb-3">
+
                     Status
+
                 </p>
 
                 <span
-                    v-if="patient.isActive"
+                    v-if="
+                    patient.isActive"
+
                     class="
-                    px-3
-                    py-1
+                    px-4
+                    py-2
                     rounded-full
                     bg-green-100
-                    text-green-600">
+                    text-green-700">
 
                     Active
 
@@ -122,12 +229,13 @@ const dischargeDate =
 
                 <span
                     v-else
+
                     class="
-                    px-3
-                    py-1
+                    px-4
+                    py-2
                     rounded-full
                     bg-red-100
-                    text-red-600">
+                    text-red-700">
 
                     Discharged
 
@@ -136,8 +244,33 @@ const dischargeDate =
             </div>
 
             <div
-                v-if="patient.isActive"
-                class="pt-8">
+                v-if="
+                patient.actualDischargeDate">
+
+                <p class="text-slate-500">
+
+                    Actual Discharge
+
+                </p>
+
+                <h4>
+
+                    {{
+                        new Date(
+                            patient.actualDischargeDate
+                        )
+                        .toLocaleDateString()
+                    }}
+
+                </h4>
+
+            </div>
+
+            <div
+                v-if="
+                patient.isActive"
+
+                class="pt-6">
 
                 <label
                     class="
@@ -166,13 +299,13 @@ const dischargeDate =
                     )"
 
                     class="
-                    mt-6
                     w-full
+                    mt-6
                     py-3
                     rounded-xl
-                    bg-[#614083]
                     text-white
-                    hover:bg-[#53366F]
+                    bg-[#003049]
+                    hover:bg-[#00243A]
                     transition">
 
                     Discharge Patient
@@ -194,7 +327,7 @@ const dischargeDate =
 <style scoped>
 .slide-enter-active,
 .slide-leave-active {
-    transition: all .3s ease;
+    transition: .3s;
 }
 
 .slide-enter-from,

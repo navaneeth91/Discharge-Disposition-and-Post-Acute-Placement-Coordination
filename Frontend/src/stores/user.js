@@ -8,9 +8,22 @@ export const useUserStore =
 defineStore('users', {
 
     state: () => ({
+
         users: [],
+
         selectedUser: null,
-        loading: false
+
+        loading: false,
+
+        page: 1,
+
+        pageSize: 10,
+
+        totalPages: 1,
+
+        totalCount: 0,
+
+        search: ''
     }),
 
     actions: {
@@ -23,14 +36,72 @@ defineStore('users', {
 
                 const response =
                     await userService
-                        .getUsers()
+                        .getUsers(
+                            this.page,
+                            this.pageSize,
+                            this.search
+                        )
+
+                const data =
+                    response.data.data
 
                 this.users =
-                    response.data.data
+                    data.items
+
+                this.totalPages =
+                    data.totalPages
+
+                this.totalCount =
+                    data.totalCount
+            }
+            catch (error) {
+
+                console.error(error)
             }
             finally {
 
                 this.loading = false
+            }
+        },
+
+        async searchUsers(value) {
+
+            this.search = value
+
+            this.page = 1
+
+            await this.loadUsers()
+        },
+
+        async goToPage(page) {
+
+            this.page = page
+
+            await this.loadUsers()
+        },
+
+        async nextPage() {
+
+            if (
+                this.page <
+                this.totalPages
+            ) {
+
+                this.page++
+
+                await this.loadUsers()
+            }
+        },
+
+        async previousPage() {
+
+            if (
+                this.page > 1
+            ) {
+
+                this.page--
+
+                await this.loadUsers()
             }
         },
 
@@ -44,7 +115,14 @@ defineStore('users', {
                 response.data.data
         },
 
-        async updateUser(id,data) {
+        async updateUser(
+            id,
+            data
+        ) {
+
+            console.log(id)
+
+            console.log(data)
 
             await userService
                 .updateUser(

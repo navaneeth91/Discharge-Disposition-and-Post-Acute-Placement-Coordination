@@ -131,56 +131,93 @@ watch(
                 class="input">
 
             <select
-                v-model="form.roleId"
+                v-model.number="form.roleId"
                 class="input">
 
                 <option :value="1">
-                    Administrator
-                </option>
-
-                <option :value="2">
                     Physician
                 </option>
 
-                <option :value="3">
+                <option :value="2">
                     Care Manager
                 </option>
 
-                <option :value="4">
+                <option :value="3">
                     Post-Acute Provider
                 </option>
 
-                <option :value="5">
+                <option :value="4">
                     Authorization Coordinator
+                </option>
+
+                <option :value="5">
+                    Administrator
+                </option>
+
+                <option :value="6">
+                    Unassigned
                 </option>
 
             </select>
 
-            <input
-                v-model="form.deptId"
-                type="number"
+            <select
+                v-model.number="form.deptId"
                 class="input">
 
+                <option :value="1">
+                    Internal Medicine
+                </option>
+
+                <option :value="2">
+                    Cardiology
+                </option>
+
+                <option :value="3">
+                    Orthopedic Surgery
+                </option>
+
+                <option :value="4">
+                    Pulmonology
+                </option>
+
+                <option :value="5">
+                    Oncology
+                </option>
+
+                <option :value="6">
+                    Unassigned
+                </option>
+
+            </select>
+
             <button
-                @click="
-                emit(
-                    'save',
-                    form
-                )"
+            
+               @click="
+console.log(form);
+emit('save', {
+    firstName: form.firstName,
+    lastName: form.lastName,
+    phoneNumber: form.phoneNumber,
+    email: form.email,
+    roleId: form.roleId,
+    deptId: form.deptId
+})
+"
 
                 class="
                 w-full
                 mt-6
                 py-3
                 rounded-xl
-                bg-[#614083]
+                bg-[#003049]
                 text-white
-                hover:bg-[#53366F]
+                hover:bg-[#00243A]
                 transition">
 
                 Save Changes
-
+                
             </button>
+            
 
         </div>
 
