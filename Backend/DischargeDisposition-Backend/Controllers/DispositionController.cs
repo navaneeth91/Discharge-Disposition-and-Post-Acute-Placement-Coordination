@@ -69,5 +69,15 @@ namespace DischargeDisposition_Backend.Controllers
 
             return this.ToHttpResponse(response);
         }
+
+        [HttpGet("assigned/patients")]
+        [Authorize(Roles = "Physician")]
+        public async Task<IActionResult> GetAssignedPatients()
+        {
+            var response =
+                await _dispositionDecisionService.GetAssignedPatientsAsync();
+
+            return StatusCode(response.StatusCode, response);
+        }
     }
 }
