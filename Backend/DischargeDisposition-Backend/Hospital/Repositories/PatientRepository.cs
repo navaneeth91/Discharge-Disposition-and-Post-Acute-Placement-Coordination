@@ -74,12 +74,24 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<PatientByDeptIdResponse>>GetPatientsByDeptIdAsync(int physicianId)
+        public async Task<List<PatientByDeptIdResponse>>GetPatientsByDeptIdAsync(int physicianId, string? search)
         {
+            
             var departmentId = await _context.Users
                 .Where(u => u.UserId == physicianId)
                 .Select(u => u.DeptId)
                 .FirstOrDefaultAsync();
+            var query = _context.Patients
+                .Where(p => p.DeptId == departmentId);
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.Trim();
+
+                query = query.Where(p =>
+                    p.FirstName.Contains(search) ||
+                    p.LastName.Contains(search) ||
+                    p.Mrn.Contains(search));
+            }
 
             return await _context.Patients
                 .Where(p => p.DeptId == departmentId && p.IsActive == 1)
@@ -88,7 +100,8 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
                     PatientId = p.PatientId,
                     PatientName = p.FirstName + " " + p.LastName,
                     Dob = p.Dob,
-                    Status = p.IsActive
+                    Status = p.IsActive,
+                    DeptId = p.DeptId
                 })
                 .ToListAsync();
         }

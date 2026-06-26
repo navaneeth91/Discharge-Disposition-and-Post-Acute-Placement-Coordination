@@ -1,5 +1,6 @@
 import api from '@/api/axios'
 
+
 export const getHospitalDashboard = () => {
     return api.get('/dashboard/hospital')
 }

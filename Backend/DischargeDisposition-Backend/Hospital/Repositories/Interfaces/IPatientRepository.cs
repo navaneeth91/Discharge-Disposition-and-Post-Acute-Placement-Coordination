@@ -17,6 +17,6 @@ namespace DischargeDisposition_Backend.Hospital.Repositories.Interfaces
         Task UpdatePatientAsync(
             Patient patient);
 
-        Task<List<PatientByDeptIdResponse>> GetPatientsByDeptIdAsync(int physicianId);
+        Task<List<PatientByDeptIdResponse>> GetPatientsByDeptIdAsync(int physicianId, string? search);
     }
 }

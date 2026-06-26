@@ -2,6 +2,8 @@ import { defineStore } from 'pinia'
 
 import * as dashboardService
 from '@/services/dashboardService'
+import * as physicianService
+from "@/services/physicianService";
 
 export const useDashboardStore =
     defineStore('dashboard', {
@@ -9,11 +11,17 @@ export const useDashboardStore =
         state: () => ({
             hospitalStats: null,
             insuranceStats: null,
-            loading: false
+            physicianStats: null,
+            currentSection: "dashboard",
+            loading: false,
+            assignedPatients: [],
         }),
 
+        
         actions: {
-
+            setCurrentSection(section){
+                this.currentSection = section;
+            },
             async loadHospitalDashboard() {
 
                 this.loading = true
@@ -25,7 +33,7 @@ export const useDashboardStore =
                             .getHospitalDashboard()
 
                     this.hospitalStats =
-                        response.data
+                        response.data.data
 
                 }
                 finally {
@@ -46,7 +54,7 @@ export const useDashboardStore =
                             .getInsuranceDashboard()
 
                     this.insuranceStats =
-                        response.data
+                        response.data.data
 
                 }
                 finally {
@@ -54,6 +62,27 @@ export const useDashboardStore =
                     this.loading = false
 
                 }
+            },
+
+            async loadPhysicianDashboard() {
+
+                this.loading = true;
+
+                try {
+
+                    const response = await dashboardService.getPhysicianDashboard();
+
+                    this.physicianStats =
+                        response.data.data;
+
+                }
+
+                finally {
+
+                    this.loading = false;
+
+                }
+
             }
         }
     })

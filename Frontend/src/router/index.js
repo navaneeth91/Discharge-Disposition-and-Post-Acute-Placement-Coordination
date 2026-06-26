@@ -10,6 +10,10 @@ import DashboardView from '@/views/hospital/DashboardView.vue'
 
 // Insurance Views
 import InsuranceDashboardView from '@/views/insurance/InsuranceDashboardView.vue'
+import PhysicianDashboard from '@/views/hospital/PhysicianDashboard.vue'
+import AssignedPatientsTable from '@/components/physician/AssignedPatientsTable.vue'
+import ViewPatientsTable from '@/components/physician/ViewPatientsTable.vue'
+
 
 const routes = [
 
@@ -56,12 +60,31 @@ const routes = [
     {
         path: '/physician/dashboard',
         name: 'PhysicianDashboard',
-        component: DashboardView,
+        component: PhysicianDashboard,
         meta: {
             requiresAuth: true,
             role: 'Physician'
         }
     },
+    {
+        path: '/physician/AssignedPatientsTable',
+        name: 'AssignedPatientsTable',
+        component: AssignedPatientsTable,
+        meta: {
+            requiresAuth: true,
+            role: 'Physician'
+        }
+    },
+    {
+        path: '/physician/ViewPatientsTable',
+        name: 'ViewPatientsTable',
+        component: ViewPatientsTable,
+        meta: {
+            requiresAuth: true,
+            role: 'Physician'
+        }
+    },
+    
 
     // Care Manager
 
