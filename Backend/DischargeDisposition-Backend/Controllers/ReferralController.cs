@@ -24,12 +24,19 @@ namespace DischargeDisposition_Backend.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult>
-            GetAll(
-                CancellationToken cancellationToken)
+        public async Task<IActionResult> GetAll(
+            int page = 1,
+            int pageSize = 10,
+            string? search = null,
+            string? status = null,
+            CancellationToken cancellationToken = default)
         {
             var response =
                 await _service.GetAllAsync(
+                    page,
+                    pageSize,
+                    search,
+                    status,
                     cancellationToken);
 
             return this
