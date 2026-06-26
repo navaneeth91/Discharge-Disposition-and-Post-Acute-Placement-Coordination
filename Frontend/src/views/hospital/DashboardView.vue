@@ -20,7 +20,8 @@ import {
     useDashboardStore
 }
 from '@/stores/dashboard'
-
+import PatientAssignmentCard
+from '@/components/dashboard/PatientAssignmentCard.vue'
 const dashboard =
     useDashboardStore()
 
@@ -78,6 +79,7 @@ onMounted(() => {
                 color="#780000" />
 
         </div>
+        <PatientAssignmentCard />
         <div
             class="
             grid
