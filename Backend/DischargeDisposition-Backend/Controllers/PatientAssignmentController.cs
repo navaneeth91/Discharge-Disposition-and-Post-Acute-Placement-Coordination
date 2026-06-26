@@ -31,11 +31,17 @@ namespace DischargeDisposition_Backend.Controllers
         }
 
         [HttpGet("unassigned-patients")]
-        public async Task<IActionResult> GetUnassignedPatients()
+        public async Task<IActionResult> GetUnassignedPatients(
+            int page = 1,
+            int pageSize = 10,
+            string? search = null)
         {
             var response =
                 await _patientAssignmentService
-                    .GetUnassignedPatientsAsync();
+                    .GetUnassignedPatientsAsync(
+                        page,
+                        pageSize,
+                        search);
 
             return this.ToHttpResponse(response);
         }

@@ -1,4 +1,5 @@
-﻿using DischargeDisposition_Backend.Hospital.DTOs.Requests;
+﻿using DischargeDisposition_Backend.Helpers;
+using DischargeDisposition_Backend.Hospital.DTOs.Requests;
 using DischargeDisposition_Backend.Hospital.DTOs.Responses;
 
 namespace DischargeDisposition_Backend.Hospital.Services.Interfaces
@@ -8,7 +9,10 @@ namespace DischargeDisposition_Backend.Hospital.Services.Interfaces
         Task<ApiResponse<PatientAssignmentDto>> AssignCareManagerAsync(
             AssignCareManagerRequest request);
 
-        Task<ApiResponse<IEnumerable<PatientDto>>> GetUnassignedPatientsAsync();
+        Task<ApiResponse<PagedResult<PatientDto>>>GetUnassignedPatientsAsync(
+            int page,
+            int pageSize,
+            string? search);
 
         Task<ApiResponse<IEnumerable<PatientAssignmentDto>>> GetPatientsByCareManagerAsync(
             int careManagerId);
