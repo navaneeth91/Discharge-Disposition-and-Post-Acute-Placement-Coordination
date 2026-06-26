@@ -83,6 +83,32 @@ export const useDashboardStore =
 
                 }
 
+            async loadRecentInsuranceAuthorizations() {
+
+                this.recentLoading = true
+
+                try {
+
+                    const response =
+                        await dashboardService
+                            .getRecentInsuranceAuthorizations()
+
+                    this.recentInsuranceAuthorizations =
+                        response.data.data ?? []
+
+                }
+                catch (error) {
+
+                    this.recentInsuranceAuthorizations = []
+
+                    console.error(error)
+
+                }
+                finally {
+
+                    this.recentLoading = false
+
+                }
             }
         }
     })

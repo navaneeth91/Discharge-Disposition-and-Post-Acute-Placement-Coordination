@@ -1,0 +1,221 @@
+﻿using DischargeDisposition_Backend.Data;
+using DischargeDisposition_Backend.Hospital.Models;
+using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
+
+namespace DischargeDisposition_Backend.Hospital.Repositories
+{
+    public class PatientAssignmentRepository : IPatientAssignmentRepository
+    {
+        private readonly HospitalDbContext _context;
+        private readonly ILogger<PatientAssignmentRepository> _logger;
+
+        public PatientAssignmentRepository(
+            HospitalDbContext context,
+            ILogger<PatientAssignmentRepository> logger)
+        {
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
+
+        public async Task<PatientAssignment> AssignCareManagerAsync(PatientAssignment assignment)
+        {
+            try
+            {
+                _logger.LogInformation(
+                    "Repository: Assigning Care Manager {CareManagerId} to Patient {PatientId}.",
+                    assignment.CareManagerId,
+                    assignment.PatientId);
+
+                _context.PatientAssignments.Add(assignment);
+
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation(
+                    "Repository: Patient assignment created successfully.");
+
+                return assignment;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Repository Error: Failed to assign Care Manager.");
+
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<Patient>> GetUnassignedPatientsAsync()
+        {
+            try
+            {
+                _logger.LogInformation(
+                    "Repository: Retrieving unassigned patients.");
+
+                var patients = await _context.Patients
+                    .Include(p => p.Department)
+                    .Where(p => p.IsActive == 1)
+                    .Where(p => !_context.PatientAssignments
+                        .Any(pa => pa.PatientId == p.PatientId && pa.IsActive))
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                _logger.LogInformation(
+                    "Repository: Retrieved {Count} unassigned patients.",
+                    patients.Count);
+
+                return patients;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Repository Error: Failed to retrieve unassigned patients.");
+
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<PatientAssignment>> GetPatientsByCareManagerAsync(int careManagerId)
+        {
+            try
+            {
+                _logger.LogInformation(
+                    "Repository: Retrieving patients assigned to Care Manager {CareManagerId}.",
+                    careManagerId);
+
+                var assignments = await _context.PatientAssignments
+                    .Include(pa => pa.Patient)
+                        .ThenInclude(p => p.Department)
+                    .Include(pa => pa.CareManager)
+                    .Where(pa =>
+                        pa.CareManagerId == careManagerId &&
+                        pa.IsActive)
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                _logger.LogInformation(
+                    "Repository: Retrieved {Count} assigned patients.",
+                    assignments.Count);
+
+                return assignments;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Repository Error: Failed to retrieve assigned patients.");
+
+                throw;
+            }
+        }
+
+        public async Task<bool> IsPatientAssignedAsync(int patientId)
+        {
+            try
+            {
+                return await _context.PatientAssignments
+                    .AsNoTracking()
+                    .AnyAsync(pa =>
+                        pa.PatientId == patientId &&
+                        pa.IsActive);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Repository Error: Failed to check patient assignment.");
+
+                throw;
+            }
+        }
+
+        public async Task<PatientAssignment?> GetAssignmentByPatientIdAsync(int patientId)
+        {
+            try
+            {
+                return await _context.PatientAssignments
+                    .Include(pa => pa.Patient)
+                    .Include(pa => pa.CareManager)
+                    .FirstOrDefaultAsync(pa =>
+                        pa.PatientId == patientId &&
+                        pa.IsActive);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Repository Error: Failed to retrieve patient assignment.");
+
+                throw;
+            }
+        }
+
+        public async Task<PatientAssignment> UpdateAssignmentAsync(PatientAssignment assignment)
+        {
+            try
+            {
+                _context.PatientAssignments.Update(assignment);
+
+                await _context.SaveChangesAsync();
+
+                return assignment;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Repository Error: Failed to update patient assignment.");
+
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<User>> GetAllCareManagersAsync()
+        {
+            try
+            {
+                _logger.LogInformation(
+                    "Repository: Retrieving all Care Managers.");
+
+                var careManagers = await _context.Users
+                    .Include(u => u.department)
+                    .Include(u => u.role)
+                    .Where(u => u.role.Name == "Care Manager")
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                return careManagers;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Repository Error: Failed to retrieve Care Managers.");
+
+                throw;
+            }
+        }
+
+        public async Task<bool> CareManagerExistsAsync(int careManagerId)
+        {
+            try
+            {
+                return await _context.Users
+                    .AsNoTracking()
+                    .AnyAsync(u =>
+                        u.UserId == careManagerId &&
+                        u.role.Name == "Care Manager");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Repository Error: Failed to verify Care Manager.");
+
+                throw;
+            }
+        }
+    }
+}

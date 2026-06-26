@@ -27,7 +27,8 @@ namespace DischargeDisposition_Backend.Insurance.Repositories
         {
             IQueryable<Plan> query =
                 _context.Plans
-                    .AsNoTracking();
+                    .AsNoTracking()
+                    .Include(x => x.insuranceProvider);
 
             if (providerId.HasValue)
             {

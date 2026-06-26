@@ -45,5 +45,13 @@ namespace DischargeDisposition_Backend.Controllers
             return this
                 .ToHttpResponse(response);
         }
+
+        [HttpGet("recent-authorizations")]
+        public async Task<IActionResult> GetRecentAuthorizations([FromQuery] int take = 5)
+        {
+            var response = await _service.GetRecentAuthorizationRequestsAsync(take);
+
+            return this.ToHttpResponse(response);
+        }
     }
 }

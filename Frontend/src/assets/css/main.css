@@ -139,12 +139,12 @@ html {
     }
 }
 .status-pending {
-    background: #FFF1E6;
-    color: #C1121F;
+    background:#35acfce1;
+    color: #003049;
 }
 
 .status-approved {
-    background: #EAF7F3;
+    background: #82fc82;
     color: #003049;
 }
 

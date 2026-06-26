@@ -45,4 +45,36 @@ public class MemberRepository : IMemberRepository
             })
             .FirstOrDefaultAsync();
     }
+
+    public async Task<List<MemberSearchResponse>> SearchMembersAsync(string query, int take)
+    {
+        var term = query.Trim();
+
+        return await _context.Members
+            .AsNoTracking()
+            .Where(m =>
+                m.FirstName.Contains(term) ||
+                m.LastName.Contains(term) ||
+                m.PolicyNumber.Contains(term) ||
+                m.Email.Contains(term) ||
+                m.Phone.Contains(term))
+            .OrderBy(m => m.LastName)
+            .ThenBy(m => m.FirstName)
+            .Take(take)
+            .Select(m => new MemberSearchResponse
+            {
+                MemberId = m.MemberId,
+                FirstName = m.FirstName,
+                LastName = m.LastName,
+                FullName = m.FirstName + " " + m.LastName,
+                PolicyNumber = m.PolicyNumber,
+                Gender = m.Gender,
+                DOB = m.DOB,
+                Email = m.Email,
+                Phone = m.Phone,
+                CoverageCount = m.MemberCoverages.Count,
+                AuthorizationCount = m.AuthorizationRequests.Count
+            })
+            .ToListAsync();
+    }
 }

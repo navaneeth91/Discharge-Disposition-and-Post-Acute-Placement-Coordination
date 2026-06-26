@@ -27,8 +27,8 @@ namespace DischargeDisposition_Backend.Data
         public DbSet<LengthOfStayTracking> LengthOfStayTrackings { get; set; } = null!;
         public DbSet<HospitalDashboard>HospitalDashboard{ get; set; }
         public DbSet<PatientDistribution>PatientDistribution{ get; set; }
-
         public DbSet<AuthorizationAnalytics> AuthorizationAnalytics{ get; set; }
+        public DbSet<PatientAssignment> PatientAssignments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -153,7 +153,7 @@ namespace DischargeDisposition_Backend.Data
                     .OnDelete(DeleteBehavior.Cascade);
 
                 b.HasOne(pd => pd.ReportedUser)
-                    .WithMany()
+                    .WithMany(u => u.PatientDelays)
                     .HasForeignKey(pd => pd.ReportedBy)
                     .OnDelete(DeleteBehavior.Restrict);
 
@@ -225,6 +225,23 @@ namespace DischargeDisposition_Backend.Data
                 .Entity<AuthorizationAnalytics>()
                 .HasNoKey()
                 .ToView("vwAuthorizationAnalytics");
+            modelBuilder.Entity<PatientAssignment>()
+                .HasOne(pa => pa.Patient)
+                .WithMany()
+                .HasForeignKey(pa => pa.PatientId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<PatientAssignment>()
+                .HasOne(pa => pa.CareManager)
+                .WithMany()
+                .HasForeignKey(pa => pa.CareManagerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<PatientAssignment>()
+                .HasOne(pa => pa.AssignedByUser)
+                .WithMany()
+                .HasForeignKey(pa => pa.AssignedBy)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

@@ -131,7 +131,8 @@ onMounted(loadChart)
     bg-white
     rounded-3xl
     p-6
-    shadow-lg">
+    shadow-lg
+    h-fit">
 
     <h2
         class="
