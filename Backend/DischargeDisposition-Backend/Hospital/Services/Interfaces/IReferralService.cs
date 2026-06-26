@@ -42,7 +42,12 @@ namespace DischargeDisposition_Backend.Hospital.Services.Interfaces
 
         Task<ApiResponse<List<ReferralResponseDto>>>
             GetByProviderIdAsync(
-                int providerId,
+                int userId,
+                CancellationToken cancellationToken = default);
+
+        Task<ApiResponse<List<ReferralResponseDto>>>
+            GetPendingByProviderIdAsync(
+                int userId,
                 CancellationToken cancellationToken = default);
 
         Task<ApiResponse<List<ReferralResponseDto>>>
@@ -58,5 +63,7 @@ namespace DischargeDisposition_Backend.Hospital.Services.Interfaces
                 int referralId,
                 AuthorizationStatus status,
                 CancellationToken cancellationToken);
+
+        Task<ApiResponse<ReferralResponseDto>> AcceptReferralAsync(int referralId);
     }
 }

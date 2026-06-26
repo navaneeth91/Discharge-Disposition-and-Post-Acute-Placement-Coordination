@@ -1,4 +1,5 @@
 ﻿using DischargeDisposition_Backend.Hospital.Models;
+using DischargeDisposition_Backend.Hospital.DTOs.Responses;
 
 namespace DischargeDisposition_Backend.Hospital.Repositories.Interfaces
 {
@@ -15,5 +16,7 @@ namespace DischargeDisposition_Backend.Hospital.Repositories.Interfaces
 
         Task UpdatePatientAsync(
             Patient patient);
+
+        Task<List<PatientByDeptIdResponse>> GetPatientsByDeptIdAsync(int physicianId);
     }
 }
