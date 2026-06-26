@@ -10,6 +10,6 @@ namespace DischargeDisposition_Backend.Hospital.Repositories.Interfaces
         Task<DispositionDecision?> GetByDecisionIdAsync(int decisionId);
 
         Task UpdateDecisionAsync(DispositionDecision decision);
-        Task<List<AssignedPatientsResponse>> GetAssignedPatientsAsync(int physicianId);
+        Task<List<AssignedPatientsResponse>> GetAssignedPatientsAsync(int physicianId, string? search);
     }
 }

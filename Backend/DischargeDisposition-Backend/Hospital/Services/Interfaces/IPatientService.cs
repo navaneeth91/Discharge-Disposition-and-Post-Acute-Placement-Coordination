@@ -13,5 +13,5 @@ public interface IPatientService
         DischargePatientAsync(
             int patientId,
             DateTime actualDischargeDate);
-    Task<ApiResponse<List<PatientByDeptIdResponse>>> GetPatientsByDeptIdAsync();
+    Task<ApiResponse<List<PatientByDeptIdResponse>>> GetPatientsByDeptIdAsync(string? search);
 }

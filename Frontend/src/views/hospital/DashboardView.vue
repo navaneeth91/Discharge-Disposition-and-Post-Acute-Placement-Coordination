@@ -22,6 +22,15 @@ import {
 from '@/stores/dashboard'
 import PatientAssignmentCard
 from '@/components/dashboard/PatientAssignmentCard.vue'
+
+import { computed } from "vue";
+
+const role = computed(()=>
+
+sessionStorage.getItem("role")
+
+);
+
 const dashboard =
     useDashboardStore()
 

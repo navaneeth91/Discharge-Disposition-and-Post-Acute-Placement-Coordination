@@ -215,7 +215,7 @@ namespace DischargeDisposition_Backend.Hospital.Services
         }
 
         public async Task<ApiResponse<List<PatientByDeptIdResponse>>>
-GetPatientsByDeptIdAsync()
+GetPatientsByDeptIdAsync(string? search)
         {
             var userIdClaim = _httpContextAccessor.HttpContext?
                 .User

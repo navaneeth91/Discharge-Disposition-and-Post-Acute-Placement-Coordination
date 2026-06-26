@@ -8,5 +8,6 @@
         public DateOnly Dob { get; set; }
 
         public byte Status { get; set; }
+        public byte DeptId { get; set; }
     }
 }
