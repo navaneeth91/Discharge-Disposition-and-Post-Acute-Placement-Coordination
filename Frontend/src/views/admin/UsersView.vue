@@ -5,70 +5,93 @@ import {
 }
 from 'vue'
 
+
 import HospitalLayout
 from '@/layouts/HospitalLayout.vue'
 
+
 import UserModal
 from '@/components/admin/UserModal.vue'
+
 
 import {
     useUserStore
 }
 from '@/stores/user'
 
+
 const store =
     useUserStore()
+
 
 const search =
     ref('')
 
+
 const showModal =
     ref(false)
+
 
 const selected =
     ref(null)
 
+
 onMounted(() => {
+
 
     store.loadUsers()
 
+
 })
 
+
 async function performSearch() {
+
 
     await store.searchUsers(
         search.value
     )
 }
 
+
 async function edit(id) {
+
 
     await store.loadUser(id)
 
+
     selected.value =
         store.selectedUser
+
 
     showModal.value =
         true
 }
 
+
 async function save(data) {
 
+
     console.log(data)
+
 
     console.log(
         selected.value.userId
     )
+
 
     await store.updateUser(
         selected.value.userId,
         data
     )
 
+
     showModal.value = false
 }
 
+
 function initials(user) {
+
 
     return (
         user.firstName?.charAt(0) +
@@ -77,11 +100,15 @@ function initials(user) {
 }
 </script>
 
+
 <template>
+
 
 <HospitalLayout>
 
+
 <div class="space-y-6 fade-up">
+
 
     <div
         class="
@@ -89,6 +116,7 @@ function initials(user) {
         rounded-3xl
         p-8
         shadow-lg">
+
 
         <div
             class="
@@ -100,7 +128,9 @@ function initials(user) {
             gap-4
             mb-8">
 
+
             <div>
+
 
                 <h1
                     class="
@@ -108,28 +138,36 @@ function initials(user) {
                     font-bold
                     text-[#003049]">
 
+
                     Users
 
+
                 </h1>
+
 
                 <p
                     class="
                     text-gray-500
                     mt-1">
 
+
                     {{
                         store.totalCount
                     }}
                     registered users
 
+
                 </p>
 
+
             </div>
+
 
             <input
                 v-model="search"
                 @input="performSearch"
                 placeholder="Search users..."
+
 
                 class="
                 w-full
@@ -144,6 +182,7 @@ function initials(user) {
                 focus:ring-blue-100">
         </div>
 
+
         <div
             class="
             overflow-hidden
@@ -151,13 +190,17 @@ function initials(user) {
             border
             border-gray-100">
 
+
             <table class="w-full">
+
 
                 <thead
                     class="
                     bg-gray-50">
 
+
                     <tr>
+
 
                         <th
                             class="
@@ -165,10 +208,13 @@ function initials(user) {
                             px-6
                             py-4
                             font-semibold">
+
 
                             User
 
+
                         </th>
+
 
                         <th
                             class="
@@ -176,10 +222,13 @@ function initials(user) {
                             px-6
                             py-4
                             font-semibold">
+
 
                             Department
 
+
                         </th>
+
 
                         <th
                             class="
@@ -187,10 +236,13 @@ function initials(user) {
                             px-6
                             py-4
                             font-semibold">
+
 
                             Role
 
+
                         </th>
+
 
                         <th
                             class="
@@ -199,41 +251,53 @@ function initials(user) {
                             py-4
                             font-semibold">
 
+
                             Created
+
 
                         </th>
 
+
                         <th></th>
+
 
                     </tr>
 
+
                 </thead>
 
+
                 <tbody>
+
 
                     <tr
                         v-for="
                         user in
                         store.users"
 
+
                         :key="
                         user.userId"
+
 
                         class="
                         border-t
                         hover:bg-blue-50
                         transition">
 
+
                         <td
                             class="
                             px-6
                             py-5">
+
 
                             <div
                                 class="
                                 flex
                                 items-center
                                 gap-4">
+
 
                                 <div
                                     class="
@@ -247,18 +311,23 @@ function initials(user) {
                                     justify-center
                                     font-semibold">
 
+
                                     {{
                                         initials(user)
                                     }}
 
+
                                 </div>
 
+
                                 <div>
+
 
                                     <div
                                         class="
                                         font-semibold
                                         text-[#003049]">
+
 
                                         {{
                                             user.firstName
@@ -267,29 +336,38 @@ function initials(user) {
                                             user.lastName
                                         }}
 
+
                                     </div>
+
 
                                     <div
                                         class="
                                         text-sm
                                         text-gray-500">
 
+
                                         {{
                                             user.email
                                         }}
 
+
                                     </div>
+
 
                                 </div>
 
+
                             </div>
 
+
                         </td>
+
 
                         <td
                             class="
                             px-6
                             py-5">
+
 
                             <span
                                 class="
@@ -300,18 +378,23 @@ function initials(user) {
                                 text-blue-700
                                 text-sm">
 
+
                                 {{
                                     user.departmentName
                                 }}
 
+
                             </span>
 
+
                         </td>
+
 
                         <td
                             class="
                             px-6
                             py-5">
+
 
                             <span
                                 class="
@@ -322,19 +405,24 @@ function initials(user) {
                                 text-green-700
                                 text-sm">
 
+
                                 {{
                                     user.roleName
                                 }}
 
+
                             </span>
 
+
                         </td>
+
 
                         <td
                             class="
                             px-6
                             py-5
                             text-gray-500">
+
 
                             {{
                                 new Date(
@@ -343,7 +431,9 @@ function initials(user) {
                                 .toLocaleDateString()
                             }}
 
+
                         </td>
+
 
                         <td
                             class="
@@ -351,11 +441,13 @@ function initials(user) {
                             py-5
                             text-right">
 
+
                             <button
                                 @click="
                                 edit(
                                     user.userId
                                 )"
+
 
                                 class="
                                 px-4
@@ -366,18 +458,24 @@ function initials(user) {
                                 hover:bg-[#669BBC]
                                 transition">
 
+
                                 Edit
+
 
                             </button>
 
+
                         </td>
 
+
                     </tr>
+
 
                     <tr
                         v-if="
                         !store.loading &&
                         store.users.length === 0">
+
 
                         <td
                             colspan="5"
@@ -386,17 +484,24 @@ function initials(user) {
                             py-10
                             text-gray-500">
 
+
                             No users found.
+
 
                         </td>
 
+
                     </tr>
+
 
                 </tbody>
 
+
             </table>
 
+
         </div>
+
 
         <div
             class="
@@ -408,29 +513,36 @@ function initials(user) {
             gap-4
             mt-8">
 
+
             <div
                 class="
                 text-sm
                 text-gray-500">
+
 
                 Page
                 {{ store.page }}
                 of
                 {{ store.totalPages }}
 
+
             </div>
+
 
             <div
                 class="
                 flex
                 gap-2">
 
+
                 <button
                     @click="
                     store.previousPage()"
 
+
                     :disabled="
                     store.page === 1"
+
 
                     class="
                     px-4
@@ -439,21 +551,27 @@ function initials(user) {
                     border
                     disabled:opacity-50">
 
+
                     Previous
 
+
                 </button>
+
 
                 <button
                     v-for="
                     page in
                     store.totalPages"
 
+
                     :key="page"
+
 
                     @click="
                     store.goToPage(
                         page
                     )"
+
 
                     :class="[
                         page ===
@@ -461,20 +579,26 @@ function initials(user) {
                         ? 'bg-[#003049] text-white'
                         : 'bg-gray-100',
 
+
                         'w-10 h-10 rounded-lg transition'
                     ]">
 
+
                     {{ page }}
 
+
                 </button>
+
 
                 <button
                     @click="
                     store.nextPage()"
 
+
                     :disabled="
                     store.page ===
                     store.totalPages"
+
 
                     class="
                     px-4
@@ -483,15 +607,21 @@ function initials(user) {
                     border
                     disabled:opacity-50">
 
+
                     Next
+
 
                 </button>
 
+
             </div>
+
 
         </div>
 
+
     </div>
+
 
     <UserModal
         :show="showModal"
@@ -500,8 +630,11 @@ function initials(user) {
         showModal=false"
         @save="save" />
 
+
 </div>
 
+
 </HospitalLayout>
+
 
 </template>

@@ -20,6 +20,8 @@ import PatientsView from '@/views/hospital/PatientsView.vue'
 
 //Users View
 import UsersView from '@/views/admin/UsersView.vue'
+//Referral View
+import ReferralsView from '@/views/referral/ReferralsView.vue'
 
 const routes = [
 
@@ -165,6 +167,17 @@ const routes = [
         meta: {
             requiresAuth: true,
             role: 'Administrator'
+        }
+    },
+    //Referral View
+    {
+        path: '/referrals',
+
+        component:
+            ReferralsView,
+
+        meta: {
+            requiresAuth: true
         }
     },
     // 404

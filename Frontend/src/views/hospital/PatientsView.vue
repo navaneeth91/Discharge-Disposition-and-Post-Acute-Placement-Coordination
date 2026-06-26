@@ -399,7 +399,7 @@ function initials(patient) {
 
                         </td>
 
-                        <td class="text-right">
+                        <td class="text-center">
 
                             <button
                                 @click="

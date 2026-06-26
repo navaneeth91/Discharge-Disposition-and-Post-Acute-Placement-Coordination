@@ -148,7 +148,7 @@ function logout() {
 
                 </RouterLink>
 
-                <RouterLink
+                <!-- <RouterLink
                     to="/providers"
                     class="menu-item">
 
@@ -161,9 +161,9 @@ function logout() {
 
                     </span>
 
-                </RouterLink>
+                </RouterLink> -->
 
-                <RouterLink
+                <!-- <RouterLink
                     to="/los"
                     class="menu-item">
 
@@ -176,7 +176,7 @@ function logout() {
 
                     </span>
 
-                </RouterLink>
+                </RouterLink> -->
 
             </template>
 
