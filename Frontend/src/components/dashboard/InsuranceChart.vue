@@ -94,10 +94,9 @@ async function loadChart() {
 
     try {
 
-        const response =
-            await getInsuranceAnalytics()
-        const insurance = response.data.data
-        console.log(response.data)
+        const response = await getInsuranceAnalytics()
+            const insurance = response.data.data
+        console.log(insurance)
 
         chartData.value.labels =
             insurance.map(

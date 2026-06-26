@@ -12,6 +12,6 @@ namespace DischargeDisposition_Backend.Hospital.Services.Interfaces
         Task<ApiResponse<DispositionDecisionDetailsResponse>> GetByPatientIdAsync(int patientId);
         Task<ApiResponse<DispositionDecisionResponse>> UpdateDecisionAsync(int decisionId,UpdateDispositionDecisionRequest request);
 
-        Task<ApiResponse<List<AssignedPatientsResponse>>> GetAssignedPatientsAsync();
+        Task<ApiResponse<List<AssignedPatientsResponse>>> GetAssignedPatientsAsync(string? search);
     }
 }

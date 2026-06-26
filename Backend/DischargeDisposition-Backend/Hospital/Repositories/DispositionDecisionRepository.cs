@@ -1,9 +1,10 @@
 ﻿using DischargeDisposition_Backend.Data;
 using DischargeDisposition_Backend.Hospital.DTOs.Responses;
+using DischargeDisposition_Backend.Hospital.DTOs.Responses;
 using DischargeDisposition_Backend.Hospital.Models;
 using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using DischargeDisposition_Backend.Hospital.DTOs.Responses;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace DischargeDisposition_Backend.Hospital.Repositories
 {
@@ -56,8 +57,33 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
         }
 
         public async Task<List<AssignedPatientsResponse>>
-GetAssignedPatientsAsync(int clinicianId)
+GetAssignedPatientsAsync(int clinicianId, string? search)
         {
+            var query = _context.DispositionDecisions
+                .Include(d => d.patient)
+                .Include(d => d.dispositionType)
+                .Where(d => d.ClinicianId == clinicianId);
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.Trim().ToLower();
+
+                query = query.Where(d =>
+
+                    d.patient.FirstName.ToLower().Contains(search)
+
+                    ||
+
+                    d.patient.LastName.ToLower().Contains(search)
+
+                    ||
+
+                    (d.patient.FirstName + " " + d.patient.LastName)
+                        .ToLower()
+                        .Contains(search)
+
+                );
+            }
+
             return await _context.DispositionDecisions
 
                 .Include(d => d.patient)

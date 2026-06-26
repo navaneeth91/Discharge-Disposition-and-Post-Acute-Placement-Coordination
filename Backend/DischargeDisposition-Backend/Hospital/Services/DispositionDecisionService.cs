@@ -116,8 +116,7 @@ namespace DischargeDisposition_Backend.Hospital.Services
             }
         }
 
-        public async Task<
-    ApiResponse<DispositionDecisionDetailsResponse>>
+        public async Task<ApiResponse<DispositionDecisionDetailsResponse>>
     GetByPatientIdAsync(int patientId)
         {
             try
@@ -210,8 +209,7 @@ namespace DischargeDisposition_Backend.Hospital.Services
                 };
             }
         }
-        public async Task<
-    ApiResponse<DispositionDecisionResponse>>
+        public async Task<ApiResponse<DispositionDecisionResponse>>
     UpdateDecisionAsync(
         int decisionId,
         UpdateDispositionDecisionRequest request)
@@ -312,7 +310,7 @@ namespace DischargeDisposition_Backend.Hospital.Services
         }
 
         public async Task<ApiResponse<List<AssignedPatientsResponse>>>
-GetAssignedPatientsAsync()
+GetAssignedPatientsAsync(string? search)
         {
             var userIdClaim = _httpContextAccessor
                 .HttpContext?

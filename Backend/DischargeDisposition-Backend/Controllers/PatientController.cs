@@ -69,9 +69,9 @@ namespace DischargeDisposition_Backend.Controllers
         }
         [HttpGet("patients/DeptId")]
         [Authorize(Roles = "Physician")]
-        public async Task<IActionResult> GetAssignedPatients()
+        public async Task<IActionResult> GetAssignedPatients([FromQuery] string? search)
         {
-            var response = await _service.GetPatientsByDeptIdAsync();
+            var response = await _service.GetPatientsByDeptIdAsync(search);
 
             return StatusCode(response.StatusCode, response);
         }
