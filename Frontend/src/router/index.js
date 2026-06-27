@@ -28,7 +28,8 @@ import PatientsView from '@/views/hospital/PatientsView.vue'
 //Care Manager Views
 import CareManagerPatientsView from '@/views/careManager/PatientsView.vue'
 import ReferralTrackingView from '@/views/careManager/ReferralTrackingView.vue'
-
+import AuthorizationTrackingView
+from '@/views/careManager/AuthorizationTrackingView.vue'
 
 //Users View
 import UsersView from '@/views/admin/UsersView.vue'
@@ -134,6 +135,11 @@ const routes = [
             path: 'referrals',
             name: 'ReferralTracking',
             component: ReferralTrackingView
+        },
+        {
+            path: 'authorization-tracking',
+            name: 'AuthorizationTracking',
+            component: AuthorizationTrackingView
         }
 
     ]
@@ -198,18 +204,15 @@ const routes = [
             role: 'Authorization Coordinator'
         }
     },
-    {
-        path: '/patients',
+// Patients
 
-    // Patients
-
-    {
-        path: '/patients',
-        component: PatientsView,
-        meta: {
-            requiresAuth: true
-        }
-    },
+{
+    path: '/patients',
+    component: PatientsView,
+    meta: {
+        requiresAuth: true
+    }
+},
 
     // Users View
     {

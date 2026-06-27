@@ -1,4 +1,6 @@
 ﻿using DischargeDisposition_Backend.Data;
+using DischargeDisposition_Backend.Enums;
+using DischargeDisposition_Backend.Hospital.DTOs.Responses;
 using DischargeDisposition_Backend.Hospital.Models;
 using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -62,6 +64,85 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
         public async Task SaveAsync()
         {
             await _context.SaveChangesAsync();
+        }
+        public async Task<HospitalPagedResponse<AuthorizationTrackingResponseDto>>
+    GetByCareManagerIdAsync(
+    int careManagerId,
+    int page,
+    int pageSize,
+    string? search = null,
+    AuthorizationStatus? status = null,
+    CancellationToken cancellationToken = default)
+        {
+            var query = _context.AuthorizationTrackings
+                .AsNoTracking()
+                .Include(a => a.patient)
+                .Include(a => a.payer)
+                .Include(a => a.referral)
+                .Where(a => a.referral.CareManagerId == careManagerId);
+
+            // Status Filter
+            if (status.HasValue)
+            {
+                query = query.Where(a => a.Status == status.Value);
+            }
+
+            // Search
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.Trim();
+
+                query = query.Where(a =>
+                    a.patient.FirstName.Contains(search) ||
+                    a.patient.LastName.Contains(search) ||
+                    (a.patient.FirstName + " " + a.patient.LastName)
+                        .Contains(search) ||
+                    a.patient.Mrn.Contains(search) ||
+                    a.payer.PayerName.Contains(search) ||
+                    a.ExternalAuthorizationId.Contains(search));
+            }
+
+            var totalRecords = await query.CountAsync(cancellationToken);
+
+            var authorizations = await query
+                .OrderByDescending(a => a.RequestedDate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(a => new AuthorizationTrackingResponseDto
+                {
+                    AuthorizationId = a.AuthorizationId,
+
+                    ReferralId = a.ReferralId,
+
+                    PatientId = a.PatientId,
+
+                    PatientName = a.patient.FirstName + " " + a.patient.LastName,
+
+                    MRN = a.patient.Mrn,
+
+                    PayerName = a.payer.PayerName,
+
+                    ExternalAuthorizationId = a.ExternalAuthorizationId,
+
+                    Status = a.Status,
+
+                    RequestedDate = a.RequestedDate,
+
+                    ResponseDate = a.ResponseDate,
+
+                    DenialReason = a.DenialReason,
+
+                    LastUpdated = a.LastUpdated
+                })
+                .ToListAsync(cancellationToken);
+
+            return new HospitalPagedResponse<AuthorizationTrackingResponseDto>
+            {
+                Items = authorizations,
+                Page = page,
+                PageSize = pageSize,
+                TotalRecords = totalRecords
+            };
         }
     }
 }

@@ -3,7 +3,8 @@ import { defineStore } from 'pinia'
 import {
     getDashboard,
     getMyPatients,
-    getReferralTracking
+    getReferralTracking,
+    getAuthorizationTracking
 } from '@/services/careManagerService'
 
 export const useCareManagerStore = defineStore(
@@ -45,7 +46,22 @@ export const useCareManagerStore = defineStore(
 
             referralSearch: '',
 
-            referralStatus: null
+            referralStatus: null,
+                        // ---------------- Authorization Tracking ----------------
+
+            authorizationTracking: [],
+
+            authorizationPage: 1,
+
+            authorizationPageSize: 10,
+
+            authorizationTotalPages: 1,
+
+            authorizationTotalRecords: 0,
+
+            authorizationSearch: '',
+
+            authorizationStatus: null,
 
         }),
 
@@ -301,7 +317,135 @@ export const useCareManagerStore = defineStore(
                     careManagerId
                 )
 
-            }
+            },
+            // ================= Authorization Tracking =================
+
+async loadAuthorizationTracking(careManagerId) {
+
+    try {
+
+        this.loading = true
+
+        this.error = null
+
+        const response =
+            await getAuthorizationTracking(
+
+                careManagerId,
+
+                this.authorizationPage,
+
+                this.authorizationPageSize,
+
+                this.authorizationSearch,
+
+                this.authorizationStatus
+
+            )
+
+        const data =
+            response.data.data
+
+        this.authorizationTracking =
+            data.items
+
+        this.authorizationPage =
+            data.page
+
+        this.authorizationPageSize =
+            data.pageSize
+
+        this.authorizationTotalPages =
+            data.totalPages
+
+        this.authorizationTotalRecords =
+            data.totalRecords
+
+    }
+
+    catch (err) {
+
+        this.error =
+            err.response?.data?.message ||
+            'Failed to load authorization tracking.'
+
+    }
+
+    finally {
+
+        this.loading = false
+
+    }
+
+},
+
+async searchAuthorizationTracking(
+    careManagerId,
+    search
+) {
+
+    this.authorizationSearch =
+        search
+
+    this.authorizationPage = 1
+
+    await this.loadAuthorizationTracking(
+        careManagerId
+    )
+
+},
+
+async filterAuthorizationTracking(
+    careManagerId,
+    status
+) {
+
+    this.authorizationStatus =
+        status
+
+    this.authorizationPage = 1
+
+    await this.loadAuthorizationTracking(
+        careManagerId
+    )
+
+},
+
+async nextAuthorizationPage(
+    careManagerId
+) {
+
+    if (
+        this.authorizationPage >=
+        this.authorizationTotalPages
+    )
+        return
+
+    this.authorizationPage++
+
+    await this.loadAuthorizationTracking(
+        careManagerId
+    )
+
+},
+
+async previousAuthorizationPage(
+    careManagerId
+) {
+
+    if (
+        this.authorizationPage <= 1
+    )
+        return
+
+    this.authorizationPage--
+
+    await this.loadAuthorizationTracking(
+        careManagerId
+    )
+
+}
+            
 
         }
 
