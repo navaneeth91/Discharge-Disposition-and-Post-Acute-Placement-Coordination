@@ -1,7 +1,8 @@
-using DischargeDisposition_Backend.Hospital.DTOs.Requests;
-using DischargeDisposition_Backend.Hospital.DTOs.Responses;
 using DischargeDisposition_Backend.Enums;
 using DischargeDisposition_Backend.Helpers;
+using DischargeDisposition_Backend.Hospital.DTOs.Requests;
+using DischargeDisposition_Backend.Hospital.DTOs.Responses;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DischargeDisposition_Backend.Hospital.Services.Interfaces
 {
@@ -73,5 +74,8 @@ namespace DischargeDisposition_Backend.Hospital.Services.Interfaces
         Task<ApiResponse<ReferralDetailsDto>> GetReferralDetailsAsync(int UserId, int referralId);
 
         Task<ApiResponse<ProviderDashboardDto>> GetDashboardSummaryAsync(int userId);
+        Task<ApiResponse<List<ReferralResponseDto>>> GetPendingByProviderIdAsync(
+            int userId,
+            CancellationToken cancellationToken = default);
     }
 }
