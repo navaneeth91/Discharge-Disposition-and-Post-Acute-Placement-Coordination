@@ -198,8 +198,7 @@ const routes = [
             role: 'Authorization Coordinator'
         }
     },
-    {
-        path: '/patients',
+    
 
     // Patients
 
