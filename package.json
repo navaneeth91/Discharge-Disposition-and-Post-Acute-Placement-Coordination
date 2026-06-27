@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "pinia": "^3.0.4",
+    "vue-toastification": "^2.0.0-rc.5"
+  }
+}
