@@ -1,9 +1,7 @@
 import { defineStore } from 'pinia'
 
-import * as dashboardService
-from '@/services/dashboardService'
-import * as physicianService
-from "@/services/physicianService";
+import * as dashboardService from '@/services/dashboardService';
+import * as physicianService from "@/services/physicianService";
 
 export const useDashboardStore =
     defineStore('dashboard', {
@@ -82,6 +80,7 @@ export const useDashboardStore =
                     this.loading = false;
 
                 }
+                },  
 
             async loadRecentInsuranceAuthorizations() {
 
