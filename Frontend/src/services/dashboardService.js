@@ -26,3 +26,8 @@ export const getInsuranceAnalytics = () => {
         '/insurance-dashboard/service-analytics'
     )
 }
+export const getRecentInsuranceAuthorizations = (take = 10) => {
+    return api.get('/insurance-authorizations/recent', {
+        params: { take }
+    })
+}
