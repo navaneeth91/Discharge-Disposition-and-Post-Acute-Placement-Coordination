@@ -6,6 +6,7 @@ using DischargeDisposition_Backend.Hospital.DTOs.Responses;
 using DischargeDisposition_Backend.Hospital.Models;
 using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
 using DischargeDisposition_Backend.Hospital.Services.Interfaces;
+using System.Security.Claims;
 
 namespace DischargeDisposition_Backend.Hospital.Services
 {
@@ -13,11 +14,13 @@ namespace DischargeDisposition_Backend.Hospital.Services
         : IDispositionDecisionService
     {
         private readonly IDispositionDecisionRepository _repository;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public DispositionDecisionService(
-            IDispositionDecisionRepository repository)
+            IDispositionDecisionRepository repository, IHttpContextAccessor httpContextAccessor)
         {
             _repository = repository;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<ApiResponse<DispositionDecisionResponse>> CreateAsync(
@@ -113,8 +116,7 @@ namespace DischargeDisposition_Backend.Hospital.Services
             }
         }
 
-        public async Task<
-    ApiResponse<DispositionDecisionDetailsResponse>>
+        public async Task<ApiResponse<DispositionDecisionDetailsResponse>>
     GetByPatientIdAsync(int patientId)
         {
             try
@@ -207,8 +209,7 @@ namespace DischargeDisposition_Backend.Hospital.Services
                 };
             }
         }
-        public async Task<
-    ApiResponse<DispositionDecisionResponse>>
+        public async Task<ApiResponse<DispositionDecisionResponse>>
     UpdateDecisionAsync(
         int decisionId,
         UpdateDispositionDecisionRequest request)
@@ -306,6 +307,38 @@ namespace DischargeDisposition_Backend.Hospital.Services
                     }
                 };
             }
+        }
+
+        public async Task<ApiResponse<List<AssignedPatientsResponse>>>GetAssignedPatientsAsync(string? search)
+        {
+            var userIdClaim = _httpContextAccessor
+                .HttpContext?
+                .User
+                .FindFirst(ClaimTypes.NameIdentifier)?
+                .Value;
+
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return new ApiResponse<List<AssignedPatientsResponse>>
+                {
+                    Success = false,
+                    StatusCode = 401,
+                    Message = "Unauthorized"
+                };
+            }
+
+            int physicianId = int.Parse(userIdClaim);
+
+            var patients =
+                await _repository.GetAssignedPatientsAsync(physicianId,search);
+
+            return new ApiResponse<List<AssignedPatientsResponse>>
+            {
+                Success = true,
+                StatusCode = 200,
+                Message = "Assigned patients retrieved successfully",
+                Data = patients
+            };
         }
     }
 }

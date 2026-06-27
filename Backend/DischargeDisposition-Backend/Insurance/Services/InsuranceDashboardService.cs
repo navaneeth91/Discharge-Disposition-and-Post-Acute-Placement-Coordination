@@ -103,5 +103,36 @@ namespace DischargeDisposition_Backend.Insurance.Services
                 };
             }
         }
+
+        public async Task<ApiResponse<List<AuthorizationRequestListItemResponse>>> GetRecentAuthorizationRequestsAsync(int take)
+        {
+            try
+            {
+                take = take < 1 ? 5 : take;
+
+                var requests = await _repository.GetRecentAuthorizationRequestsAsync(take);
+
+                return new ApiResponse<List<AuthorizationRequestListItemResponse>>
+                {
+                    Success = true,
+                    StatusCode = 200,
+                    Message = "Recent authorization requests retrieved successfully",
+                    Data = requests
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<List<AuthorizationRequestListItemResponse>>
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message = "Failed to retrieve recent authorization requests",
+                    Errors = new()
+                    {
+                        ex.Message
+                    }
+                };
+            }
+        }
     }
 }

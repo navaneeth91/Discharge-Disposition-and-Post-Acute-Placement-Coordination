@@ -10,5 +10,8 @@ namespace DischargeDisposition_Backend.Insurance.Services.Interfaces
 
         Task<ApiResponse<List<InsuranceAnalytics>>>
             GetServiceAnalyticsAsync();
+
+        Task<ApiResponse<List<AuthorizationRequestListItemResponse>>>
+            GetRecentAuthorizationRequestsAsync(int take);
     }
 }

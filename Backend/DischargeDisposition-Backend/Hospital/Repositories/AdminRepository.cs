@@ -1,6 +1,7 @@
 using DischargeDisposition_Backend.Data;
 using DischargeDisposition_Backend.Hospital.Models;
 using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
+using DischargeDisposition_Backend.Helpers;
 using Microsoft.EntityFrameworkCore;
 
 namespace DischargeDisposition_Backend.Hospital.Repositories
@@ -14,27 +15,48 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
-        public async Task<IEnumerable<User>> GetAllUsersAsync()
+        public async Task<PagedResult<User>>GetAllUsersAsync(
+        int page,
+        int pageSize,
+        string? search)
         {
-            try
-            {
-                _logger.LogInformation("Repository: Retrieving all users from database.");
+            var query =
+                _context.Users
+                    .Include(x => x.department)
+                    .Include(x => x.role)
+                    .AsNoTracking();
 
-                var users = await _context.Users
-                    .Include(u => u.department)
-                    .Include(u => u.role)
-                    .AsNoTracking()
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(x =>
+                    x.FirstName.Contains(search)
+                    ||
+                    x.LastName.Contains(search)
+                    ||
+                    x.Email.Contains(search));
+            }
+
+            var totalCount =
+                await query.CountAsync();
+
+            var users =
+                await query
+                    .OrderBy(x => x.FirstName)
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
                     .ToListAsync();
 
-                _logger.LogInformation($"Repository: Successfully retrieved {users.Count} users.");
-
-                return users;
-            }
-            catch (Exception ex)
+            return new PagedResult<User>
             {
-                _logger.LogError(ex, $"Repository Error: Failed to retrieve all users. Error: {ex.Message}");
-                throw;
-            }
+                Items = users,
+                Page = page,
+                PageSize = pageSize,
+                TotalCount = totalCount,
+                TotalPages =
+                    (int)Math.Ceiling(
+                        totalCount /
+                        (double)pageSize)
+            };
         }
         public async Task<User?> GetUserByIdAsync(int userId)
         {
@@ -76,22 +98,25 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
         {
             try
             {
-                if (user == null)
-                {
-                    throw new ArgumentNullException(nameof(user), "User entity cannot be null.");
-                }
+                await _context
+                    .SaveChangesAsync();
 
-                _logger.LogInformation($"Repository: Updating user with ID {user.UserId} in database.");
+                await _context.Entry(user)
+                    .Reference(x => x.department)
+                    .LoadAsync();
 
-                _context.Users.Update(user);
-                await _context.SaveChangesAsync();
+                await _context.Entry(user)
+                    .Reference(x => x.role)
+                    .LoadAsync();
 
-                _logger.LogInformation($"Repository: Successfully updated user with ID {user.UserId}.");
                 return user;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Repository Error: Failed to update user. Error: {ex.Message}");
+                _logger.LogError(
+                    ex,
+                    $"Repository Error: Failed to update user. Error: {ex.Message}");
+
                 throw;
             }
         }
@@ -136,59 +161,92 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
                 throw;
             }
         }
-        public async Task<IEnumerable<Patient>> GetAllPatientsAsync()
-        {
-            try
-            {
-                _logger.LogInformation("Repository: Retrieving all active patients from database.");
 
-                var patients = await _context.Patients
-                    .Include(p => p.Department)
-                    .Where(p => p.IsActive == 1)
-                    .AsNoTracking()
+        public async Task<PagedResult<Patient>>GetAllPatientsAsync(
+        int page,
+        int pageSize,
+        string? search,
+        string? status)
+        {
+            var query =
+                _context.Patients
+                    .Include(x => x.Department)
+                    .AsNoTracking();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(x =>
+                    x.FirstName.Contains(search)
+                    ||
+                    x.LastName.Contains(search)
+                    ||
+                    x.Mrn.Contains(search));
+            }
+
+            if (status == "active")
+            {
+                query =
+                    query.Where(
+                        x => x.IsActive == 1);
+            }
+
+            if (status == "discharged")
+            {
+                query =
+                    query.Where(
+                        x => x.IsActive == 0);
+            }
+
+            var totalCount =
+                await query.CountAsync();
+
+            var patients =
+                await query
+                    .OrderBy(x => x.FirstName)
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
                     .ToListAsync();
 
-                _logger.LogInformation($"Repository: Successfully retrieved {patients.Count} patients.");
-
-                return patients;
-            }
-            catch (Exception ex)
+            return new PagedResult<Patient>
             {
-                _logger.LogError(ex, $"Repository Error: Failed to retrieve all patients. Error: {ex.Message}");
-                throw;
-            }
+                Items = patients,
+                Page = page,
+                PageSize = pageSize,
+                TotalCount = totalCount,
+                TotalPages =
+                    (int)Math.Ceiling(
+                        totalCount /
+                        (double)pageSize)
+            };
         }
         public async Task<Patient?> GetPatientByIdAsync(int patientId)
         {
             try
             {
-                _logger.LogInformation($"Repository: Retrieving patient with ID {patientId} from database.");
+                _logger.LogInformation(
+                    $"Repository: Retrieving patient with ID {patientId}");
 
                 if (patientId <= 0)
                 {
-                    _logger.LogWarning($"Repository: Invalid patient ID provided: {patientId}");
                     return null;
                 }
 
-                var patient = await _context.Patients
-                    .Include(p => p.Department)
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(p => p.PatientId == patientId && p.IsActive == 1);
+                _context.ChangeTracker.Clear();
 
-                if (patient == null)
-                {
-                    _logger.LogWarning($"Repository: Patient with ID {patientId} not found in database.");
-                }
-                else
-                {
-                    _logger.LogInformation($"Repository: Successfully retrieved patient with ID {patientId}.");
-                }
+                var patient =
+                    await _context.Patients
+                        .Include(p => p.Department)
+                        .FirstOrDefaultAsync(
+                            p => p.PatientId == patientId);
 
                 return patient;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Repository Error: Failed to retrieve patient with ID {patientId}. Error: {ex.Message}");
+                _logger.LogError(
+                    ex,
+                    $"Error retrieving patient {patientId}");
+
                 throw;
             }
         }
@@ -220,6 +278,13 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
                 _logger.LogError(ex, $"Repository Error: Failed to check if role exists. Error: {ex.Message}");
                 throw;
             }
+        }
+        public async Task<User?>GetTrackedUserByIdAsync(
+        int userId)
+        {
+            return await _context.Users
+                .FirstOrDefaultAsync(
+                    x => x.UserId == userId);
         }
     }
 }

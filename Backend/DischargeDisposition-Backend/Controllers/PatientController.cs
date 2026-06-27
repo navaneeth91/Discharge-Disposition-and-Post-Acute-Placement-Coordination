@@ -1,5 +1,6 @@
 using DischargeDisposition_Backend.Helpers;
 using DischargeDisposition_Backend.Hospital.DTOs.Requests;
+using DischargeDisposition_Backend.Hospital.Services;
 using DischargeDisposition_Backend.Hospital.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -65,6 +66,14 @@ namespace DischargeDisposition_Backend.Controllers
 
             return this
                 .ToHttpResponse(response);
+        }
+        [HttpGet("patients/DeptId")]
+        [Authorize(Roles = "Physician")]
+        public async Task<IActionResult> GetAssignedPatients([FromQuery] string? search)
+        {
+            var response = await _service.GetPatientsByDeptIdAsync(search);
+
+            return StatusCode(response.StatusCode, response);
         }
     }
 }

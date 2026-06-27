@@ -15,6 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Text;
+using System.Text.Json.Serialization;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,6 +37,7 @@ builder.Services.AddScoped<IReferralService, ReferralService>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IInsuranceRepository,InsuranceRepository>();
+builder.Services.AddScoped<IInsuranceAuthorizationRepository,InsuranceAuthorizationRepository>();
 builder.Services.AddScoped<IDispositionDecisionRepository,DispositionDecisionRepository>();
 builder.Services.AddScoped<IDispositionDecisionService,DispositionDecisionService>();
 builder.Services.AddScoped<IInsuranceService,InsuranceService>();
@@ -119,7 +121,12 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(
+            new JsonStringEnumConverter());
+    });
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();

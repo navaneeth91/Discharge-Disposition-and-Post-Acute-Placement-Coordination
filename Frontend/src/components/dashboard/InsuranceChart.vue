@@ -94,10 +94,9 @@ async function loadChart() {
 
     try {
 
-        const response =
-            await getInsuranceAnalytics()
-        const insurance = response.data.data
-        console.log(response.data)
+        const response = await getInsuranceAnalytics()
+            const insurance = response.data.data
+        console.log(insurance)
 
         chartData.value.labels =
             insurance.map(
@@ -132,7 +131,8 @@ onMounted(loadChart)
     bg-white
     rounded-3xl
     p-6
-    shadow-lg">
+    shadow-lg
+    h-fit">
 
     <h2
         class="

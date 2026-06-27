@@ -1,4 +1,5 @@
-﻿using DischargeDisposition_Backend.Hospital.DTOs.Requests;
+﻿using DischargeDisposition_Backend.Helpers;
+using DischargeDisposition_Backend.Hospital.DTOs.Requests;
 using DischargeDisposition_Backend.Hospital.DTOs.Responses;
 using DischargeDisposition_Backend.Hospital.Models;
 using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
@@ -15,34 +16,60 @@ namespace DischargeDisposition_Backend.Hospital.Services
             IAdminRepository repository,
             ILogger<AdminService> logger)
         {
-            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _repository = repository;
+            _logger = logger;
         }
 
-        public async Task<ApiResponse<IEnumerable<UserDto>>>GetAllUsersAsync()
+        public async Task<ApiResponse<PagedResult<UserDto>>>GetAllUsersAsync(
+                int page,
+                int pageSize,
+                string? search)
         {
             try
             {
-                var users =await _repository
-                        .GetAllUsersAsync();
+                var result =
+                    await _repository.GetAllUsersAsync(
+                        page,
+                        pageSize,
+                        search);
 
-                return new ApiResponse<IEnumerable<UserDto>>
+                return new ApiResponse<PagedResult<UserDto>>
                 {
                     Success = true,
                     StatusCode = 200,
                     Message = "Users retrieved successfully",
-                    Data = users.Select(MapUserToDto)
+
+                    Data = new PagedResult<UserDto>
+                    {
+                        Items = result.Items
+                            .Select(MapUserToDto),
+
+                        Page = result.Page,
+
+                        PageSize = result.PageSize,
+
+                        TotalCount =
+                            result.TotalCount,
+
+                        TotalPages =
+                            result.TotalPages
+                    }
                 };
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex,"Error retrieving users");
+                _logger.LogError(
+                    ex,
+                    "Error retrieving users");
 
-                return new ApiResponse<IEnumerable<UserDto>>
+                return new ApiResponse<
+                    PagedResult<UserDto>>
                 {
                     Success = false,
                     StatusCode = 500,
-                    Message = "Failed to retrieve users",
+                    Message =
+                        "Failed to retrieve users",
+
                     Errors = new()
                     {
                         ex.Message
@@ -51,11 +78,13 @@ namespace DischargeDisposition_Backend.Hospital.Services
             }
         }
 
-        public async Task<ApiResponse<UserDto>>GetUserByIdAsync(int userId)
+        public async Task<ApiResponse<UserDto>>
+            GetUserByIdAsync(int userId)
         {
             try
             {
-                var user =await _repository
+                var user =
+                    await _repository
                         .GetUserByIdAsync(userId);
 
                 if (user == null)
@@ -72,19 +101,24 @@ namespace DischargeDisposition_Backend.Hospital.Services
                 {
                     Success = true,
                     StatusCode = 200,
-                    Message = "User retrieved successfully",
+                    Message =
+                        "User retrieved successfully",
+
                     Data = MapUserToDto(user)
                 };
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex,"Error retrieving user");
+                _logger.LogError(ex,
+                    "Error retrieving user");
 
                 return new ApiResponse<UserDto>
                 {
                     Success = false,
                     StatusCode = 500,
-                    Message = "Failed to retrieve user",
+                    Message =
+                        "Failed to retrieve user",
+
                     Errors = new()
                     {
                         ex.Message
@@ -93,11 +127,14 @@ namespace DischargeDisposition_Backend.Hospital.Services
             }
         }
 
-        public async Task<ApiResponse<UserDto>> UpdateUserAsync(int userId,UpdateUserDto updateUserDto)
+        public async Task<ApiResponse<UserDto>>UpdateUserAsync(
+                int userId,
+                UpdateUserDto updateUserDto)
         {
             try
             {
-                var user =await _repository.GetUserByIdAsync(userId);
+                var user =await _repository
+                        .GetTrackedUserByIdAsync(userId);
 
                 if (user == null)
                 {
@@ -105,53 +142,85 @@ namespace DischargeDisposition_Backend.Hospital.Services
                     {
                         Success = false,
                         StatusCode = 404,
-                        Message = $"User with ID {userId} not found"
+                        Message = "User not found"
                     };
                 }
 
-                if (!string.IsNullOrWhiteSpace(updateUserDto.UserName))
-                    user.UserName = updateUserDto.UserName;
+                if (!string.IsNullOrWhiteSpace(
+                    updateUserDto.UserName))
+                {
+                    user.UserName =
+                        updateUserDto.UserName;
+                }
 
-                if (!string.IsNullOrWhiteSpace(updateUserDto.FirstName))
-                    user.FirstName = updateUserDto.FirstName;
+                if (!string.IsNullOrWhiteSpace(
+                    updateUserDto.FirstName))
+                {
+                    user.FirstName =
+                        updateUserDto.FirstName;
+                }
 
-                if (!string.IsNullOrWhiteSpace(updateUserDto.LastName))
-                    user.LastName = updateUserDto.LastName;
+                if (!string.IsNullOrWhiteSpace(
+                    updateUserDto.LastName))
+                {
+                    user.LastName =
+                        updateUserDto.LastName;
+                }
 
-                if (!string.IsNullOrWhiteSpace(updateUserDto.Email))
-                    user.Email = updateUserDto.Email;
+                if (!string.IsNullOrWhiteSpace(
+                    updateUserDto.Email))
+                {
+                    user.Email =
+                        updateUserDto.Email;
+                }
 
-                if (!string.IsNullOrWhiteSpace(updateUserDto.PhoneNumber))
-                    user.PhoneNumber = updateUserDto.PhoneNumber;
+                if (!string.IsNullOrWhiteSpace(
+                    updateUserDto.PhoneNumber))
+                {
+                    user.PhoneNumber =
+                        updateUserDto.PhoneNumber;
+                }
 
                 if (updateUserDto.DeptId.HasValue)
-                    user.DeptId = updateUserDto.DeptId.Value;
+                {
+                    user.DeptId =
+                        updateUserDto.DeptId.Value;
+                }
 
                 if (updateUserDto.RoleId.HasValue)
-                    user.RoleId = updateUserDto.RoleId.Value;
+                {
+                    user.RoleId =
+                        updateUserDto.RoleId.Value;
+                }
 
-                var updatedUser = await _repository.UpdateUserAsync(user);
+                var updatedUser =
+                    await _repository
+                        .UpdateUserAsync(user);
 
                 return new ApiResponse<UserDto>
                 {
                     Success = true,
                     StatusCode = 200,
-                    Message = "User updated successfully",
-                    Data = MapUserToDto(updatedUser)
+                    Message =
+                        "User updated successfully",
+
+                    Data =
+                        MapUserToDto(updatedUser)
                 };
             }
             catch (Exception ex)
             {
                 _logger.LogError(
                     ex,
-                    "Error updating user with ID {UserId}",
-                    userId);
+                    "Error updating user");
 
                 return new ApiResponse<UserDto>
                 {
                     Success = false,
                     StatusCode = 500,
-                    Message = "Failed to update user",
+                    Message =
+                        "Failed to update user",
+
                     Errors = new()
                     {
                         ex.Message
@@ -160,12 +229,14 @@ namespace DischargeDisposition_Backend.Hospital.Services
             }
         }
 
-        public async Task<ApiResponse<object>>DeleteUserAsync(int userId)
+        public async Task<ApiResponse<object>>
+            DeleteUserAsync(int userId)
         {
             try
             {
                 var user =
-                    await _repository.GetUserByIdAsync(userId);
+                    await _repository
+                        .GetUserByIdAsync(userId);
 
                 if (user == null)
                 {
@@ -173,7 +244,8 @@ namespace DischargeDisposition_Backend.Hospital.Services
                     {
                         Success = false,
                         StatusCode = 404,
-                        Message = "User not found"
+                        Message =
+                            "User not found"
                     };
                 }
 
@@ -184,7 +256,8 @@ namespace DischargeDisposition_Backend.Hospital.Services
                 {
                     Success = true,
                     StatusCode = 200,
-                    Message = "User deleted successfully"
+                    Message =
+                        "User deleted successfully"
                 };
             }
             catch (Exception ex)
@@ -193,7 +266,9 @@ namespace DischargeDisposition_Backend.Hospital.Services
                 {
                     Success = false,
                     StatusCode = 500,
-                    Message = "Failed to delete user",
+                    Message =
+                        "Failed to delete user",
+
                     Errors = new()
                     {
                         ex.Message
@@ -202,19 +277,51 @@ namespace DischargeDisposition_Backend.Hospital.Services
             }
         }
 
-        public async Task<ApiResponse<IEnumerable<PatientDto>>>GetAllPatientsAsync()
+        public async Task<ApiResponse<PagedResult<PatientDto>>>GetAllPatientsAsync(
+        int page,
+        int pageSize,
+        string? search,
+        string? status)
         {
             try
             {
-                var patients =
-                    await _repository.GetAllPatientsAsync();
+                var result =
+                    await _repository
+                        .GetAllPatientsAsync(
+                            page,
+                            pageSize,
+                            search,
+                            status);
 
-                return new ApiResponse<IEnumerable<PatientDto>>
+                return new ApiResponse<PagedResult<PatientDto>>
                 {
                     Success = true,
+
                     StatusCode = 200,
-                    Message = "Patients retrieved successfully",
-                    Data = patients.Select(MapPatientToDto)
+
+                    Message =
+                        "Patients retrieved successfully",
+
+                    Data =
+                        new PagedResult<PatientDto>
+                        {
+                            Items =
+                                result.Items
+                                    .Select(
+                                        MapPatientToDto),
+
+                            Page =
+                                result.Page,
+
+                            PageSize =
+                                result.PageSize,
+
+                            TotalCount =
+                                result.TotalCount,
+
+                            TotalPages =
+                                result.TotalPages
+                        }
                 };
             }
             catch (Exception ex)
@@ -223,11 +330,15 @@ namespace DischargeDisposition_Backend.Hospital.Services
                     ex,
                     "Error retrieving patients");
 
-                return new ApiResponse<IEnumerable<PatientDto>>
+                return new ApiResponse<PagedResult<PatientDto>>
                 {
                     Success = false,
+
                     StatusCode = 500,
-                    Message = "Failed to retrieve patients",
+
+                    Message =
+                        "Failed to retrieve patients",
+
                     Errors = new()
                     {
                         ex.Message
@@ -236,42 +347,54 @@ namespace DischargeDisposition_Backend.Hospital.Services
             }
         }
 
-        public async Task<ApiResponse<PatientDto>>GetPatientByIdAsync(int patientId)
+        public async Task<ApiResponse<PatientDto>>
+            GetPatientByIdAsync(int patientId)
         {
             try
             {
-                var patient =await _repository.GetPatientByIdAsync(patientId);
+                var patient =
+                    await _repository
+                        .GetPatientByIdAsync(
+                            patientId);
 
                 if (patient == null)
                 {
-                    return new ApiResponse<PatientDto>
+                    return new ApiResponse<
+                        PatientDto>
                     {
                         Success = false,
                         StatusCode = 404,
-                        Message = "Patient not found"
+                        Message =
+                            "Patient not found"
                     };
                 }
 
-                return new ApiResponse<PatientDto>
+                return new ApiResponse<
+                    PatientDto>
                 {
                     Success = true,
                     StatusCode = 200,
-                    Message = "Patient retrieved successfully",
-                    Data = MapPatientToDto(patient)
+                    Message =
+                        "Patient retrieved successfully",
+
+                    Data =
+                        MapPatientToDto(patient)
                 };
             }
             catch (Exception ex)
             {
                 _logger.LogError(
                     ex,
-                    "Error retrieving patient with ID {PatientId}",
-                    patientId);
+                    "Error retrieving patient");
 
-                return new ApiResponse<PatientDto>
+                return new ApiResponse<
+                    PatientDto>
                 {
                     Success = false,
                     StatusCode = 500,
-                    Message = "Failed to retrieve patient",
+                    Message =
+                        "Failed to retrieve patient",
+
                     Errors = new()
                     {
                         ex.Message
@@ -308,13 +431,19 @@ namespace DischargeDisposition_Backend.Hospital.Services
                 LastName = patient.LastName,
                 DateOfBirth = patient.Dob,
                 AdmissionDate = patient.AdmissionDate,
-                ExpectedDischargeDate = patient.ExpectedDischargeDate,
-                ActualDischargeDate = patient.ActualDischargeDate,
-                Gender = patient.Gender.ToString(),
+                ExpectedDischargeDate =
+                    patient.ExpectedDischargeDate,
+                ActualDischargeDate =
+                    patient.ActualDischargeDate,
+                Gender =
+                    patient.Gender.ToString(),
                 Email = patient.Email,
-                PhoneNumber = patient.PhoneNumber,
+                PhoneNumber =
+                    patient.PhoneNumber,
                 DeptId = patient.DeptId,
-                DepartmentName = patient.Department?.Name
+                DepartmentName =
+                    patient.Department?.Name,
+                IsActive = patient.IsActive
             };
         }
     }

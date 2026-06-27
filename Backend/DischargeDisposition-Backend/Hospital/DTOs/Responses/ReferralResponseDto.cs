@@ -9,8 +9,9 @@ namespace DischargeDisposition_Backend.Hospital.DTOs.Responses
         public int ProviderId { get; set; }
         public int CareManagerId { get; set; }
         public DateTime CreatedDate { get; set; }
-        public string Status { get; set; } = null!;
-        public string Priority { get; set; } = null!;
+        public string Status { get; set; }= string.Empty;
+
+        public string Priority { get; set; }= string.Empty;
 
         // Simple relation summaries
         public string? PatientName { get; set; }

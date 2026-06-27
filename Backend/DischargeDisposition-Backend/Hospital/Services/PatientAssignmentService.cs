@@ -1,4 +1,5 @@
-﻿using DischargeDisposition_Backend.Hospital.DTOs.Requests;
+﻿using DischargeDisposition_Backend.Helpers;
+using DischargeDisposition_Backend.Hospital.DTOs.Requests;
 using DischargeDisposition_Backend.Hospital.DTOs.Responses;
 using DischargeDisposition_Backend.Hospital.Models;
 using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
@@ -113,19 +114,43 @@ namespace DischargeDisposition_Backend.Hospital.Services
             }
         }
 
-        public async Task<ApiResponse<IEnumerable<PatientDto>>> GetUnassignedPatientsAsync()
+        public async Task<ApiResponse<PagedResult<PatientDto>>> GetUnassignedPatientsAsync(
+            int page,
+            int pageSize,
+            string? search)
         {
             try
             {
-                var patients =
-                    await _repository.GetUnassignedPatientsAsync();
+                var result =
+                    await _repository
+                        .GetUnassignedPatientsAsync(
+                            page,
+                            pageSize,
+                            search);
 
-                return new ApiResponse<IEnumerable<PatientDto>>
+                var pagedPatients =
+                    new PagedResult<PatientDto>
+                    {
+                        Items = result.Items
+                            .Select(MapPatientToDto)
+                            .ToList(),
+
+                        Page = result.Page,
+
+                        PageSize = result.PageSize,
+
+                        TotalCount = result.TotalCount,
+
+                        TotalPages = result.TotalPages
+                    };
+
+                return new ApiResponse<PagedResult<PatientDto>>
                 {
                     Success = true,
                     StatusCode = 200,
                     Message = "Unassigned patients retrieved successfully.",
-                    Data = patients.Select(MapPatientToDto)
+
+                    Data = pagedPatients
                 };
             }
             catch (Exception ex)
@@ -134,11 +159,12 @@ namespace DischargeDisposition_Backend.Hospital.Services
                     ex,
                     "Error retrieving unassigned patients.");
 
-                return new ApiResponse<IEnumerable<PatientDto>>
+                return new ApiResponse<PagedResult<PatientDto>>
                 {
                     Success = false,
                     StatusCode = 500,
                     Message = "Failed to retrieve unassigned patients.",
+
                     Errors = new()
                     {
                         ex.Message

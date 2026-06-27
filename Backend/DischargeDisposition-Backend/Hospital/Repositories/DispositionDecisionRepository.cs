@@ -1,7 +1,10 @@
 ﻿using DischargeDisposition_Backend.Data;
+using DischargeDisposition_Backend.Hospital.DTOs.Responses;
+using DischargeDisposition_Backend.Hospital.DTOs.Responses;
 using DischargeDisposition_Backend.Hospital.Models;
 using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace DischargeDisposition_Backend.Hospital.Repositories
 {
@@ -51,6 +54,61 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
             _context.DispositionDecisions.Update(decision);
 
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<AssignedPatientsResponse>> GetAssignedPatientsAsync(int clinicianId, string? search)
+        {
+            var query = _context.DispositionDecisions
+                .Include(d => d.patient)
+                .Include(d => d.dispositionType)
+                .Where(d => d.ClinicianId == clinicianId);
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.Trim().ToLower();
+
+                query = query.Where(d =>
+
+                    d.patient.FirstName.ToLower().Contains(search)
+
+                    ||
+
+                    d.patient.LastName.ToLower().Contains(search)
+
+                    ||
+
+                    (d.patient.FirstName + " " + d.patient.LastName)
+                        .ToLower()
+                        .Contains(search)
+
+                );
+            }
+
+            return await _context.DispositionDecisions
+
+                .Include(d => d.patient)
+                .Include(d => d.dispositionType)
+
+                .Where(d => d.ClinicianId == clinicianId)
+
+                .Select(d => new AssignedPatientsResponse
+                {
+                    PatientId = d.PatientId,
+
+                    PatientName =
+                        d.patient.FirstName + " " +
+                        d.patient.LastName,
+
+                    DecisionDate =
+                        d.DecisionDate,
+
+                    Status =
+                        d.Status.ToString(),
+
+                    Disposition =
+                        d.dispositionType.DispositionName
+                })
+
+                .ToListAsync();
         }
     }
 }

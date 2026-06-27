@@ -1,5 +1,6 @@
 ﻿using DischargeDisposition_Backend.Data;
 using DischargeDisposition_Backend.Hospital.DTOs.Responses;
+using DischargeDisposition_Backend.Helpers;
 using DischargeDisposition_Backend.Hospital.Models;
 using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -47,26 +48,73 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
             }
         }
 
-        public async Task<IEnumerable<Patient>> GetUnassignedPatientsAsync()
+        public async Task<PagedResult<Patient>> GetUnassignedPatientsAsync(
+            int page,
+            int pageSize,
+            string? search)
         {
             try
             {
                 _logger.LogInformation(
-                    "Repository: Retrieving unassigned patients.");
+                    "Repository: Retrieving unassigned patients. Page: {Page}, PageSize: {PageSize}, Search: {Search}",
+                    page,
+                    pageSize,
+                    search);
 
-                var patients = await _context.Patients
-                    .Include(p => p.Department)
-                    .Where(p => p.IsActive == 1)
-                    .Where(p => !_context.PatientAssignments
-                        .Any(pa => pa.PatientId == p.PatientId && pa.IsActive))
-                    .AsNoTracking()
-                    .ToListAsync();
+                var query =
+                    _context.Patients
+                        .Include(p => p.Department)
+                        .Where(p => p.IsActive == 1)
+                        .Where(p =>
+                            !_context.PatientAssignments.Any(pa =>
+                                pa.PatientId == p.PatientId &&
+                                pa.IsActive))
+                        .AsNoTracking();
+
+                if (!string.IsNullOrWhiteSpace(search))
+                {
+                    search = search.Trim();
+
+                    query = query.Where(p =>
+
+                        p.FirstName.Contains(search) ||
+
+                        p.LastName.Contains(search) ||
+
+                        p.Mrn.Contains(search) ||
+
+                        p.Department.Name.Contains(search)
+
+                    );
+                }
+
+                var totalCount =
+                    await query.CountAsync();
+
+                var patients =
+                    await query
+                        .OrderBy(p => p.FirstName)
+                        .ThenBy(p => p.LastName)
+                        .Skip((page - 1) * pageSize)
+                        .Take(pageSize)
+                        .ToListAsync();
 
                 _logger.LogInformation(
-                    "Repository: Retrieved {Count} unassigned patients.",
-                    patients.Count);
+                    "Repository: Retrieved {Count} patients out of {TotalCount}.",
+                    patients.Count,
+                    totalCount);
 
-                return patients;
+                return new PagedResult<Patient>
+                {
+                    Items = patients,
+                    Page = page,
+                    PageSize = pageSize,
+                    TotalCount = totalCount,
+                    TotalPages =
+                        (int)Math.Ceiling(
+                            totalCount /
+                            (double)pageSize)
+                };
             }
             catch (Exception ex)
             {
@@ -79,10 +127,10 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
         }
 
         public async Task<PagedResponse<AssignedPatientDto>> GetPatientsByCareManagerAsync(
-      int careManagerId,
-      int page,
-      int pageSize,
-      string? search = null)
+          int careManagerId,
+          int page,
+          int pageSize,
+          string? search = null)
         {
             try
             {
