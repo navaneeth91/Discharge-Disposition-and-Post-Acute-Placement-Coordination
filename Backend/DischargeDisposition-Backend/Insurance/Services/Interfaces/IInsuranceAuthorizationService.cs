@@ -6,7 +6,7 @@ namespace DischargeDisposition_Backend.Insurance.Services.Interfaces
 {
     public interface IInsuranceAuthorizationService
     {
-        Task<ApiResponse<PagedResponse<AuthorizationRequestListItemResponse>>> GetAuthorizationsAsync(
+        Task<ApiResponse<InsurancePagedResponse<AuthorizationRequestListItemResponse>>> GetAuthorizationsAsync(
             string? search,
             AuthorizationStatus? status,
             int page,

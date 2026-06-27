@@ -309,8 +309,7 @@ namespace DischargeDisposition_Backend.Hospital.Services
             }
         }
 
-        public async Task<ApiResponse<List<AssignedPatientsResponse>>>
-GetAssignedPatientsAsync(string? search)
+        public async Task<ApiResponse<List<AssignedPatientsResponse>>>GetAssignedPatientsAsync(string? search)
         {
             var userIdClaim = _httpContextAccessor
                 .HttpContext?
@@ -331,7 +330,7 @@ GetAssignedPatientsAsync(string? search)
             int physicianId = int.Parse(userIdClaim);
 
             var patients =
-                await _repository.GetAssignedPatientsAsync(physicianId);
+                await _repository.GetAssignedPatientsAsync(physicianId,search);
 
             return new ApiResponse<List<AssignedPatientsResponse>>
             {

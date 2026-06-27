@@ -235,7 +235,7 @@ GetPatientsByDeptIdAsync(string? search)
             int physicianId = int.Parse(userIdClaim);
 
             var patients =
-                await _repository.GetPatientsByDeptIdAsync(physicianId);
+                await _repository.GetPatientsByDeptIdAsync(physicianId,search);
 
             return new ApiResponse<List<PatientByDeptIdResponse>>
             {

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using DischargeDisposition_Backend.Enums;
 
-namespace DischargeDisposition_Backend.Hospital.DTOs.Responses
+namespace DischargeDisposition_Backend.Hospital.DTOs.Requests
 {
     public class CreateReferralDto
     {

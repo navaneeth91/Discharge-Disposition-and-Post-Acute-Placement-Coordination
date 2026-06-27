@@ -1,4 +1,5 @@
 ﻿using DischargeDisposition_Backend.Data;
+using DischargeDisposition_Backend.Hospital.DTOs.Responses;
 using DischargeDisposition_Backend.Helpers;
 using DischargeDisposition_Backend.Hospital.Models;
 using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
@@ -125,29 +126,92 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
             }
         }
 
-        public async Task<IEnumerable<PatientAssignment>> GetPatientsByCareManagerAsync(int careManagerId)
+        public async Task<HospitalPagedResponse<AssignedPatientDto>> GetPatientsByCareManagerAsync(
+          int careManagerId,
+          int page,
+          int pageSize,
+          string? search = null)
         {
             try
             {
                 _logger.LogInformation(
-                    "Repository: Retrieving patients assigned to Care Manager {CareManagerId}.",
-                    careManagerId);
+                    "Repository: Retrieving patients for Care Manager {CareManagerId}. Page: {Page}, PageSize: {PageSize}, Search: {Search}",
+                    careManagerId,
+                    page,
+                    pageSize,
+                    search);
 
-                var assignments = await _context.PatientAssignments
-                    .Include(pa => pa.Patient)
-                        .ThenInclude(p => p.Department)
-                    .Include(pa => pa.CareManager)
+                var query = _context.PatientAssignments
                     .Where(pa =>
                         pa.CareManagerId == careManagerId &&
-                        pa.IsActive)
+                        pa.IsActive);
+
+                // Search by Patient Name or MRN
+                if (!string.IsNullOrWhiteSpace(search))
+                {
+                    search = search.Trim();
+
+                    query = query.Where(pa =>
+                        pa.Patient.FirstName.Contains(search) ||
+                        pa.Patient.LastName.Contains(search) ||
+                        (pa.Patient.FirstName + " " + pa.Patient.LastName)
+                            .Contains(search) ||
+                        pa.Patient.Mrn.Contains(search));
+                }
+
+                var totalRecords = await query.CountAsync();
+
+                var patients = await query
+                    .OrderBy(pa => pa.Patient.PatientId)
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .Select(pa => new AssignedPatientDto
+                    {
+                        PatientId = pa.Patient.PatientId,
+
+                        Mrn = pa.Patient.Mrn,
+
+                        PatientName = pa.Patient.FirstName + " " + pa.Patient.LastName,
+
+                        Gender = pa.Patient.Gender.ToString(),
+
+                        DepartmentName = pa.Patient.Department.Name,
+
+                        ExpectedDischargeDate = pa.Patient.ExpectedDischargeDate,
+
+                        DispositionTypeId = _context.DispositionDecisions
+                            .Where(dd => dd.PatientId == pa.PatientId)
+                            .Select(dd => (int?)dd.DispositionTypeId)
+                            .FirstOrDefault(),
+
+                        DispositionType = _context.DispositionDecisions
+                            .Where(dd => dd.PatientId == pa.PatientId)
+                            .Select(dd => dd.dispositionType.DispositionName)
+                            .FirstOrDefault(),
+
+                        HasReferral = _context.Referrals
+                            .Any(r => r.PatientId == pa.PatientId),
+
+                        ReferralStatus = _context.Referrals
+                            .Where(r => r.PatientId == pa.PatientId)
+                            .Select(r => r.Status.ToString())
+                            .FirstOrDefault()
+                    })
                     .AsNoTracking()
                     .ToListAsync();
 
                 _logger.LogInformation(
-                    "Repository: Retrieved {Count} assigned patients.",
-                    assignments.Count);
+                    "Repository: Retrieved {Count} patients out of {Total}.",
+                    patients.Count,
+                    totalRecords);
 
-                return assignments;
+                return new HospitalPagedResponse<AssignedPatientDto>
+                {
+                    Items = patients,
+                    Page = page,
+                    PageSize = pageSize,
+                    TotalRecords = totalRecords
+                };
             }
             catch (Exception ex)
             {

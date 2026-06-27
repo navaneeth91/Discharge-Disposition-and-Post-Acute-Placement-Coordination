@@ -1,6 +1,6 @@
 namespace DischargeDisposition_Backend.Insurance.DTOs.Responses
 {
-    public class PagedResponse<T>
+    public class InsurancePagedResponse<T>
     {
         public List<T> Items { get; set; } = new();
 

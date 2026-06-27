@@ -172,42 +172,51 @@ namespace DischargeDisposition_Backend.Hospital.Services
                 };
             }
         }
-        public async Task<ApiResponse<IEnumerable<PatientAssignmentDto>>> GetPatientsByCareManagerAsync(
-    int careManagerId)
+        public async Task<ApiResponse<HospitalPagedResponse<AssignedPatientDto>>> GetPatientsByCareManagerAsync(
+    int careManagerId,
+    int page,
+    int pageSize,
+    string? search = null)
         {
             try
             {
-                var assignments =
-                    await _repository.GetPatientsByCareManagerAsync(careManagerId);
+                _logger.LogInformation(
+                    "Service: Retrieving patients assigned to Care Manager {CareManagerId}. Page: {Page}, PageSize: {PageSize}, Search: {Search}",
+                    careManagerId,
+                    page,
+                    pageSize,
+                    search);
 
-                return new ApiResponse<IEnumerable<PatientAssignmentDto>>
+                var result = await _repository.GetPatientsByCareManagerAsync(
+                    careManagerId,
+                    page,
+                    pageSize,
+                    search);
+
+                return new ApiResponse<HospitalPagedResponse<AssignedPatientDto>>
                 {
                     Success = true,
                     StatusCode = 200,
                     Message = "Assigned patients retrieved successfully.",
-                    Data = assignments.Select(a =>
-                        MapAssignmentToDto(
-                            a,
-                            a.Patient,
-                            a.CareManager))
+                    Data = result
                 };
             }
             catch (Exception ex)
             {
                 _logger.LogError(
                     ex,
-                    "Error retrieving assigned patients for Care Manager {CareManagerId}.",
+                    "Service Error: Failed to retrieve assigned patients for Care Manager {CareManagerId}.",
                     careManagerId);
 
-                return new ApiResponse<IEnumerable<PatientAssignmentDto>>
+                return new ApiResponse<HospitalPagedResponse<AssignedPatientDto>>
                 {
                     Success = false,
                     StatusCode = 500,
                     Message = "Failed to retrieve assigned patients.",
-                    Errors = new()
-                    {
-                        ex.Message
-                    }
+                    Errors = new List<string>
+            {
+                ex.Message
+            }
                 };
             }
         }

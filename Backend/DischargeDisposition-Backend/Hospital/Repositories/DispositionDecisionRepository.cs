@@ -56,8 +56,7 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<AssignedPatientsResponse>>
-GetAssignedPatientsAsync(int clinicianId, string? search)
+        public async Task<List<AssignedPatientsResponse>> GetAssignedPatientsAsync(int clinicianId, string? search)
         {
             var query = _context.DispositionDecisions
                 .Include(d => d.patient)
