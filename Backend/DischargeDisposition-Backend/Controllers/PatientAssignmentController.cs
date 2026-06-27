@@ -55,14 +55,23 @@ namespace DischargeDisposition_Backend.Controllers
 
             return this.ToHttpResponse(response);
         }
-
+        [Authorize(Roles ="Care Manager, Administrator")]
         [HttpGet("care-manager/{careManagerId}/patients")]
-        public async Task<IActionResult> GetPatientsByCareManager(
-            int careManagerId)
+        /// <summary>
+        /// Retrieves paginated patients assigned to a specific Care Manager.
+        /// </summary>
+    public async Task<IActionResult> GetPatientsByCareManager(
+    int careManagerId,
+    [FromQuery] int page = 1,
+    [FromQuery] int pageSize = 10,
+    [FromQuery] string? search = null)
         {
-            var response =
-                await _patientAssignmentService
-                    .GetPatientsByCareManagerAsync(careManagerId);
+            var response = await _patientAssignmentService
+                .GetPatientsByCareManagerAsync(
+                    careManagerId,
+                    page,
+                    pageSize,
+                    search);
 
             return this.ToHttpResponse(response);
         }

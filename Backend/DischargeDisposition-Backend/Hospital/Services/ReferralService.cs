@@ -112,8 +112,7 @@ namespace DischargeDisposition_Backend.Hospital.Services
             }
         }
 
-        public async Task<ApiResponse<ReferralResponseDto>>
-     CreateAsync(
+        public async Task<ApiResponse<ReferralResponseDto>> CreateAsync(
          CreateReferralDto dto,
          CancellationToken cancellationToken = default)
         {
@@ -429,6 +428,46 @@ namespace DischargeDisposition_Backend.Hospital.Services
             }
         }
 
+        public async Task<ApiResponse<PagedResponse<ReferralResponseDto>>> GetByCareManagerIdAsync(
+    int careManagerId,
+    int page,
+    int pageSize,
+    string? search = null,
+    AuthorizationStatus? status = null,
+    CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var referrals = await _repo.GetByCareManagerIdAsync(
+                    careManagerId,
+                    page,
+                    pageSize,
+                    search,
+                    status,
+                    cancellationToken);
+
+                return new ApiResponse<PagedResponse<ReferralResponseDto>>
+                {
+                    Success = true,
+                    StatusCode = 200,
+                    Message = "Referrals retrieved successfully.",
+                    Data = referrals
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<PagedResponse<ReferralResponseDto>>
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message = "Failed to retrieve referrals.",
+                    Errors = new()
+            {
+                ex.Message
+            }
+                };
+            }
+        }
         public async Task<
     ApiResponse<List<ReferralResponseDto>>>
     GetByProviderIdAsync(
@@ -609,8 +648,8 @@ namespace DischargeDisposition_Backend.Hospital.Services
                 ProviderId = r.ProviderId,
                 CareManagerId = r.CareManagerId,
                 CreatedDate = r.CreatedDate,
-                Status =r.Status.ToString(),
-                Priority =r.Priority.ToString(),
+                Status = r.Status.ToString(),
+                Priority = r.Priority.ToString(),
                 PatientName = r.patient is null ? null : $"{r.patient.FirstName} {r.patient.LastName}",
                 ProviderName = r.provider?.ProviderName,
                 CareManagerName = r.careManager is null ? null : $"{r.careManager.FirstName} {r.careManager.LastName}"

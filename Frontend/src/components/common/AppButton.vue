@@ -1,6 +1,10 @@
 <script setup>
 defineProps({
-  loading: Boolean
+  loading: Boolean,
+  fullWidth: {
+    type: Boolean,
+    default: true
+  }
 })
 </script>
 
@@ -8,25 +12,23 @@ defineProps({
 
 <button
     :disabled="loading"
-    class="
-    w-full
-    rounded-xl
-    py-3
-    font-semibold
-    text-white
-    transition-all
-    duration-300
-    hover:-translate-y-1
-    hover:shadow-xl
-    disabled:opacity-70"
-
-    style="
-    background: var(--primary);">
+    :class="[
+        fullWidth ? 'w-full' : '',
+        'rounded-xl',
+        'py-3',
+        'px-4',
+        'font-semibold',
+        'text-white',
+        'transition-all',
+        'duration-300',
+        'hover:-translate-y-1',
+        'hover:shadow-xl',
+        'disabled:opacity-70'
+    ]"
+    style="background: var(--primary);">
 
     <span v-if="loading">
-
         Please wait...
-
     </span>
 
     <slot v-else />
@@ -36,7 +38,7 @@ defineProps({
 </template>
 
 <style scoped>
-button:hover {
-    background: var(--primary-hover);
+button:hover{
+    background:var(--primary-hover);
 }
 </style>
