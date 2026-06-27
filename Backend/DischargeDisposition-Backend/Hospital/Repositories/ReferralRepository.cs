@@ -144,7 +144,7 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
         return new List<Referral>();
     }
 
-    var referrals = _db.Referrals
+    var referrals = _context.Referrals
 
         .Where(r =>
             r.ProviderId == provider.ProviderId)
@@ -235,7 +235,7 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
 
         public async Task<ReferralDetailsDto?> GetReferralDetailsAsync(int UserId,int referralId)
         {
-            return await _db.Referrals
+            return await _context.Referrals
 
                 .Where(r =>
                     r.ReferralId == referralId &&
@@ -364,7 +364,7 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
         }
         public async Task<ProviderDashboardDto> GetDashboardSummaryAsync(int userId)
         {
-            var provider = await _db.PostAcuteProviders
+            var provider = await _context.PostAcuteProviders
                 .FirstOrDefaultAsync(p => p.UserId == userId);
 
             if (provider == null)
@@ -372,7 +372,7 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
                 return new ProviderDashboardDto();
             }
 
-            var referrals = _db.Referrals
+            var referrals = _context.Referrals
                 .Where(r => r.ProviderId == provider.ProviderId);
 
             return new ProviderDashboardDto
