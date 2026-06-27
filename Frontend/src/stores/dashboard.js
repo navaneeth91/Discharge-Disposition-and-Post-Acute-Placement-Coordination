@@ -1,61 +1,106 @@
 import { defineStore } from 'pinia'
 
-import * as dashboardService
-from '@/services/dashboardService'
+import * as dashboardService from '@/services/dashboardService'
+import * as physicianService from '@/services/physicianService'
 
 export const useDashboardStore =
-    defineStore('dashboard', {
+defineStore('dashboard', {
 
-        state: () => ({
-            hospitalStats: null,
-            insuranceStats: null,
-            providerStats: null,
-            loading: false
-        }),
+    state: () => ({
 
-        actions: {
+        hospitalStats: null,
 
-            async loadHospitalDashboard() {
+        insuranceStats: null,
 
-                this.loading = true
+        physicianStats: null,
 
-                try {
+        currentSection: 'dashboard',
 
-                    const response =
-                        await dashboardService
-                            .getHospitalDashboard()
+        loading: false,
 
-                    this.hospitalStats =
-                        response.data.data
+        recentLoading: false,
+
+        assignedPatients: [],
+
+        recentInsuranceAuthorizations: []
+
+    }),
+
+    actions: {
+
+        setCurrentSection(section) {
+
+            this.currentSection = section
+
+        },
+
+        async loadHospitalDashboard() {
+
+            this.loading = true
+
+            try {
+
+                const response =
+                    await dashboardService
+                        .getHospitalDashboard()
+
+                this.hospitalStats =
+                    response.data.data
+
+            }
+
+            finally {
+
+                this.loading = false
+
+            }
+
+        },
+
+        async loadInsuranceDashboard() {
+
+            this.loading = true
+
+            try {
+
+                const response =
+                    await dashboardService
+                        .getInsuranceDashboard()
+
+                this.insuranceStats =
+                    response.data.data
+
+            }
+
+            finally {
+
+                this.loading = false
+
+            }
+
+        },
+
+        async loadPhysicianDashboard() {
+
+            this.loading = true
+
+            try {
+
+                const response =
+                    await dashboardService
+                        .getPhysicianDashboard()
+
+                this.physicianStats =
+                    response.data.data
 
                 }
-                finally {
+              finally {
 
-                    this.loading = false
+                this.loading = false
 
-                }
-            },
+            }
 
-            async loadInsuranceDashboard() {
-
-                this.loading = true
-
-                try {
-
-                    const response =
-                        await dashboardService
-                            .getInsuranceDashboard()
-
-                    this.insuranceStats =
-                        response.data.data
-
-                }
-                finally {
-
-                    this.loading = false
-
-                }
-            },
+        },
 
             async loadProviderDashboard() {
 
@@ -73,6 +118,72 @@ export const useDashboardStore =
 
                         this.loading = false
                     }
+            },
+
+            
+
+        async loadRecentInsuranceAuthorizations() {
+
+            this.recentLoading = true
+
+            try {
+
+                const response =
+                    await dashboardService
+                        .getRecentInsuranceAuthorizations()
+
+                this.recentInsuranceAuthorizations =
+                    response.data.data ?? []
+
             }
+
+            catch (error) {
+
+                console.error(error)
+
+                this.recentInsuranceAuthorizations = []
+
+            }
+
+            finally {
+
+                this.recentLoading = false
+
+            }
+
+        },
+
+        async loadAssignedPatients() {
+
+            this.loading = true
+
+            try {
+
+                const response =
+                    await physicianService
+                        .getAssignedPatients()
+
+                this.assignedPatients =
+                    response.data.data ?? []
+
+            }
+
+            catch (error) {
+
+                console.error(error)
+
+                this.assignedPatients = []
+
+            }
+
+            finally {
+
+                this.loading = false
+
+            }
+
         }
-    })
+
+    }
+
+})

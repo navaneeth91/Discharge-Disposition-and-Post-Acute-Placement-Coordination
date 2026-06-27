@@ -8,13 +8,17 @@ namespace DischargeDisposition_Backend.Hospital.Services
     {
         private readonly ILogger<PatientService> _logger;
         private readonly IPatientRepository _repository;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public PatientService(
             ILogger<PatientService> logger,
-            IPatientRepository repository)
+            IPatientRepository repository,
+            IHttpContextAccessor httpContextAccessor
+            )
         {
             _logger = logger;
             _repository = repository;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<ApiResponse<IEnumerable<PatientResponseDto>>>
@@ -208,6 +212,38 @@ namespace DischargeDisposition_Backend.Hospital.Services
                     }
                 };
             }
+        }
+
+        public async Task<ApiResponse<List<PatientByDeptIdResponse>>>
+GetPatientsByDeptIdAsync(string? search)
+        {
+            var userIdClaim = _httpContextAccessor.HttpContext?
+                .User
+                .FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?
+                .Value;
+
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return new ApiResponse<List<PatientByDeptIdResponse>>
+                {
+                    Success = false,
+                    StatusCode = 401,
+                    Message = "Unauthorized"
+                };
+            }
+
+            int physicianId = int.Parse(userIdClaim);
+
+            var patients =
+                await _repository.GetPatientsByDeptIdAsync(physicianId,search);
+
+            return new ApiResponse<List<PatientByDeptIdResponse>>
+            {
+                Success = true,
+                StatusCode = 200,
+                Message = "Assigned patients retrieved successfully",
+                Data = patients
+            };
         }
     }
 }

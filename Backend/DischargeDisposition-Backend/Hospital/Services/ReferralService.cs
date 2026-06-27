@@ -3,7 +3,7 @@ using DischargeDisposition_Backend.Enums;
 using DischargeDisposition_Backend.Hospital.DTOs.Requests;
 using DischargeDisposition_Backend.Hospital.DTOs.Responses;
 using DischargeDisposition_Backend.Hospital.Models;
-using DischargeDisposition_Backend.Hospital.Repositories;
+using DischargeDisposition_Backend.Helpers;
 using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
 using DischargeDisposition_Backend.Hospital.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -21,45 +21,41 @@ namespace DischargeDisposition_Backend.Hospital.Services
             _db = db;
         }
 
-        public async Task<ApiResponse<List<ReferralResponseDto>>>
-    GetAllAsync(
-        CancellationToken cancellationToken = default)
+        public async Task<ApiResponse<PagedResult<ReferralResponseDto>>> GetAllAsync(
+        int page,
+        int pageSize,
+        string? search,
+        string? status,
+        CancellationToken cancellationToken)
         {
-            try
+            var result =
+                await _repo.GetAllAsync(
+                    page,
+                    pageSize,
+                    search,
+                    status);
+
+            return new ApiResponse<
+                PagedResult<ReferralResponseDto>>
             {
-                var items =
-                    await _repo.GetAllAsync(
-                        cancellationToken);
+                Success = true,
+                StatusCode = 200,
+                Message = "Referrals retrieved successfully",
 
-                return new ApiResponse<
-                    List<ReferralResponseDto>>
-                {
-                    Success = true,
-                    StatusCode = 200,
-                    Message =
-                        "Referrals retrieved successfully",
-
-                    Data =
-                        items.Select(MapToResponse)
-                             .ToList()
-                };
-            }
-            catch (Exception ex)
-            {
-                return new ApiResponse<
-                    List<ReferralResponseDto>>
-                {
-                    Success = false,
-                    StatusCode = 500,
-                    Message =
-                        "Failed to retrieve referrals",
-
-                    Errors = new()
+                Data =
+                    new PagedResult<ReferralResponseDto>
                     {
-                        ex.Message
+                        Items =
+                            result.Items
+                                .Select(MapToResponse)
+                                .ToList(),
+
+                        Page = result.Page,
+                        PageSize = result.PageSize,
+                        TotalCount = result.TotalCount,
+                        TotalPages = result.TotalPages
                     }
-                };
-            }
+            };
         }
 
         public async Task<ApiResponse<ReferralResponseDto>>
@@ -116,8 +112,7 @@ namespace DischargeDisposition_Backend.Hospital.Services
             }
         }
 
-        public async Task<ApiResponse<ReferralResponseDto>>
-     CreateAsync(
+        public async Task<ApiResponse<ReferralResponseDto>> CreateAsync(
          CreateReferralDto dto,
          CancellationToken cancellationToken = default)
         {
@@ -433,9 +428,47 @@ namespace DischargeDisposition_Backend.Hospital.Services
             }
         }
 
-        public async Task<
-    ApiResponse<List<ReferralResponseDto>>>
-    GetByProviderIdAsync(
+        public async Task<ApiResponse<HospitalPagedResponse<ReferralResponseDto>>> GetByCareManagerIdAsync(
+        int careManagerId,
+        int page,
+        int pageSize,
+        string? search = null,
+        AuthorizationStatus? status = null,
+        CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var referrals = await _repo.GetByCareManagerIdAsync(
+                    careManagerId,
+                    page,
+                    pageSize,
+                    search,
+                    status,
+                    cancellationToken);
+
+                return new ApiResponse<HospitalPagedResponse<ReferralResponseDto>>
+                {
+                    Success = true,
+                    StatusCode = 200,
+                    Message = "Referrals retrieved successfully.",
+                    Data = referrals
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<HospitalPagedResponse<ReferralResponseDto>>
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message = "Failed to retrieve referrals.",
+                    Errors = new()
+            {
+                ex.Message
+            }
+                };
+            }
+        }
+        public async Task<ApiResponse<List<ReferralResponseDto>>>GetByProviderIdAsync(
         int userId, ProviderReferralQueryDto query,
         CancellationToken cancellationToken = default)
         {
@@ -572,14 +605,54 @@ namespace DischargeDisposition_Backend.Hospital.Services
                 ProviderId = r.ProviderId,
                 CareManagerId = r.CareManagerId,
                 CreatedDate = r.CreatedDate,
-                Status = r.Status,
-                Priority = r.Priority,
+                Status = r.Status.ToString(),
+                Priority = r.Priority.ToString(),
                 PatientName = r.patient is null ? null : $"{r.patient.FirstName} {r.patient.LastName}",
                 ProviderName = r.provider?.ProviderName,
                 CareManagerName = r.careManager is null ? null : $"{r.careManager.FirstName} {r.careManager.LastName}"
             };
         }
+        public async Task<ApiResponse<List<ReferralResponseDto>>>GetPendingByProviderIdAsync(
+        int userId,
+        CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var items =
+                    await _repo.GetPendingByProviderIdAsync(
+                        userId,
+                        cancellationToken);
 
+                return new ApiResponse<
+                    List<ReferralResponseDto>>
+                {
+                    Success = true,
+                    StatusCode = 200,
+                    Message =
+                        "Pending Provider referrals retrieved successfully",
+
+                    Data =
+                        items.Select(MapToResponse)
+                             .ToList()
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<
+                    List<ReferralResponseDto>>
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message =
+                        "Failed to retrieve pending referrals",
+
+                    Errors = new()
+                    {
+                        ex.Message
+                    }
+                };
+            }
+        }
 
         public async Task<ApiResponse<ReferralResponseDto>> AcceptReferralAsync(int referralId)
         {

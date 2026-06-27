@@ -1,4 +1,5 @@
 ﻿using DischargeDisposition_Backend.Hospital.Models;
+using DischargeDisposition_Backend.Hospital.DTOs.Responses;
 
 namespace DischargeDisposition_Backend.Hospital.Repositories.Interfaces
 {
@@ -9,5 +10,6 @@ namespace DischargeDisposition_Backend.Hospital.Repositories.Interfaces
         Task<DispositionDecision?> GetByDecisionIdAsync(int decisionId);
 
         Task UpdateDecisionAsync(DispositionDecision decision);
+        Task<List<AssignedPatientsResponse>> GetAssignedPatientsAsync(int physicianId, string? search);
     }
 }

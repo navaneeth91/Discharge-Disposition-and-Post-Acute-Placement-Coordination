@@ -276,28 +276,58 @@ function logout() {
 
         <!-- POST ACUTE PROVIDER -->
 
-            <template
-                v-if="
-                auth.role === 'Post-Acute Provider'
-                && !insurance">
+        <template
+            v-if="
+            auth.role === 'Post-Acute Provider'
+            && !insurance">
 
-                <RouterLink
-                    to="/provider/referrals"
-                    class="menu-item">
+            <RouterLink
+                to="/patients"
+                class="menu-item">
 
-                    <ClipboardList />
+                <Users />
 
-                    <span
-                        v-if="!ui.sidebarCollapsed">
+                <span
+                    v-if="!ui.sidebarCollapsed">
 
-                        Referrals
+                    Patients
 
-                    </span>
+                </span>
 
-                </RouterLink>
-                
+            </RouterLink>
 
-            </template>
+            <RouterLink
+                to="/referrals"
+                class="menu-item">
+
+                <ClipboardList />
+
+                <span
+                    v-if="!ui.sidebarCollapsed">
+
+                    Referrals
+
+                </span>
+
+            </RouterLink>
+
+            <RouterLink
+                to="/authorizations"
+                class="menu-item">
+
+                <ShieldCheck />
+
+                <span
+                    v-if="!ui.sidebarCollapsed">
+
+                    Authorizations
+
+                </span>
+
+            </RouterLink>
+
+        </template>
+
         <!-- AUTHORIZATION COORDINATOR -->
 
         <template

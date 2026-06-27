@@ -1,14 +1,18 @@
 using DischargeDisposition_Backend.Hospital.DTOs.Requests;
 using DischargeDisposition_Backend.Hospital.DTOs.Responses;
 using DischargeDisposition_Backend.Enums;
+using DischargeDisposition_Backend.Helpers;
 
 namespace DischargeDisposition_Backend.Hospital.Services.Interfaces
 {
     public interface IReferralService
     {
-        Task<ApiResponse<List<ReferralResponseDto>>>
-            GetAllAsync(
-                CancellationToken cancellationToken = default);
+        Task<ApiResponse<PagedResult<ReferralResponseDto>>>GetAllAsync(
+        int page,
+        int pageSize,
+        string? search,
+        string? status,
+        CancellationToken cancellationToken = default);
 
         Task<ApiResponse<ReferralResponseDto>>
             GetByIdAsync(
@@ -35,7 +39,14 @@ namespace DischargeDisposition_Backend.Hospital.Services.Interfaces
             GetByPatientIdAsync(
                 int patientId,
                 CancellationToken cancellationToken = default);
-
+        
+        Task<ApiResponse<HospitalPagedResponse<ReferralResponseDto>>> GetByCareManagerIdAsync(
+            int careManagerId,
+            int page,
+            int pageSize,
+            string? search = null,
+            AuthorizationStatus? status = null,
+            CancellationToken cancellationToken = default);
         Task<ApiResponse<List<ReferralResponseDto>>>
             GetByProviderIdAsync(
                 int userId, ProviderReferralQueryDto query,

@@ -30,5 +30,13 @@ namespace DischargeDisposition_Backend.Controllers
             return this
                 .ToHttpResponse(response);
         }
+
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchMembers([FromQuery] string query, [FromQuery] int take = 20)
+        {
+            var response = await _service.SearchMembersAsync(query, take);
+
+            return this.ToHttpResponse(response);
+        }
     }
 }

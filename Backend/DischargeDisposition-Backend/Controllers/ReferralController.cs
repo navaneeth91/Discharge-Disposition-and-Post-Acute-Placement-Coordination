@@ -7,7 +7,6 @@ using DischargeDisposition_Backend.Hospital.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using DischargeDisposition_Backend.Hospital.DTOs.Requests;
 
 namespace DischargeDisposition_Backend.Api.Controllers
 {
@@ -27,12 +26,19 @@ namespace DischargeDisposition_Backend.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult>
-            GetAll(
-                CancellationToken cancellationToken)
+        public async Task<IActionResult> GetAll(
+            int page = 1,
+            int pageSize = 10,
+            string? search = null,
+            string? status = null,
+            CancellationToken cancellationToken = default)
         {
             var response =
                 await _service.GetAllAsync(
+                    page,
+                    pageSize,
+                    search,
+                    status,
                     cancellationToken);
 
             return this
@@ -55,8 +61,7 @@ namespace DischargeDisposition_Backend.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult>
-            Create(
+        public async Task<IActionResult> Create(
                 CreateReferralDto dto,
                 CancellationToken cancellationToken)
         {
@@ -142,7 +147,45 @@ namespace DischargeDisposition_Backend.Api.Controllers
             var response =
                 await _service.GetByProviderIdAsync(
                     userId,
-                    query,cancellationToken);
+                    query,
+                    cancellationToken);
+
+            return this
+                .ToHttpResponse(response);
+        }
+        /// <summary>
+        /// Retrieves paginated referrals created by a specific Care Manager.
+        /// </summary>
+        [HttpGet("care-manager/{careManagerId}")]
+        public async Task<IActionResult> GetByCareManagerId(
+            int careManagerId,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] string? search = null,
+            [FromQuery] AuthorizationStatus? status = null,
+            CancellationToken cancellationToken = default)
+        {
+            var response = await _service.GetByCareManagerIdAsync(
+                careManagerId,
+                page,
+                pageSize,
+                search,
+                status,
+                cancellationToken);
+
+            return this.ToHttpResponse(response);
+        }
+
+        [HttpGet("provider/pending/{userId:int}")]
+        public async Task<IActionResult>
+            GetPendingByProviderId(
+                int userId,
+                CancellationToken cancellationToken)
+        {
+            var response =
+                await _service.GetPendingByProviderIdAsync(
+                    userId,
+                    cancellationToken);
 
             return this
                 .ToHttpResponse(response);

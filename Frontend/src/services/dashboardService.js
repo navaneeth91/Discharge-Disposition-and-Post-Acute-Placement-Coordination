@@ -1,5 +1,6 @@
 import api from '@/api/axios'
 
+
 export const getHospitalDashboard = () => {
     return api.get('/dashboard/hospital')
 }
@@ -31,4 +32,8 @@ export function getProviderDashboard() {
     return api.get(
         'referrals/provider/dashboard'
     )
+export const getRecentInsuranceAuthorizations = (take = 10) => {
+    return api.get('/insurance-authorizations/recent', {
+        params: { take }
+    })
 }

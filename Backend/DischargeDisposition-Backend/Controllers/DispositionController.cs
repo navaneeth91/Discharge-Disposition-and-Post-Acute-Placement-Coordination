@@ -35,8 +35,7 @@ namespace DischargeDisposition_Backend.Controllers
         }
 
         [HttpPost("decisions")]
-        public async Task<IActionResult> CreateDispositionDecision(
-    CreateDispositionDecisionRequest request)
+        public async Task<IActionResult> CreateDispositionDecision([FromBody] CreateDispositionDecisionRequest request)
         {
             var response =
                 await _dispositionDecisionService
@@ -68,6 +67,16 @@ namespace DischargeDisposition_Backend.Controllers
                         request);
 
             return this.ToHttpResponse(response);
+        }
+
+        [HttpGet("assigned/patients")]
+        [Authorize(Roles = "Physician")]
+        public async Task<IActionResult> GetAssignedPatients([FromQuery] string? search)
+        {
+            var response =
+                await _dispositionDecisionService.GetAssignedPatientsAsync(search);
+
+            return StatusCode(response.StatusCode, response);
         }
     }
 }

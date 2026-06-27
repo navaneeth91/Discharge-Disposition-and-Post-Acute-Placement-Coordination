@@ -1,8 +1,11 @@
 using DischargeDisposition_Backend.Data;
+using DischargeDisposition_Backend.Hospital.DTOs.Responses;
 using DischargeDisposition_Backend.Hospital.Models;
-using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore;
 using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore;
+using System;
 
 namespace DischargeDisposition_Backend.Hospital.Repositories
 {
@@ -69,6 +72,38 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
             Patient patient)
         {
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<PatientByDeptIdResponse>>GetPatientsByDeptIdAsync(int physicianId, string? search)
+        {
+            
+            var departmentId = await _context.Users
+                .Where(u => u.UserId == physicianId)
+                .Select(u => u.DeptId)
+                .FirstOrDefaultAsync();
+            var query = _context.Patients
+                .Where(p => p.DeptId == departmentId);
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.Trim();
+
+                query = query.Where(p =>
+                    p.FirstName.Contains(search) ||
+                    p.LastName.Contains(search) ||
+                    p.Mrn.Contains(search));
+            }
+
+            return await _context.Patients
+                .Where(p => p.DeptId == departmentId && p.IsActive == 1)
+                .Select(p => new PatientByDeptIdResponse
+                {
+                    PatientId = p.PatientId,
+                    PatientName = p.FirstName + " " + p.LastName,
+                    Dob = p.Dob,
+                    Status = p.IsActive,
+                    DeptId = p.DeptId
+                })
+                .ToListAsync();
         }
     }
 }
