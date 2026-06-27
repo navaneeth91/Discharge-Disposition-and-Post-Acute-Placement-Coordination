@@ -14,9 +14,19 @@ import * as providerService
 from '@/services/providerService'
 
 import {
+    useDashboardStore
+}
+from '@/stores/dashboard'
+
+
+
+import {
     useAuthStore
 }
 from '@/stores/auth'
+
+const dashboard =
+    useDashboardStore()
 
 const auth =
     useAuthStore()
@@ -186,7 +196,7 @@ async function viewReferral(referralId) {
                 .getReferralDetails(
                     referralId
                 )
-
+        
         selected.value =
             response.data.data
 
@@ -216,6 +226,7 @@ async function acceptReferral(id) {
             .acceptReferral(id)
 
         await loadReferrals()
+        await dashboard.loadProviderDashboard()
 
     }
 
@@ -235,6 +246,7 @@ async function rejectReferral(id) {
             .rejectReferral(id)
 
         await loadReferrals()
+        await dashboard.loadProviderDashboard()
 
     }
 
@@ -282,29 +294,6 @@ function initials(name) {
 
 }
 
-function statusText(status) {
-
-    switch (status) {
-
-        case 1:
-
-            return 'Pending'
-
-        case 2:
-
-            return 'Approved'
-
-        case 3:
-
-            return 'Denied'
-
-        default:
-
-            return 'Unknown'
-
-    }
-
-}
 </script>
 
 <template>
@@ -545,7 +534,7 @@ function statusText(status) {
                             text-blue-700
                             text-sm">
 
-                            {{ statusText(referral.status) }}
+                            {{ referral.status }}
 
                         </span>
 
@@ -585,8 +574,7 @@ function statusText(status) {
                             </button>
 
                             <button
-                                v-if="
-                                referral.status === 1"
+                                v-if="referral.status === 'Pending'"
 
                                 @click="
                                 acceptReferral(
@@ -607,8 +595,7 @@ function statusText(status) {
                             </button>
 
                             <button
-                                v-if="
-                                referral.status === 1"
+                                v-if="referral.status === 'Pending'"
 
                                 @click="
                                 rejectReferral(

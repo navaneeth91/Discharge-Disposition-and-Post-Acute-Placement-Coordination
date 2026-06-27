@@ -23,16 +23,19 @@ const emit = defineEmits([
     flex
     items-center
     justify-center
-    z-50">
+    z-50
+    p-6">
 
     <div
-        class="
-        bg-white
-        rounded-3xl
-        shadow-xl
-        w-full
-        max-w-4xl
-        p-8">
+    class="
+    bg-white
+    rounded-3xl
+    shadow-xl
+    w-full
+    max-w-4xl
+    max-h-[90vh]
+    overflow-y-auto
+    p-8">
 
         <!-- Header -->
 
