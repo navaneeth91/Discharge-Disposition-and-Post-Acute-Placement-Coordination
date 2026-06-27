@@ -137,6 +137,7 @@ watch(
 onMounted(async () => {
 
     await store.loadAuthorizations()
+    await store.loadRecentInsuranceAuthorizations()
 })
 </script>
 

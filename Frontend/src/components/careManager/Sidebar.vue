@@ -4,7 +4,7 @@ import {
     Users,
     ClipboardList,
     Clock3,
-    LogOut
+    LogOut, ShieldCheck
 } from 'lucide-vue-next'
 
 import { useUiStore }
@@ -39,7 +39,7 @@ const menuItems = [
     {
         label: 'Referrals Tracking',
         icon: ClipboardList,
-        route: '/care-manager/referrals/'
+        route: '/care-manager/referrals'
     }
 ]
 
@@ -108,7 +108,20 @@ function logout() {
             </span>
 
         </RouterLink>
+       <RouterLink
+            to="/care-manager/authorization-tracking"
+            class="menu-item">
 
+            <ShieldCheck />
+
+            <span
+                v-if="!ui.sidebarCollapsed">
+
+                Authorization Tracking
+
+            </span>
+
+        </RouterLink>
         <button
             @click="logout"
             class="menu-item w-full">

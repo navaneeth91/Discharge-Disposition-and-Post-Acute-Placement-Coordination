@@ -1,3 +1,4 @@
+using DischargeDisposition_Backend.Hospital.DTOs.Requests;
 using DischargeDisposition_Backend.Enums;
 using DischargeDisposition_Backend.Hospital.DTOs.Responses;
 using DischargeDisposition_Backend.Helpers;
@@ -12,6 +13,14 @@ namespace DischargeDisposition_Backend.Hospital.Repositories.Interfaces
         Task UpdateAsync(Referral referral, CancellationToken cancellationToken = default);
         Task DeleteAsync(int id, CancellationToken cancellationToken = default);
         Task<IEnumerable<Referral>> GetByPatientIdAsync(int patientId, CancellationToken cancellationToken = default);
+        Task<IEnumerable<Referral>> GetByProviderIdAsync(int userId, ProviderReferralQueryDto query,CancellationToken cancellationToken = default);
+       
+        Task<IEnumerable<Referral>> GetPendingReferralsAsync(CancellationToken cancellationToken = default);
+        Task<IEnumerable<Referral>> GetCompletedReferralsAsync(CancellationToken cancellationToken = default);
+
+        Task<ReferralDetailsDto?> GetReferralDetailsAsync(int UserId,int referralId);
+
+        Task<ProviderDashboardDto> GetDashboardSummaryAsync(int userId);
         Task<HospitalPagedResponse<ReferralResponseDto>> GetByCareManagerIdAsync(
             int careManagerId,
             int page,
@@ -19,10 +28,7 @@ namespace DischargeDisposition_Backend.Hospital.Repositories.Interfaces
             string? search = null,
             AuthorizationStatus? status = null,
             CancellationToken cancellationToken = default);
-        Task<IEnumerable<Referral>> GetByProviderIdAsync(int providerId, CancellationToken cancellationToken = default);
-        Task<IEnumerable<Referral>> GetPendingReferralsAsync(CancellationToken cancellationToken = default);
-        Task<IEnumerable<Referral>> GetCompletedReferralsAsync(CancellationToken cancellationToken = default);
-       
+        
         Task<PagedResult<Referral>> GetAllAsync(
             int page,
             int pageSize,

@@ -281,20 +281,7 @@ function logout() {
             auth.role === 'Post-Acute Provider'
             && !insurance">
 
-            <RouterLink
-                to="/patients"
-                class="menu-item">
-
-                <Users />
-
-                <span
-                    v-if="!ui.sidebarCollapsed">
-
-                    Patients
-
-                </span>
-
-            </RouterLink>
+            
 
             <RouterLink
                 to="/referrals"
@@ -311,20 +298,7 @@ function logout() {
 
             </RouterLink>
 
-            <RouterLink
-                to="/authorizations"
-                class="menu-item">
-
-                <ShieldCheck />
-
-                <span
-                    v-if="!ui.sidebarCollapsed">
-
-                    Authorizations
-
-                </span>
-
-            </RouterLink>
+            
 
         </template>
 

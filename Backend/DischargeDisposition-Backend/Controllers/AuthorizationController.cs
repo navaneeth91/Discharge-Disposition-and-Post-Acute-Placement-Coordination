@@ -1,6 +1,8 @@
-﻿using DischargeDisposition_Backend.Helpers;
+﻿using DischargeDisposition_Backend.Enums;
+using DischargeDisposition_Backend.Helpers;
 using DischargeDisposition_Backend.Hospital.DTOs.Requests;
 using DischargeDisposition_Backend.Hospital.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DischargeDisposition_Backend.Controllers
@@ -56,6 +58,29 @@ namespace DischargeDisposition_Backend.Controllers
 
             return this
                 .ToHttpResponse(response);
+        }
+        /// <summary>
+        /// Retrieves paginated authorization tracking records for a Care Manager.
+        /// </summary>
+        [HttpGet("care-manager/{careManagerId}")]
+        public async Task<IActionResult> GetByCareManagerId(
+            int careManagerId,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] string? search = null,
+            [FromQuery] AuthorizationStatus? status = null,
+            CancellationToken cancellationToken = default)
+        {
+            var response = await _service
+                .GetByCareManagerIdAsync(
+                    careManagerId,
+                    page,
+                    pageSize,
+                    search,
+                    status,
+                    cancellationToken);
+
+            return this.ToHttpResponse(response);
         }
     }
 }

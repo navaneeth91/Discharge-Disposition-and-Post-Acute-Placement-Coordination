@@ -3,6 +3,7 @@ using DischargeDisposition_Backend.Enums;
 using DischargeDisposition_Backend.Hospital.DTOs.Requests;
 using DischargeDisposition_Backend.Hospital.DTOs.Responses;
 using DischargeDisposition_Backend.Hospital.Models;
+using DischargeDisposition_Backend.Hospital.Repositories;
 using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
 using DischargeDisposition_Backend.Hospital.Services.Interfaces;
 using DischargeDisposition_Backend.Insurance.Models;
@@ -273,6 +274,48 @@ namespace DischargeDisposition_Backend.Hospital.Services
                 DateTime.UtcNow;
 
             await _repository.SaveAsync();
+        }
+        public async Task<ApiResponse<HospitalPagedResponse<AuthorizationTrackingResponseDto>>>
+    GetByCareManagerIdAsync(
+    int careManagerId,
+    int page,
+    int pageSize,
+    string? search = null,
+    AuthorizationStatus? status = null,
+    CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var result = await _repository
+                    .GetByCareManagerIdAsync(
+                        careManagerId,
+                        page,
+                        pageSize,
+                        search,
+                        status,
+                        cancellationToken);
+
+                return new ApiResponse<HospitalPagedResponse<AuthorizationTrackingResponseDto>>
+                {
+                    Success = true,
+                    StatusCode = 200,
+                    Message = "Authorization tracking retrieved successfully.",
+                    Data = result
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<HospitalPagedResponse<AuthorizationTrackingResponseDto>>
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message = "Failed to retrieve authorization tracking.",
+                    Errors = new List<string>
+            {
+                ex.Message
+            }
+                };
+            }
         }
     }
 }
