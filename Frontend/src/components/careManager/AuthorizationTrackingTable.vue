@@ -6,7 +6,7 @@ import EmptyState from '@/components/common/EmptyState.vue'
 
 const props = defineProps({
 
-    referrals: {
+    authorizations: {
         type: Array,
         default: () => []
     },
@@ -101,29 +101,6 @@ function formatDate(date) {
 
 }
 
-function priorityClass(priority) {
-
-    switch (priority) {
-
-        case 'Critical':
-            return 'bg-red-100 text-red-700'
-
-        case 'High':
-            return 'bg-orange-100 text-orange-700'
-
-        case 'Normal':
-            return 'bg-blue-100 text-blue-700'
-
-        case 'Low':
-            return 'bg-green-100 text-green-700'
-
-        default:
-            return 'bg-slate-100 text-slate-700'
-
-    }
-
-}
-
 function statusClass(status) {
 
     switch (status) {
@@ -154,89 +131,74 @@ function statusClass(status) {
     background:white;
     box-shadow:var(--card-shadow);">
 
-    <!-- Header -->
+    <!-- Search & Filter -->
 
     <div
         class="
         flex
         flex-col
         lg:flex-row
-        lg:items-center
-        lg:justify-between
-        gap-4
+        lg:justify-end
+        gap-3
         mb-6">
 
-        
-        <div
+        <input
+
+            v-model="search"
+
+            type="text"
+
+            placeholder="Search Patient / Payer / Authorization ID"
+
             class="
-            flex
-            flex-col
-            md:flex-row
-            gap-3">
+            rounded-xl
+            border
+            px-4
+            py-3
+            outline-none"
 
-            <!-- Search -->
+            style="
+            border-color:var(--border);" />
 
-            <input
+        <select
 
-                v-model="search"
+            v-model="status"
 
-                type="text"
+            class="
+            rounded-xl
+            border
+            px-4
+            py-3
+            outline-none"
 
-                placeholder="Search..."
+            style="
+            border-color:var(--border);">
 
-                class="
-                rounded-xl
-                border
-                px-4
-                py-3
-                outline-none"
+            <option value="">
 
-                style="
-                border-color:var(--border);" />
+                All Status
 
-            <!-- Status Filter -->
+            </option>
 
-            <select
+            <option value="Pending">
 
-                v-model="status"
+                Pending
 
-                class="
-                rounded-xl
-                border
-                px-4
-                py-3
-                outline-none"
+            </option>
 
-                style="
-                border-color:var(--border);">
+            <option value="Approved">
 
-                <option value="">
+                Approved
 
-                    All Status
+            </option>
 
-                </option>
+            <option value="Denied">
 
-                <option value="Pending">
+                Denied
 
-                    Pending
+            </option>
 
-                </option>
-
-                <option value="Approved">
-
-                    Approved
-
-                </option>
-
-                <option value="Denied">
-
-                    Denied
-
-                </option>
-
-            </select>
-
-        </div>
+        </select>
 
     </div>
 
@@ -250,7 +212,7 @@ function statusClass(status) {
         py-12
         text-center">
 
-        Loading referrals...
+        Loading authorization tracking...
 
     </div>
 
@@ -258,11 +220,11 @@ function statusClass(status) {
 
     <EmptyState
 
-        v-else-if="referrals.length===0"
+        v-else-if="authorizations.length === 0"
 
-        title="No Referrals Found"
+        title="No Authorization Records"
 
-        message="No referrals match your search." />
+        message="No authorization tracking records found." />
 
     <!-- Table -->
 
@@ -290,13 +252,13 @@ function statusClass(status) {
 
                     <th class="py-3 text-left">
 
-                        Provider
+                        Payer
 
                     </th>
 
                     <th class="py-3 text-left">
 
-                        Priority
+                        Authorization ID
 
                     </th>
 
@@ -308,7 +270,13 @@ function statusClass(status) {
 
                     <th class="py-3 text-left">
 
-                        Created On
+                        Requested
+
+                    </th>
+
+                    <th class="py-3 text-left">
+
+                        Response
 
                     </th>
 
@@ -326,36 +294,27 @@ function statusClass(status) {
 
                 <tr
 
-                    v-for="referral in referrals"
+                    v-for="authorization in authorizations"
 
-                    :key="referral.referralId"
+                    :key="authorization.authorizationId"
 
                     class="border-b">
 
                     <td class="py-4">
 
-                        {{ referral.patientName }}
+                        {{ authorization.patientName }}
 
                     </td>
 
                     <td>
 
-                        {{ referral.providerName }}
+                        {{ authorization.payerName }}
 
                     </td>
 
                     <td>
 
-                        <span
-
-                            :class="[
-                                'rounded-full px-3 py-1 text-sm font-medium',
-                                priorityClass(referral.priority)
-                            ]">
-
-                            {{ referral.priority }}
-
-                        </span>
+                        {{ authorization.externalAuthorizationId }}
 
                     </td>
 
@@ -365,10 +324,12 @@ function statusClass(status) {
 
                             :class="[
                                 'rounded-full px-3 py-1 text-sm font-medium',
-                                statusClass(referral.status)
+                                statusClass(
+                                    authorization.status
+                                )
                             ]">
 
-                            {{ referral.status }}
+                            {{ authorization.status }}
 
                         </span>
 
@@ -377,7 +338,15 @@ function statusClass(status) {
                     <td>
 
                         {{ formatDate(
-                            referral.createdDate
+                            authorization.requestedDate
+                        ) }}
+
+                    </td>
+
+                    <td>
+
+                        {{ formatDate(
+                            authorization.responseDate
                         ) }}
 
                     </td>
@@ -394,7 +363,7 @@ function statusClass(status) {
                                 @click="
                                     emit(
                                         'view',
-                                        referral
+                                        authorization
                                     )">
 
                                 View
@@ -428,7 +397,7 @@ function statusClass(status) {
 
             @click="emit('previous')"
 
-            :disabled="page===1"
+            :disabled="page === 1"
 
             class="
             rounded-xl
@@ -454,7 +423,7 @@ function statusClass(status) {
 
             @click="emit('next')"
 
-            :disabled="page===totalPages"
+            :disabled="page === totalPages"
 
             class="
             rounded-xl

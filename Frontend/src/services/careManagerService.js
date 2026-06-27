@@ -65,3 +65,22 @@ export async function getReferralTracking(
         }
     )
 }
+export async function getAuthorizationTracking(
+    careManagerId,
+    page = 1,
+    pageSize = 10,
+    search = '',
+    status = null
+) {
+    return await api.get(
+        `/authorizations/care-manager/${careManagerId}`,
+        {
+            params: {
+                page,
+                pageSize,
+                search,
+                status
+            }
+        }
+    )
+}
