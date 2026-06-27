@@ -11,6 +11,10 @@ import DashboardView from '@/views/hospital/DashboardView.vue'
 // Insurance Views
 import InsuranceDashboardView from '@/views/insurance/InsuranceDashboardView.vue'
 
+//Post-Acute Provider Views
+import ProviderDashboardView from '@/views/provider/ProviderDashboardView.vue'
+import ProviderReferralsView from '@/views/provider/ProviderReferralsView.vue'
+
 const routes = [
 
     // Default Redirect
@@ -78,13 +82,23 @@ const routes = [
     // Post Acute Provider
 
     {
-        path: '/provider/dashboard',
-        name: 'ProviderDashboard',
-        component: DashboardView,
-        meta: {
-            requiresAuth: true,
-            role: 'Post-Acute Provider'
+    path: '/provider/dashboard',
+    name: 'ProviderDashboard',
+    component: ProviderDashboardView,
+    meta: {
+        requiresAuth: true,
+        role: 'Post-Acute Provider'
         }
+    },
+
+    {
+    path: '/provider/referrals',
+    name: 'ProviderReferrals',
+    component: ProviderReferralsView,
+    meta: {
+        requiresAuth: true,
+        role: 'Post-Acute Provider'
+    }
     },
 
     // Insurance

@@ -91,14 +91,15 @@ async function loadChart() {
 
         const response =
             await getPatientDistribution()
+        const patients = response.data.data
 
         chartData.value.labels =
-            response.data.map(
+            patients.map(
                 x => x.departmentName
             )
 
         chartData.value.datasets[0].data =
-            response.data.map(
+            patients.map(
                 x => x.totalPatients
             )
     }

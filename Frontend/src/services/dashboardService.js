@@ -25,3 +25,10 @@ export const getInsuranceAnalytics = () => {
         '/insurance-dashboard/service-analytics'
     )
 }
+
+export function getProviderDashboard() {
+
+    return api.get(
+        'referrals/provider/dashboard'
+    )
+}

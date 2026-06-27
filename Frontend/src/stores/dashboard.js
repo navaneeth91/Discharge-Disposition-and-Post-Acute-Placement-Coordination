@@ -9,6 +9,7 @@ export const useDashboardStore =
         state: () => ({
             hospitalStats: null,
             insuranceStats: null,
+            providerStats: null,
             loading: false
         }),
 
@@ -25,7 +26,7 @@ export const useDashboardStore =
                             .getHospitalDashboard()
 
                     this.hospitalStats =
-                        response.data
+                        response.data.data
 
                 }
                 finally {
@@ -46,7 +47,7 @@ export const useDashboardStore =
                             .getInsuranceDashboard()
 
                     this.insuranceStats =
-                        response.data
+                        response.data.data
 
                 }
                 finally {
@@ -54,6 +55,24 @@ export const useDashboardStore =
                     this.loading = false
 
                 }
+            },
+
+            async loadProviderDashboard() {
+
+                    this.loading = true
+
+                    try {
+
+                        const response =
+                        await dashboardService
+                            .getProviderDashboard()
+
+                        this.providerStats = response.data.data
+                    }
+                    finally {
+
+                        this.loading = false
+                    }
             }
         }
     })

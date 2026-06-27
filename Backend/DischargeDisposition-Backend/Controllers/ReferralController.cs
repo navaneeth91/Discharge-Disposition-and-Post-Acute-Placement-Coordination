@@ -2,9 +2,12 @@ using DischargeDisposition_Backend.Enums;
 using DischargeDisposition_Backend.Helpers;
 using DischargeDisposition_Backend.Hospital.DTOs.Requests;
 using DischargeDisposition_Backend.Hospital.DTOs.Responses;
+using DischargeDisposition_Backend.Hospital.Services;
 using DischargeDisposition_Backend.Hospital.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using DischargeDisposition_Backend.Hospital.DTOs.Requests;
 
 namespace DischargeDisposition_Backend.Api.Controllers
 {
@@ -134,39 +137,19 @@ namespace DischargeDisposition_Backend.Api.Controllers
         public async Task<IActionResult>
             GetByProviderId(
                 int userId,
-                CancellationToken cancellationToken)
+                [FromQuery] ProviderReferralQueryDto query,CancellationToken cancellationToken)
         {
             var response =
                 await _service.GetByProviderIdAsync(
                     userId,
-                    cancellationToken);
+                    query,cancellationToken);
 
             return this
                 .ToHttpResponse(response);
         }
 
-        [HttpGet("provider/pending/{userId:int}")]
-        public async Task<IActionResult>
-            GetPendingByProviderId(
-                int userId,
-                CancellationToken cancellationToken)
-        {
-            var response =
-                await _service.GetPendingByProviderIdAsync(
-                    userId,
-                    cancellationToken);
+        
 
-            return this
-                .ToHttpResponse(response);
-        }
-
-        [HttpPatch("/provider/{id}/accept")]
-        public async Task<IActionResult> AcceptReferral(int id)
-        {
-            var response = await _service.AcceptReferralAsync(id);
-
-            return this.ToHttpResponse(response);
-        }
 
         [HttpGet("pending")]
         public async Task<IActionResult>
@@ -194,7 +177,51 @@ namespace DischargeDisposition_Backend.Api.Controllers
                 .ToHttpResponse(response);
         }
 
+        [HttpGet("details/{referralId}")]
+        public async Task<IActionResult> GetReferralDetails(int referralId)
+        {
+            var userIdClaim =
+                User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        
+            if (userIdClaim == null)
+            {
+                return Unauthorized();
+            }
+
+            int UserId = int.Parse(userIdClaim);
+
+            var response =
+                await _service.GetReferralDetailsAsync(
+                    UserId,
+                    referralId);
+
+            return StatusCode(
+                response.StatusCode,
+                response);
+        }
+
+
+        [HttpGet("provider/dashboard")]
+        public async Task<IActionResult> GetDashboardSummary()
+        {
+            var userIdClaim =
+                User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userIdClaim == null)
+            {
+                return Unauthorized();
+            }
+
+            int userId =
+                int.Parse(userIdClaim);
+
+            var response =
+                await _service.GetDashboardSummaryAsync(userId);
+
+            return StatusCode(
+                response.StatusCode,
+                response);
+        }
+
     }
 }
