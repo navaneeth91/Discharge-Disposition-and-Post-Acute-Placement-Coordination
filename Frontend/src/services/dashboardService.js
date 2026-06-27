@@ -26,14 +26,21 @@ export const getInsuranceAnalytics = () => {
         '/insurance-dashboard/service-analytics'
     )
 }
-
-export function getProviderDashboard() {
-
-    return api.get(
-        'referrals/provider/dashboard'
-    )
 export const getRecentInsuranceAuthorizations = (take = 10) => {
     return api.get('/insurance-authorizations/recent', {
         params: { take }
     })
 }
+export function getProviderDashboard() {
+
+    return api.get(
+        'referrals/provider/dashboard'
+    )
+}
+
+
+
+
+
+
+
