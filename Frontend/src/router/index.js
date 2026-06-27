@@ -7,16 +7,25 @@ import InsuranceLoginView from '@/views/auth/InsuranceLoginView.vue'
 
 // Hospital Views
 import DashboardView from '@/views/hospital/DashboardView.vue'
+import CareManagerDashboardView from '@/views/careManager/DashboardView.vue'
+
+// Layouts
+import CareManagerLayout from '@/layouts/CareManagerLayout.vue'
 
 // Insurance Views
 import InsuranceDashboardView from '@/views/insurance/InsuranceDashboardView.vue'
 
-//Patient Views
+// Patient Views
 import PatientsView from '@/views/hospital/PatientsView.vue'
+//Care Manager Views
+import CareManagerPatientsView from '@/views/careManager/PatientsView.vue'
+import ReferralTrackingView from '@/views/careManager/ReferralTrackingView.vue'
+
 
 const routes = [
 
     // Default Redirect
+
     {
         path: '/',
         redirect: '/login'
@@ -68,16 +77,35 @@ const routes = [
 
     // Care Manager
 
-    {
-        path: '/care-manager/dashboard',
-        name: 'CareManagerDashboard',
-        component: DashboardView,
-        meta: {
-            requiresAuth: true,
-            role: 'Care Manager'
-        }
+   {
+    path: '/care-manager',
+    component: CareManagerLayout,
+    meta: {
+        requiresAuth: true,
+        role: 'Care Manager'
     },
+    children: [
 
+        {
+            path: 'dashboard',
+            name: 'CareManagerDashboard',
+            component: CareManagerDashboardView
+        },
+
+        {
+            path: 'patients',
+            name: 'CareManagerPatients',
+            component: CareManagerPatientsView
+        },
+
+        {
+            path: 'referrals',
+            name: 'ReferralTracking',
+            component: ReferralTrackingView
+        }
+
+    ]
+},
     // Post Acute Provider
 
     {
@@ -101,22 +129,24 @@ const routes = [
             role: 'Authorization Coordinator'
         }
     },
+
+    // Patients
+
     {
         path: '/patients',
-
-        component:
-            PatientsView,
-
+        component: PatientsView,
         meta: {
             requiresAuth: true
         }
     },
+
     // 404
 
     {
         path: '/:pathMatch(.*)*',
         redirect: '/login'
     }
+
 ]
 
 const router = createRouter({
@@ -141,8 +171,6 @@ router.beforeEach((to, from, next) => {
     // Public routes
 
     if (publicPages.includes(to.path)) {
-
-        // Already logged in
 
         if (token && role) {
 
@@ -188,11 +216,13 @@ router.beforeEach((to, from, next) => {
         to.meta.role &&
         role !== to.meta.role
     ) {
+
         next('/login')
         return
     }
 
     next()
+
 })
 
 export default router

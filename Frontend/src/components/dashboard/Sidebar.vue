@@ -2,144 +2,463 @@
 import {
     LayoutDashboard,
     Users,
+    ClipboardPlus,
     ClipboardList,
     ShieldCheck,
     BarChart3,
-    Settings,
     LogOut
-} from 'lucide-vue-next'
+}
+from 'lucide-vue-next'
 
-import { useUiStore }
-from '@/stores/ui'
+import {
+    computed
+}
+from 'vue'
 
-import { useRouter }
+import {
+    useRouter
+}
 from 'vue-router'
 
-import { useAuthStore }
+import {
+    useUiStore
+}
+from '@/stores/ui'
+
+import {
+    useAuthStore
+}
 from '@/stores/auth'
 
-const ui = useUiStore()
+const ui =
+    useUiStore()
 
-const auth = useAuthStore()
+const auth =
+    useAuthStore()
 
-const router = useRouter()
+const router =
+    useRouter()
 
-const props = defineProps({
+defineProps({
+
     insurance: Boolean
+
 })
+
+const dashboardRoute =
+    computed(() => {
+
+        switch (auth.role) {
+
+            case 'Administrator':
+                return '/administrator/dashboard'
+
+            case 'Physician':
+                return '/physician/dashboard'
+
+            case 'Care Manager':
+                return '/care-manager/dashboard'
+
+            case 'Post-Acute Provider':
+                return '/provider/dashboard'
+
+            case 'Authorization Coordinator':
+                return '/insurance/dashboard'
+
+            default:
+                return '/login'
+
+        }
+
+    })
 
 function logout() {
 
     auth.logout()
 
     router.push('/login')
+
 }
 </script>
-
 <template>
 
-    <aside
-        :class="[
-            ui.sidebarCollapsed
-                ? 'w-24'
-                : 'w-72'
-        ]"
+<aside
+    :class="[
+        ui.sidebarCollapsed
+            ? 'w-24'
+            : 'w-72'
+    ]"
 
+    class="
+    fixed
+    left-0
+    top-0
+    h-screen
+    bg-[#003049]
+    text-white
+    transition-all
+    duration-300
+    flex
+    flex-col
+    z-50">
+
+    <!-- Logo -->
+
+    <div
         class="
-        fixed
-        left-0
-        top-0
-        h-screen
-        bg-[#003049]
-        text-white
-        transition-all
-        duration-300
+        h-20
         flex
-        flex-col
-        z-50">
+        items-center
+        justify-center
+        text-2xl
+        font-bold
+        border-b
+        border-[#669BBC]/20">
 
-        <div
-            class="
-            h-20
-            flex
-            items-center
-            justify-center
-            text-2xl
-            font-bold">
+        DDS
 
-            DDS
+    </div>
 
-        </div>
+    <nav
+        class="
+        flex-1
+        p-4
+        space-y-2">
 
-        <nav class="flex-1 p-4 space-y-2">
+        <!-- DASHBOARD -->
+
+        <RouterLink
+            :to="dashboardRoute"
+            class="menu-item">
+
+            <LayoutDashboard />
+
+            <span
+                v-if="!ui.sidebarCollapsed">
+
+                Dashboard
+
+            </span>
+
+        </RouterLink>
+
+        <!-- ADMINISTRATOR -->
+
+        <template
+            v-if="
+            auth.role === 'Administrator'
+            && !insurance">
 
             <RouterLink
-                to="/administrator/dashboard"
+                to="/administrator/users"
                 class="menu-item">
 
-                <LayoutDashboard />
+                <ShieldCheck />
 
                 <span
                     v-if="!ui.sidebarCollapsed">
 
-                    Dashboard
+                    Users
 
                 </span>
 
             </RouterLink>
 
-            <template v-if="!insurance">
+            <RouterLink
+                to="/patients"
+                class="menu-item">
 
-                <RouterLink
-                    to="/patients"
-                    class="menu-item">
-
-                    <Users />
-
-                    <span
-                        v-if="!ui.sidebarCollapsed">
-
-                        Patients
-
-                    </span>
-
-                </RouterLink>
-
-                <RouterLink
-                    to="/referrals"
-                    class="menu-item">
-
-                    <ClipboardList />
-
-                    <span
-                        v-if="!ui.sidebarCollapsed">
-
-                        Referrals
-
-                    </span>
-
-                </RouterLink>
-
-            </template>
-
-            <button
-                @click="logout"
-                class="menu-item w-full">
-
-                <LogOut />
+                <Users />
 
                 <span
                     v-if="!ui.sidebarCollapsed">
 
-                    Logout
+                    Patients
 
                 </span>
 
-            </button>
+            </RouterLink>
 
-        </nav>
+            <RouterLink
+                to="/referrals"
+                class="menu-item">
 
-    </aside>
+                <ClipboardList />
+
+                <span
+                    v-if="!ui.sidebarCollapsed">
+
+                    Referrals
+
+                </span>
+
+            </RouterLink>
+
+        </template>
+
+        <!-- CARE MANAGER -->
+
+        <template
+            v-if="
+            auth.role === 'Care Manager'
+            && !insurance">
+
+            <RouterLink
+                to="/patients"
+                class="menu-item">
+
+                <Users />
+
+                <span
+                    v-if="!ui.sidebarCollapsed">
+
+                    Patients
+
+                </span>
+
+            </RouterLink>
+
+            <RouterLink
+                to="/referrals"
+                class="menu-item">
+
+                <ClipboardList />
+
+                <span
+                    v-if="!ui.sidebarCollapsed">
+
+                    Referrals
+
+                </span>
+
+            </RouterLink>
+
+        </template>
+
+                <!-- PHYSICIAN -->
+
+        <template
+            v-if="
+            auth.role === 'Physician'
+            && !insurance">
+
+            <RouterLink
+                to="/physician/AssignedPatientsTable"
+                class="menu-item">
+
+                <Users />
+
+                <span
+                    v-if="!ui.sidebarCollapsed">
+
+                    Assigned Patients
+
+                </span>
+
+            </RouterLink>
+
+            <RouterLink
+                to="/physician/ViewPatientsTable"
+                class="menu-item">
+
+                <ClipboardPlus />
+
+                <span
+                    v-if="!ui.sidebarCollapsed">
+
+                    View Patients
+
+                </span>
+
+            </RouterLink>
+
+        </template>
+
+        <!-- POST ACUTE PROVIDER -->
+
+        <template
+            v-if="
+            auth.role === 'Post-Acute Provider'
+            && !insurance">
+
+            <RouterLink
+                to="/patients"
+                class="menu-item">
+
+                <Users />
+
+                <span
+                    v-if="!ui.sidebarCollapsed">
+
+                    Patients
+
+                </span>
+
+            </RouterLink>
+
+            <RouterLink
+                to="/referrals"
+                class="menu-item">
+
+                <ClipboardList />
+
+                <span
+                    v-if="!ui.sidebarCollapsed">
+
+                    Referrals
+
+                </span>
+
+            </RouterLink>
+
+            <RouterLink
+                to="/authorizations"
+                class="menu-item">
+
+                <ShieldCheck />
+
+                <span
+                    v-if="!ui.sidebarCollapsed">
+
+                    Authorizations
+
+                </span>
+
+            </RouterLink>
+
+        </template>
+
+        <!-- AUTHORIZATION COORDINATOR -->
+
+        <template
+            v-if="
+            auth.role === 'Authorization Coordinator'
+            && !insurance">
+
+            <RouterLink
+                to="/referrals"
+                class="menu-item">
+
+                <ClipboardList />
+
+                <span
+                    v-if="!ui.sidebarCollapsed">
+
+                    Referrals
+
+                </span>
+
+            </RouterLink>
+
+        </template>
+
+        <!-- UNASSIGNED -->
+
+        <template
+            v-if="
+            auth.role === 'Unassigned'
+            && !insurance">
+
+            <div
+                class="
+                p-4
+                text-center
+                text-sm
+                text-gray-300">
+
+                Awaiting role assignment
+
+            </div>
+
+        </template>
+
+        <!-- INSURANCE -->
+
+        <template
+            v-if="insurance">
+
+            <RouterLink
+                to="/insurance/authorizations"
+                class="menu-item">
+
+                <ClipboardList />
+
+                <span
+                    v-if="!ui.sidebarCollapsed">
+
+                    Authorizations
+
+                </span>
+
+            </RouterLink>
+
+            <RouterLink
+                to="/insurance/members"
+                class="menu-item">
+
+                <Users />
+
+                <span
+                    v-if="!ui.sidebarCollapsed">
+
+                    Members
+
+                </span>
+
+            </RouterLink>
+
+            <RouterLink
+                to="/insurance/providers"
+                class="menu-item">
+
+                <BarChart3 />
+
+                <span
+                    v-if="!ui.sidebarCollapsed">
+
+                    Providers
+
+                </span>
+
+            </RouterLink>
+
+            <RouterLink
+                to="/insurance/plans"
+                class="menu-item">
+
+                <ShieldCheck />
+
+                <span
+                    v-if="!ui.sidebarCollapsed">
+
+                    Plans
+
+                </span>
+
+            </RouterLink>
+
+        </template>
+
+        <!-- LOGOUT -->
+
+        <button
+            @click="logout"
+            class="menu-item w-full">
+
+            <LogOut />
+
+            <span
+                v-if="!ui.sidebarCollapsed">
+
+                Logout
+
+            </span>
+
+        </button>
+
+    </nav>
+
+</aside>
 
 </template>
 
@@ -156,6 +475,7 @@ function logout() {
 
 .menu-item:hover {
     background: rgba(102,155,188,.25);
+    transform: translateX(4px);
 }
 
 .router-link-active {

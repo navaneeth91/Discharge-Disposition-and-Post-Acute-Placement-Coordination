@@ -59,6 +59,8 @@ builder.Services.AddHttpClient<IWebhookService,WebhookService>();
 builder.Services.AddScoped<IMemberService,MemberService>();
 builder.Services.AddScoped<IPatientAssignmentRepository,PatientAssignmentRepository>();
 builder.Services.AddScoped<IPatientAssignmentService,PatientAssignmentService>();
+builder.Services.AddScoped<ICareManagerRepository, CareManagerRepository>();
+builder.Services.AddScoped<ICareManagerService, CareManagerService>();
 var hospitalConnection =
     builder.Configuration.GetConnectionString("HospitalConnection")
     ?? throw new InvalidOperationException(

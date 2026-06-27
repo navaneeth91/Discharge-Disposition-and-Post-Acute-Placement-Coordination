@@ -10,8 +10,11 @@ namespace DischargeDisposition_Backend.Hospital.Services.Interfaces
 
         Task<ApiResponse<IEnumerable<PatientDto>>> GetUnassignedPatientsAsync();
 
-        Task<ApiResponse<IEnumerable<PatientAssignmentDto>>> GetPatientsByCareManagerAsync(
-            int careManagerId);
+        Task<ApiResponse<PagedResponse<AssignedPatientDto>>> GetPatientsByCareManagerAsync(
+            int careManagerId,
+            int page,
+            int pageSize,
+            string? search = null);
 
         Task<ApiResponse<IEnumerable<UserDto>>> GetAllCareManagersAsync();
     }

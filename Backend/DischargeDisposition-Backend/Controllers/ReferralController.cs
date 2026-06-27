@@ -1,7 +1,7 @@
 using DischargeDisposition_Backend.Enums;
 using DischargeDisposition_Backend.Helpers;
 using DischargeDisposition_Backend.Hospital.DTOs.Requests;
-using DischargeDisposition_Backend.Hospital.DTOs.Responses;
+using DischargeDisposition_Backend.Hospital.Services;
 using DischargeDisposition_Backend.Hospital.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -52,8 +52,7 @@ namespace DischargeDisposition_Backend.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult>
-            Create(
+        public async Task<IActionResult> Create(
                 CreateReferralDto dto,
                 CancellationToken cancellationToken)
         {
@@ -144,7 +143,28 @@ namespace DischargeDisposition_Backend.Api.Controllers
             return this
                 .ToHttpResponse(response);
         }
+        /// <summary>
+        /// Retrieves paginated referrals created by a specific Care Manager.
+        /// </summary>
+        [HttpGet("care-manager/{careManagerId}")]
+        public async Task<IActionResult> GetByCareManagerId(
+            int careManagerId,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] string? search = null,
+            [FromQuery] AuthorizationStatus? status = null,
+            CancellationToken cancellationToken = default)
+        {
+            var response = await _service.GetByCareManagerIdAsync(
+                careManagerId,
+                page,
+                pageSize,
+                search,
+                status,
+                cancellationToken);
 
+            return this.ToHttpResponse(response);
+        }
         [HttpGet("pending")]
         public async Task<IActionResult>
             GetPending(

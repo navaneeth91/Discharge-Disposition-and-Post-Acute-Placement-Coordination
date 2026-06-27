@@ -1,3 +1,5 @@
+using DischargeDisposition_Backend.Enums;
+using DischargeDisposition_Backend.Hospital.DTOs.Responses;
 using DischargeDisposition_Backend.Hospital.Models;
 
 namespace DischargeDisposition_Backend.Hospital.Repositories.Interfaces
@@ -10,6 +12,13 @@ namespace DischargeDisposition_Backend.Hospital.Repositories.Interfaces
         Task UpdateAsync(Referral referral, CancellationToken cancellationToken = default);
         Task DeleteAsync(int id, CancellationToken cancellationToken = default);
         Task<IEnumerable<Referral>> GetByPatientIdAsync(int patientId, CancellationToken cancellationToken = default);
+        Task<PagedResponse<ReferralResponseDto>> GetByCareManagerIdAsync(
+            int careManagerId,
+            int page,
+            int pageSize,
+            string? search = null,
+            AuthorizationStatus? status = null,
+            CancellationToken cancellationToken = default);
         Task<IEnumerable<Referral>> GetByProviderIdAsync(int providerId, CancellationToken cancellationToken = default);
         Task<IEnumerable<Referral>> GetPendingReferralsAsync(CancellationToken cancellationToken = default);
         Task<IEnumerable<Referral>> GetCompletedReferralsAsync(CancellationToken cancellationToken = default);

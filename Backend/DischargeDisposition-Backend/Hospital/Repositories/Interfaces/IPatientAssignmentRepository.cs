@@ -1,4 +1,5 @@
-﻿using DischargeDisposition_Backend.Hospital.Models;
+﻿using DischargeDisposition_Backend.Hospital.DTOs.Responses;
+using DischargeDisposition_Backend.Hospital.Models;
 
 namespace DischargeDisposition_Backend.Hospital.Repositories.Interfaces
 {
@@ -8,8 +9,11 @@ namespace DischargeDisposition_Backend.Hospital.Repositories.Interfaces
 
         Task<IEnumerable<Patient>> GetUnassignedPatientsAsync();
 
-        Task<IEnumerable<PatientAssignment>> GetPatientsByCareManagerAsync(int careManagerId);
-
+        Task<PagedResponse<AssignedPatientDto>> GetPatientsByCareManagerAsync(
+            int careManagerId,
+            int page,
+            int pageSize,
+            string? search = null);
         Task<bool> IsPatientAssignedAsync(int patientId);
 
         Task<PatientAssignment?> GetAssignmentByPatientIdAsync(int patientId);
