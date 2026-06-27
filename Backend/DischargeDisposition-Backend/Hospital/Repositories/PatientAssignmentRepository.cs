@@ -126,7 +126,7 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
             }
         }
 
-        public async Task<PagedResponse<AssignedPatientDto>> GetPatientsByCareManagerAsync(
+        public async Task<HospitalPagedResponse<AssignedPatientDto>> GetPatientsByCareManagerAsync(
           int careManagerId,
           int page,
           int pageSize,
@@ -205,7 +205,7 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
                     patients.Count,
                     totalRecords);
 
-                return new PagedResponse<AssignedPatientDto>
+                return new HospitalPagedResponse<AssignedPatientDto>
                 {
                     Items = patients,
                     Page = page,

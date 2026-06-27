@@ -1,6 +1,6 @@
 ﻿namespace DischargeDisposition_Backend.Hospital.DTOs.Responses
 {
-    public class PagedResponse<T>
+    public class HospitalPagedResponse<T>
     {
         public IEnumerable<T> Items { get; set; } = [];
 

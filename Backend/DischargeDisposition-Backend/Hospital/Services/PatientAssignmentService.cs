@@ -172,7 +172,7 @@ namespace DischargeDisposition_Backend.Hospital.Services
                 };
             }
         }
-        public async Task<ApiResponse<PagedResponse<AssignedPatientDto>>> GetPatientsByCareManagerAsync(
+        public async Task<ApiResponse<HospitalPagedResponse<AssignedPatientDto>>> GetPatientsByCareManagerAsync(
     int careManagerId,
     int page,
     int pageSize,
@@ -193,7 +193,7 @@ namespace DischargeDisposition_Backend.Hospital.Services
                     pageSize,
                     search);
 
-                return new ApiResponse<PagedResponse<AssignedPatientDto>>
+                return new ApiResponse<HospitalPagedResponse<AssignedPatientDto>>
                 {
                     Success = true,
                     StatusCode = 200,
@@ -208,7 +208,7 @@ namespace DischargeDisposition_Backend.Hospital.Services
                     "Service Error: Failed to retrieve assigned patients for Care Manager {CareManagerId}.",
                     careManagerId);
 
-                return new ApiResponse<PagedResponse<AssignedPatientDto>>
+                return new ApiResponse<HospitalPagedResponse<AssignedPatientDto>>
                 {
                     Success = false,
                     StatusCode = 500,

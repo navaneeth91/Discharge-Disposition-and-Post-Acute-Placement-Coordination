@@ -1,10 +1,9 @@
 ﻿using DischargeDisposition_Backend.Data;
 using DischargeDisposition_Backend.Enums;
-using DischargeDisposition_Backend.Hospital.DTOs.Responses;
-using DischargeDisposition_Backend.Hospital.Services.Interfaces;
 using DischargeDisposition_Backend.Insurance.DTOs.Responses;
 using DischargeDisposition_Backend.Insurance.Hospital.Services.Interfaces;
 using DischargeDisposition_Backend.Insurance.Models;
+using DischargeDisposition_Backend.Hospital.DTOs.Responses;
 using DischargeDisposition_Backend.Insurance.Repositories.Interfaces;
 using DischargeDisposition_Backend.Insurance.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +26,7 @@ namespace DischargeDisposition_Backend.Insurance.Services
             _webhookService = webhookService;
         }
 
-        public async Task<ApiResponse<PagedResponse<AuthorizationRequestListItemResponse>>> GetAuthorizationsAsync(
+        public async Task<ApiResponse<InsurancePagedResponse<AuthorizationRequestListItemResponse>>> GetAuthorizationsAsync(
             string? search,
             AuthorizationStatus? status,
             int page,
@@ -42,12 +41,12 @@ namespace DischargeDisposition_Backend.Insurance.Services
 
                 var data = items.Select(MapAuthorization).ToList();
 
-                return new ApiResponse<PagedResponse<AuthorizationRequestListItemResponse>>
+                return new ApiResponse<InsurancePagedResponse<AuthorizationRequestListItemResponse>>
                 {
                     Success = true,
                     StatusCode = 200,
                     Message = "Authorizations retrieved successfully",
-                    Data = new PagedResponse<AuthorizationRequestListItemResponse>
+                    Data = new InsurancePagedResponse<AuthorizationRequestListItemResponse>
                     {
                         Items = data,
                         TotalCount = totalCount,
@@ -58,7 +57,7 @@ namespace DischargeDisposition_Backend.Insurance.Services
             }
             catch (Exception ex)
             {
-                return new ApiResponse<PagedResponse<AuthorizationRequestListItemResponse>>
+                return new ApiResponse<InsurancePagedResponse<AuthorizationRequestListItemResponse>>
                 {
                     Success = false,
                     StatusCode = 500,

@@ -12,7 +12,7 @@ namespace DischargeDisposition_Backend.Hospital.Repositories.Interfaces
         Task UpdateAsync(Referral referral, CancellationToken cancellationToken = default);
         Task DeleteAsync(int id, CancellationToken cancellationToken = default);
         Task<IEnumerable<Referral>> GetByPatientIdAsync(int patientId, CancellationToken cancellationToken = default);
-        Task<PagedResponse<ReferralResponseDto>> GetByCareManagerIdAsync(
+        Task<HospitalPagedResponse<ReferralResponseDto>> GetByCareManagerIdAsync(
             int careManagerId,
             int page,
             int pageSize,
