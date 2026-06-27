@@ -13,7 +13,7 @@ namespace DischargeDisposition_Backend.Hospital.Repositories.Interfaces
             int pageSize,
             string? search);
 
-        Task<PagedResponse<AssignedPatientDto>> GetPatientsByCareManagerAsync(
+        Task<HospitalPagedResponse<AssignedPatientDto>> GetPatientsByCareManagerAsync(
             int careManagerId,
             int page,
             int pageSize,

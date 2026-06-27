@@ -127,7 +127,7 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<PagedResponse<ReferralResponseDto>> GetByCareManagerIdAsync(
+        public async Task<HospitalPagedResponse<ReferralResponseDto>> GetByCareManagerIdAsync(
           int careManagerId,
           int page,
           int pageSize,
@@ -191,7 +191,7 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
                 })
                 .ToListAsync(cancellationToken);
 
-            return new PagedResponse<ReferralResponseDto>
+            return new HospitalPagedResponse<ReferralResponseDto>
             {
                 Items = referrals,
                 Page = page,
