@@ -93,15 +93,34 @@ defineStore('dashboard', {
                 this.physicianStats =
                     response.data.data
 
-            }
-
-            finally {
+                }
+              finally {
 
                 this.loading = false
 
             }
 
         },
+
+            async loadProviderDashboard() {
+
+                    this.loading = true
+
+                    try {
+
+                        const response =
+                        await dashboardService
+                            .getProviderDashboard()
+
+                        this.providerStats = response.data.data
+                    }
+                    finally {
+
+                        this.loading = false
+                    }
+            },
+
+            
 
         async loadRecentInsuranceAuthorizations() {
 

@@ -166,30 +166,7 @@ function statusClass(status) {
         gap-4
         mb-6">
 
-        <div>
-
-            <h2
-                class="
-                text-2xl
-                font-bold"
-                style="
-                color:var(--text-primary);">
-
-                Referral Tracking
-
-            </h2>
-
-            <p
-                class="text-sm"
-                style="
-                color:var(--text-secondary);">
-
-                Track all referrals created by you.
-
-            </p>
-
-        </div>
-
+        
         <div
             class="
             flex

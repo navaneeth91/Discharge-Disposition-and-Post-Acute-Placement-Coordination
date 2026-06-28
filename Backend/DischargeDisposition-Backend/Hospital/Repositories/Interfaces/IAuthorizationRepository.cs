@@ -1,4 +1,6 @@
-﻿using DischargeDisposition_Backend.Hospital.Models;
+﻿using DischargeDisposition_Backend.Enums;
+using DischargeDisposition_Backend.Hospital.DTOs.Responses;
+using DischargeDisposition_Backend.Hospital.Models;
 
 namespace DischargeDisposition_Backend.Hospital.Repositories.Interfaces
 {
@@ -9,6 +11,13 @@ namespace DischargeDisposition_Backend.Hospital.Repositories.Interfaces
         Task<List<AuthorizationTracking>>GetByPatientAsync(int patientId);
 
         Task<AuthorizationTracking?>GetByExternalIdAsync(string externalId);
+        Task<HospitalPagedResponse<AuthorizationTrackingResponseDto>> GetByCareManagerIdAsync(
+           int careManagerId,
+           int page,
+           int pageSize,
+           string? search = null,
+           AuthorizationStatus? status = null,
+           CancellationToken cancellationToken = default);
 
         Task<AuthorizationTracking?>
             GetByInsuranceRequestIdAsync(

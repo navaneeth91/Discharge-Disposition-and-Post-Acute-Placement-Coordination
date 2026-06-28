@@ -309,42 +309,65 @@
             </label>
 
             <select
+    v-model="decision.dispositionTypeId"
+    class="w-full mt-2 border rounded-lg px-3 py-2"
+>
 
-                v-model="decision.dispositionTypeId"
+    <option value="">
 
-                class="w-full mt-2 border rounded-lg px-3 py-2">
+        Select Disposition
 
-                <option value="">
+    </option>
 
-                    Select
+    <option value="1">
 
-                </option>
+        Home Health
 
-                <option value="1">
+    </option>
 
-                    Skilled Nursing Facility
+    <option value="2">
 
-                </option>
+        Skilled Nursing Facility
 
-                <option value="2">
+    </option>
 
-                    Home Health
+    <option value="3">
 
-                </option>
+        Inpatient Rehabilitation
 
-                <option value="3">
+    </option>
 
-                    Rehabilitation
+    <option value="4">
 
-                </option>
+        Long-Term Acute Care Hospital
 
-                <option value="4">
+    </option>
 
-                    Hospice
+    <option value="5">
 
-                </option>
+        Hospice
 
-            </select>
+    </option>
+
+    <option value="6">
+
+        Assisted Living
+
+    </option>
+
+    <option value="7">
+
+        Home with Family Support
+
+    </option>
+
+    <option value="8">
+
+        Outpatient Therapy
+
+    </option>
+
+</select>
 
         </div>
 
@@ -427,7 +450,7 @@
 import { ref, computed, onMounted, reactive, watch} from "vue";
 
 import { useRouter } from "vue-router";
-
+import { useToast } from 'vue-toastification'
 import * as physicianService
 from "@/services/physicianService";
 import HospitalLayout from "@/layouts/HospitalLayout.vue";
@@ -435,7 +458,7 @@ import HospitalLayout from "@/layouts/HospitalLayout.vue";
 const router = useRouter();
 const patients = ref([]);
 const search = ref("");
-
+const toast = useToast()
 
 const showDrawer = ref(false);
 
@@ -443,6 +466,7 @@ const selectedPatient = ref(null);
 const currentPage = ref(1);
 
 const pageSize = 10;
+
 
 const decision = reactive({
 
@@ -563,14 +587,13 @@ async function saveDecision(){
         await physicianService
             .createDispositionDecision(decision);
 
-        alert("Disposition Decision Created Successfully");
+        toast.success("Disposition Decision Created Successfully");
 
         showDrawer.value = false;
 
     }
 
     catch(error){
-
         console.log(error);
 
     }
