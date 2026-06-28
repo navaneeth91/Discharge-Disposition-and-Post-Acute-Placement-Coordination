@@ -1,12 +1,16 @@
 ﻿using DischargeDisposition_Backend.Data;
 using DischargeDisposition_Backend.Enums;
+using DischargeDisposition_Backend.Hospital.DTOs.Responses;
+using DischargeDisposition_Backend.Infrastructure.Caching;
+using DischargeDisposition_Backend.Infrastructure.SignalR;
 using DischargeDisposition_Backend.Insurance.DTOs.Responses;
 using DischargeDisposition_Backend.Insurance.Hospital.Services.Interfaces;
 using DischargeDisposition_Backend.Insurance.Models;
-using DischargeDisposition_Backend.Hospital.DTOs.Responses;
 using DischargeDisposition_Backend.Insurance.Repositories.Interfaces;
 using DischargeDisposition_Backend.Insurance.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using System.Diagnostics;
 
 namespace DischargeDisposition_Backend.Insurance.Services
 {
@@ -15,17 +19,25 @@ namespace DischargeDisposition_Backend.Insurance.Services
         private readonly IInsuranceAuthorizationRepository _repository;
         private readonly InsuranceDbContext _context;
         private readonly IWebhookService _webhookService;
+        private readonly ILogger<InsuranceAuthorizationService> _logger;
+        private readonly IMemoryCache _cache;
+        private readonly NotificationService _notificationService;
 
         public InsuranceAuthorizationService(
             IInsuranceAuthorizationRepository repository,
             InsuranceDbContext context,
-            IWebhookService webhookService)
+            IWebhookService webhookService,
+            ILogger<InsuranceAuthorizationService> logger,
+            IMemoryCache cache,
+            NotificationService notificationService)
         {
             _repository = repository;
             _context = context;
             _webhookService = webhookService;
+            _logger = logger;
+            _cache = cache;
+            _notificationService = notificationService;
         }
-
         public async Task<ApiResponse<InsurancePagedResponse<AuthorizationRequestListItemResponse>>> GetAuthorizationsAsync(
             string? search,
             AuthorizationStatus? status,
@@ -40,7 +52,6 @@ namespace DischargeDisposition_Backend.Insurance.Services
                 var (items, totalCount) = await _repository.GetAuthorizationsAsync(search, status, page, pageSize);
 
                 var data = items.Select(MapAuthorization).ToList();
-
                 return new ApiResponse<InsurancePagedResponse<AuthorizationRequestListItemResponse>>
                 {
                     Success = true,
@@ -139,37 +150,80 @@ namespace DischargeDisposition_Backend.Insurance.Services
 
         public async Task UpdateStatusAsync(int authorizationRequestId, UpdateAuthorizationStatus dto)
         {
-            var request = await _repository.GetByIdWithTrackingAsync(authorizationRequestId);
-
-            if (request == null)
+            var stopwatch = Stopwatch.StartNew();
+            try
             {
-                throw new KeyNotFoundException("Authorization request not found.");
+
+                var request = await _repository.GetByIdWithTrackingAsync(authorizationRequestId);
+
+                if (request == null)
+                {
+                    throw new KeyNotFoundException("Authorization request not found.");
+                }
+
+                request.Status = dto.Status;
+
+                var decision = new AuthorizationDecision
+                {
+                    AuthorizationRequestId = authorizationRequestId,
+                    DecisionStatus = dto.Status,
+                    DecisionDate = DateTime.UtcNow,
+                    ReasonCode = dto.ReasonCode,
+                    Notes = dto.Notes
+                };
+
+                _context.AuthorizationDecisions.Add(decision);
+                await _context.SaveChangesAsync();
+
+                var webhook = new AuthorizationWebhook
+                {
+                    AuthorizationRequestId = authorizationRequestId,
+                    Status = dto.Status,
+                    DecisionDate = DateTime.UtcNow,
+                    ReasonCode = dto.ReasonCode,
+                    Notes = dto.Notes
+                };
+                _cache.Remove(CacheKeys.InsuranceDashboard);
+
+                _cache.Remove(CacheKeys.HospitalDashboard);
+
+                _cache.Remove("InsuranceServiceAnalytics");
+
+                _logger.LogInformation(
+                    "Insurance dashboard caches invalidated.");
+
+                await _notificationService.RefreshDashboard();
+
+                await _notificationService.RefreshAuthorizations();
+
+                await _webhookService.SendAuthorizationUpdateAsync(webhook);
+                stopwatch.Stop();
+
+                _logger.LogInformation(
+                    "Performance | Service: InsuranceAuthorizationService | Method: UpdateStatusAsync | Execution Time: {ElapsedMilliseconds} ms",
+                    stopwatch.ElapsedMilliseconds);
+
+                if (stopwatch.ElapsedMilliseconds > 1000)
+                {
+                    _logger.LogWarning(
+                        "Performance Warning | UpdateStatusAsync took {ElapsedMilliseconds} ms",
+                        stopwatch.ElapsedMilliseconds);
+                }
             }
-
-            request.Status = dto.Status;
-
-            var decision = new AuthorizationDecision
+            catch (Exception ex)
             {
-                AuthorizationRequestId = authorizationRequestId,
-                DecisionStatus = dto.Status,
-                DecisionDate = DateTime.UtcNow,
-                ReasonCode = dto.ReasonCode,
-                Notes = dto.Notes
-            };
+                stopwatch.Stop();
 
-            _context.AuthorizationDecisions.Add(decision);
-            await _context.SaveChangesAsync();
+                _logger.LogInformation(
+                    "Performance | Service: InsuranceAuthorizationService | Method: UpdateStatusAsync | Failed after {ElapsedMilliseconds} ms",
+                    stopwatch.ElapsedMilliseconds);
 
-            var webhook = new AuthorizationWebhook
-            {
-                AuthorizationRequestId = authorizationRequestId,
-                Status = dto.Status,
-                DecisionDate = DateTime.UtcNow,
-                ReasonCode = dto.ReasonCode,
-                Notes = dto.Notes
-            };
+                _logger.LogError(
+                    ex,
+                    "Error while updating authorization status.");
 
-            await _webhookService.SendAuthorizationUpdateAsync(webhook);
+                throw;
+            }
         }
 
         private static AuthorizationRequestListItemResponse MapAuthorization(AuthorizationRequest authorization)

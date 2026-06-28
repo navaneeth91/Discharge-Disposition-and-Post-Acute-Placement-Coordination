@@ -1,5 +1,9 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import {
+    ref,
+    onMounted,
+    onUnmounted
+} from 'vue'
 
 import { useAuthStore } from '@/stores/auth'
 import { useCareManagerStore } from '@/stores/careManager'
@@ -17,11 +21,40 @@ const showReferralModal = ref(false)
 const showViewReferralModal = ref(false)
 
 const selectedPatient = ref(null)
+const refreshAssignments = async () => {
+
+    await Promise.all([
+
+        careManager.loadDashboard(
+            auth.userId
+        ),
+
+        careManager.loadPatients(
+            auth.userId
+        )
+
+    ])
+
+}
 
 onMounted(async () => {
 
     await careManager.loadDashboard(
         auth.userId
+    )
+
+    window.addEventListener(
+        "refresh-assignments",
+        refreshAssignments
+    )
+
+})
+
+onUnmounted(() => {
+
+    window.removeEventListener(
+        "refresh-assignments",
+        refreshAssignments
     )
 
 })

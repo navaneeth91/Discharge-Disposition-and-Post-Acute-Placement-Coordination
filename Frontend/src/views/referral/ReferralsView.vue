@@ -2,6 +2,7 @@
 import {
     ref,
     onMounted,
+    onUnmounted,
     watch
 }
 from 'vue'
@@ -17,9 +18,12 @@ import {
 }
 from '@/stores/referral'
 
-const store =
-    useReferralStore()
+const store = useReferralStore()
+const refreshReferrals = async () => {
 
+    await store.loadReferrals()
+
+}
 const search =
     ref('')
 
@@ -32,6 +36,21 @@ const showDrawer =
 onMounted(() => {
 
     store.loadReferrals()
+
+    window.addEventListener(
+        "refresh-referrals",
+        refreshReferrals
+    )
+
+})
+
+onUnmounted(() => {
+
+    window.removeEventListener(
+        "refresh-referrals",
+        refreshReferrals
+    )
+
 })
 
 let debounceTimer

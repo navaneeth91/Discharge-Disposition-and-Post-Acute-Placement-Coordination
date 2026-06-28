@@ -13,6 +13,7 @@
     "format": "prettier --write --experimental-cli src/"
   },
   "dependencies": {
+    "@microsoft/signalr": "^10.0.0",
     "@vueuse/core": "^14.3.0",
     "autoprefixer": "^10.5.2",
     "axios": "^1.18.1",

@@ -1,24 +1,33 @@
 using DischargeDisposition_Backend.Data;
 using DischargeDisposition_Backend.Enums;
+using DischargeDisposition_Backend.Helpers;
 using DischargeDisposition_Backend.Hospital.DTOs.Requests;
 using DischargeDisposition_Backend.Hospital.DTOs.Responses;
 using DischargeDisposition_Backend.Hospital.Models;
-using DischargeDisposition_Backend.Helpers;
 using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
 using DischargeDisposition_Backend.Hospital.Services.Interfaces;
+using DischargeDisposition_Backend.Infrastructure.Caching;
+using DischargeDisposition_Backend.Infrastructure.SignalR;
 using Microsoft.EntityFrameworkCore;
-
+using System.Diagnostics;
+using Microsoft.Extensions.Caching.Memory;
 namespace DischargeDisposition_Backend.Hospital.Services
 {
     public class ReferralService : IReferralService
     {
         private readonly IReferralRepository _repo;
         private readonly HospitalDbContext _db;
+        private readonly ILogger<ReferralService> _logger;
+        private readonly IMemoryCache _cache;
+        private readonly NotificationService _notificationService;
 
-        public ReferralService(IReferralRepository repo, HospitalDbContext db)
+        public ReferralService(IReferralRepository repo, HospitalDbContext db, ILogger<ReferralService> logger, IMemoryCache cache, NotificationService notificationService)
         {
             _repo = repo;
             _db = db;
+            _logger = logger;
+            _cache = cache;
+            _notificationService = notificationService;
         }
 
         public async Task<ApiResponse<PagedResult<ReferralResponseDto>>> GetAllAsync(
@@ -116,6 +125,7 @@ namespace DischargeDisposition_Backend.Hospital.Services
          CreateReferralDto dto,
          CancellationToken cancellationToken = default)
         {
+            var stopwatch = Stopwatch.StartNew();
             try
             {
                 await ValidateRelationsExist(
@@ -158,7 +168,23 @@ namespace DischargeDisposition_Backend.Hospital.Services
                     await _repo.GetByIdAsync(
                         created.ReferralId,
                         cancellationToken);
+                stopwatch.Stop();
 
+                _logger.LogInformation(
+                    "Performance | Service: ReferralService | Method: CreateAsync | Execution Time: {ElapsedMilliseconds} ms",
+                    stopwatch.ElapsedMilliseconds);
+
+                if (stopwatch.ElapsedMilliseconds > 1000)
+                {
+                    _logger.LogWarning(
+                        "Performance Warning | CreateAsync took {ElapsedMilliseconds} ms",
+                        stopwatch.ElapsedMilliseconds);
+                }
+                _cache.Remove(CacheKeys.HospitalDashboard);
+
+                await _notificationService.RefreshDashboard();
+
+                await _notificationService.RefreshReferrals();
                 return new ApiResponse<
                     ReferralResponseDto>
                 {
@@ -173,8 +199,13 @@ namespace DischargeDisposition_Backend.Hospital.Services
             }
             catch (Exception ex)
             {
-                return new ApiResponse<
-                    ReferralResponseDto>
+                stopwatch.Stop();
+
+                _logger.LogInformation(
+                    "Performance | Service: ReferralService | Method: CreateAsync | Failed after {ElapsedMilliseconds} ms",
+                    stopwatch.ElapsedMilliseconds);
+
+                return new ApiResponse<ReferralResponseDto>
                 {
                     Success = false,
                     StatusCode = 500,
@@ -216,7 +247,11 @@ namespace DischargeDisposition_Backend.Hospital.Services
                 await _repo.UpdateAsync(
                     referral,
                     cancellationToken);
+                _cache.Remove(CacheKeys.HospitalDashboard);
 
+                await _notificationService.RefreshDashboard();
+
+                await _notificationService.RefreshReferrals();
                 return new ApiResponse<object>
                 {
                     Success = true,
@@ -242,8 +277,7 @@ namespace DischargeDisposition_Backend.Hospital.Services
             }
         }
 
-        public async Task<ApiResponse<object>>
-    UpdateAsync(
+        public async Task<ApiResponse<object>>UpdateAsync(
         int id,
         UpdateReferralDto dto,
         CancellationToken cancellationToken = default)
@@ -307,6 +341,11 @@ namespace DischargeDisposition_Backend.Hospital.Services
                 await _repo.UpdateAsync(
                     existing,
                     cancellationToken);
+                _cache.Remove(CacheKeys.HospitalDashboard);
+
+                await _notificationService.RefreshDashboard();
+
+                await _notificationService.RefreshReferrals();
 
                 return new ApiResponse<object>
                 {
@@ -358,7 +397,11 @@ namespace DischargeDisposition_Backend.Hospital.Services
                 await _repo.DeleteAsync(
                     id,
                     cancellationToken);
+                _cache.Remove(CacheKeys.HospitalDashboard);
 
+                await _notificationService.RefreshDashboard();
+
+                await _notificationService.RefreshReferrals();
                 return new ApiResponse<object>
                 {
                     Success = true,
@@ -384,9 +427,7 @@ namespace DischargeDisposition_Backend.Hospital.Services
             }
         }
 
-        public async Task<
-    ApiResponse<List<ReferralResponseDto>>>
-    GetByPatientIdAsync(
+        public async Task<ApiResponse<List<ReferralResponseDto>>>GetByPatientIdAsync(
         int patientId,
         CancellationToken cancellationToken = default)
         {
@@ -512,9 +553,7 @@ namespace DischargeDisposition_Backend.Hospital.Services
 
         
     
-        public async Task<
-    ApiResponse<List<ReferralResponseDto>>>
-    GetPendingReferralsAsync(
+        public async Task<ApiResponse<List<ReferralResponseDto>>>GetPendingReferralsAsync(
         CancellationToken cancellationToken = default)
         {
             try
@@ -554,9 +593,7 @@ namespace DischargeDisposition_Backend.Hospital.Services
             }
         }
 
-        public async Task<
-    ApiResponse<List<ReferralResponseDto>>>
-    GetCompletedReferralsAsync(
+        public async Task<ApiResponse<List<ReferralResponseDto>>>GetCompletedReferralsAsync(
         CancellationToken cancellationToken = default)
         {
             try
@@ -672,6 +709,12 @@ namespace DischargeDisposition_Backend.Hospital.Services
 
             
                 await _repo.UpdateAsync(referral);
+
+            _cache.Remove(CacheKeys.HospitalDashboard);
+
+            await _notificationService.RefreshDashboard();
+
+            await _notificationService.RefreshReferrals();
 
             return new ApiResponse<ReferralResponseDto>
             {

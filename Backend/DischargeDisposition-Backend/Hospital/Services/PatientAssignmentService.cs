@@ -4,7 +4,11 @@ using DischargeDisposition_Backend.Hospital.DTOs.Responses;
 using DischargeDisposition_Backend.Hospital.Models;
 using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
 using DischargeDisposition_Backend.Hospital.Services.Interfaces;
-
+using DischargeDisposition_Backend.Infrastructure.Caching;
+using DischargeDisposition_Backend.Infrastructure.Notifications;
+using DischargeDisposition_Backend.Infrastructure.SignalR;
+using Microsoft.Extensions.Caching.Memory;
+using System.Diagnostics;
 namespace DischargeDisposition_Backend.Hospital.Services
 {
     public class PatientAssignmentService : IPatientAssignmentService
@@ -12,24 +16,31 @@ namespace DischargeDisposition_Backend.Hospital.Services
         private readonly IPatientAssignmentRepository _repository;
         private readonly IAdminRepository _adminRepository;
         private readonly ILogger<PatientAssignmentService> _logger;
+        private readonly NotificationService _notificationService;
+        private readonly IMemoryCache _cache;
 
         public PatientAssignmentService(
             IPatientAssignmentRepository repository,
             IAdminRepository adminRepository,
-            ILogger<PatientAssignmentService> logger)
+            ILogger<PatientAssignmentService> logger,
+            NotificationService notificationService,
+            IMemoryCache cache)
         {
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
             _adminRepository = adminRepository ?? throw new ArgumentNullException(nameof(adminRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _notificationService = notificationService;
+            _cache = cache;
+
         }
 
-        public async Task<ApiResponse<PatientAssignmentDto>> AssignCareManagerAsync(
-            AssignCareManagerRequest request)
+        public async Task<ApiResponse<PatientAssignmentDto>> AssignCareManagerAsync(AssignCareManagerRequest request)
         {
+            var stopwatch = Stopwatch.StartNew();
+
             try
             {
-                var patient =
-                    await _adminRepository.GetPatientByIdAsync(request.PatientId);
+                var patient = await _adminRepository.GetPatientByIdAsync(request.PatientId);
 
                 if (patient == null)
                 {
@@ -41,8 +52,7 @@ namespace DischargeDisposition_Backend.Hospital.Services
                     };
                 }
 
-                var careManagerExists =
-                    await _repository.CareManagerExistsAsync(request.CareManagerId);
+                var careManagerExists = await _repository.CareManagerExistsAsync(request.CareManagerId);
 
                 if (!careManagerExists)
                 {
@@ -77,12 +87,43 @@ namespace DischargeDisposition_Backend.Hospital.Services
                     Notes = request.Notes
                 };
 
-                var createdAssignment =
-                    await _repository.AssignCareManagerAsync(assignment);
+                var createdAssignment = await _repository.AssignCareManagerAsync(assignment);
 
-                var careManager =
-                    (await _repository.GetAllCareManagersAsync())
+                _cache.Remove(CacheKeys.HospitalDashboard);
+
+                _logger.LogInformation("Hospital Dashboard cache invalidated.");
+
+                var careManager = (await _repository.GetAllCareManagersAsync())
                     .FirstOrDefault(c => c.UserId == request.CareManagerId);
+
+                await _notificationService.SendToUserAsync(
+                    new NotificationDto
+                    {
+                        TargetUserId = request.CareManagerId,
+                        Title = "New Patient Assignment",
+                        Message = $"Patient {patient.FirstName} {patient.LastName} has been assigned to you.",
+                        Type = NotificationType.Assignment,
+                        Priority = NotificationPriority.High,
+                        CreatedAt = DateTime.UtcNow,
+                        PatientId = patient.PatientId
+                    });
+
+                await _notificationService.RefreshAssignments();
+
+                await _notificationService.RefreshDashboard();
+
+                stopwatch.Stop();
+
+                _logger.LogInformation(
+                    "AssignCareManager completed successfully in {ElapsedMilliseconds} ms",
+                    stopwatch.ElapsedMilliseconds);
+
+                if (stopwatch.ElapsedMilliseconds > 1000)
+                {
+                    _logger.LogWarning(
+                        "AssignCareManager is taking unusually long. Execution Time: {ElapsedMilliseconds} ms",
+                        stopwatch.ElapsedMilliseconds);
+                }
 
                 return new ApiResponse<PatientAssignmentDto>
                 {
@@ -97,9 +138,12 @@ namespace DischargeDisposition_Backend.Hospital.Services
             }
             catch (Exception ex)
             {
+                stopwatch.Stop();
+
                 _logger.LogError(
                     ex,
-                    "Error assigning Care Manager.");
+                    "Error assigning Care Manager after {ElapsedMilliseconds} ms",
+                    stopwatch.ElapsedMilliseconds);
 
                 return new ApiResponse<PatientAssignmentDto>
                 {
@@ -107,9 +151,9 @@ namespace DischargeDisposition_Backend.Hospital.Services
                     StatusCode = 500,
                     Message = "Failed to assign Care Manager.",
                     Errors = new()
-                    {
-                        ex.Message
-                    }
+            {
+                ex.Message
+            }
                 };
             }
         }

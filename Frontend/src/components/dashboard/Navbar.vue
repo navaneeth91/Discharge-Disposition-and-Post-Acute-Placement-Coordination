@@ -12,14 +12,17 @@ from 'lucide-vue-next'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { useUiStore }
-from '@/stores/ui'
+import { useUiStore } from '@/stores/ui'
 
-import { useAuthStore }
-from '@/stores/auth'
+import { useAuthStore } from '@/stores/auth'
+import { useNotificationStore } from '@/stores/notification'
 
 const ui = useUiStore()
+
 const auth = useAuthStore()
+
+const notificationStore = useNotificationStore()
+
 const router = useRouter()
 
 const profileDropdown = ref(false)
@@ -72,8 +75,11 @@ function logout() {
 
             <button
                 @click="
-                notificationDropdown =
-                !notificationDropdown"
+                    notificationDropdown =
+                    !notificationDropdown;
+
+                    if(notificationDropdown)
+                    notificationStore.clearUnread();"
 
                 class="
                 relative
@@ -86,6 +92,7 @@ function logout() {
                     class="text-[#003049]" />
 
                 <span
+                    v-if="notificationStore.notifications.length > 0"
                     class="
                     absolute
                     top-2
@@ -124,13 +131,59 @@ function logout() {
                 </div>
 
                 <div
+                    v-if="notificationStore.notifications.length===0"
                     class="
                     p-5
                     text-slate-500">
 
                     No notifications.
 
-                </div>
+                    </div>
+
+                    <div
+                    v-else
+                    class="max-h-96 overflow-y-auto">
+
+                    <div
+                    v-for="item in notificationStore.notifications"
+                    :key="item.createdAt"
+                    class="
+                    p-4
+                    border-b
+                    last:border-none">
+
+                    <div
+                    class="
+                    font-semibold
+                    text-[#003049]">
+
+                    {{ item.title }}
+
+                    </div>
+
+                    <div
+                    class="
+                    text-sm
+                    text-slate-500
+                    mt-1">
+
+                    {{ item.message }}
+
+                    </div>
+
+                    <div
+                    class="
+                    text-xs
+                    text-slate-400
+                    mt-2">
+
+                    {{ new Date(item.createdAt).toLocaleString() }}
+
+                    </div>
+
+                    </div>
+
+                    </div>
 
             </div>
 

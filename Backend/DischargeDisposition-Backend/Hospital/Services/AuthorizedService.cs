@@ -7,6 +7,7 @@ using DischargeDisposition_Backend.Hospital.Repositories;
 using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
 using DischargeDisposition_Backend.Hospital.Services.Interfaces;
 using DischargeDisposition_Backend.Insurance.Models;
+using System.Diagnostics;
 
 namespace DischargeDisposition_Backend.Hospital.Services
 {
@@ -16,17 +17,20 @@ namespace DischargeDisposition_Backend.Hospital.Services
         private readonly IAuthorizationRepository _repository;
 
         private readonly InsuranceDbContext _insuranceContext;
-
+        private readonly ILogger<AuthorizedService> _logger;
         public AuthorizedService(
             IAuthorizationRepository repository,
-            InsuranceDbContext insuranceContext)
+            InsuranceDbContext insuranceContext,
+            ILogger<AuthorizedService> logger)
         {
             _repository = repository;
             _insuranceContext = insuranceContext;
+            _logger = logger;
         }
 
         public async Task<ApiResponse<long>>CreateAsync(CreateAuthorizationRequest dto)
         {
+            var stopwatch = Stopwatch.StartNew();
             try
             {
                 var externalId =
@@ -83,7 +87,18 @@ namespace DischargeDisposition_Backend.Hospital.Services
                 tracking.InsuranceAuthorizationRequestId = request.AuthorizationRequestId;
 
                 await _repository.SaveAsync();
+                stopwatch.Stop();
 
+                _logger.LogInformation(
+                    "Performance | Service: AuthorizationService | Method: CreateAsync | Execution Time: {ElapsedMilliseconds} ms",
+                    stopwatch.ElapsedMilliseconds);
+
+                if (stopwatch.ElapsedMilliseconds > 1000)
+                {
+                    _logger.LogWarning(
+                        "Performance Warning | CreateAsync took {ElapsedMilliseconds} ms",
+                        stopwatch.ElapsedMilliseconds);
+                }
                 return new ApiResponse<long>
                 {
                     Success = true,
@@ -94,6 +109,11 @@ namespace DischargeDisposition_Backend.Hospital.Services
             }
             catch (Exception ex)
             {
+                stopwatch.Stop();
+
+                _logger.LogInformation(
+                    "Performance | Service: AuthorizationService | Method: CreateAsync | Failed after {ElapsedMilliseconds} ms",
+                    stopwatch.ElapsedMilliseconds);
                 return new ApiResponse<long>
                 {
                     Success = false,
