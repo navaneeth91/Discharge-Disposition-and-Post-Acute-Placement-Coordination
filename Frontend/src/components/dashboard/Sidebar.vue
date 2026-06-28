@@ -284,7 +284,7 @@ function logout() {
             
 
             <RouterLink
-                to="/referrals"
+                to="/provider/referrals"
                 class="menu-item">
 
                 <ClipboardList />
