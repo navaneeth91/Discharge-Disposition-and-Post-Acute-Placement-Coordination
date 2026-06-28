@@ -280,11 +280,7 @@ function statusClass(status) {
 
                     </th>
 
-                    <th class="py-3 text-center">
-
-                        Action
-
-                    </th>
+                    
 
                 </tr>
 
@@ -351,28 +347,6 @@ function statusClass(status) {
 
                     </td>
 
-                    <td>
-
-                        <div
-                            class="
-                            flex
-                            justify-center">
-
-                            <AppButton
-
-                                @click="
-                                    emit(
-                                        'view',
-                                        authorization
-                                    )">
-
-                                View
-
-                            </AppButton>
-
-                        </div>
-
-                    </td>
 
                 </tr>
 
