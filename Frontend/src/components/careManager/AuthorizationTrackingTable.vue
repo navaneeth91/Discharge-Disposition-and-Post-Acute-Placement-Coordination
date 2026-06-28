@@ -347,11 +347,6 @@ function statusClass(status) {
 
                     </td>
 
-                    <td>
-
-            
-
-                    </td>
 
                 </tr>
 
