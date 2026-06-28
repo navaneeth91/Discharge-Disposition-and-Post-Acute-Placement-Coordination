@@ -4,6 +4,7 @@ using DischargeDisposition_Backend.Hospital.Repositories;
 using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
 using DischargeDisposition_Backend.Hospital.Services;
 using DischargeDisposition_Backend.Hospital.Services.Interfaces;
+using DischargeDisposition_Backend.Infrastructure.SignalR;
 using DischargeDisposition_Backend.Insurance.Hospital.Services.Interfaces;
 using DischargeDisposition_Backend.Insurance.Repositories;
 using DischargeDisposition_Backend.Insurance.Repositories.Interfaces;
@@ -63,6 +64,16 @@ builder.Services.AddScoped<IPatientAssignmentRepository,PatientAssignmentReposit
 builder.Services.AddScoped<IPatientAssignmentService,PatientAssignmentService>();
 builder.Services.AddScoped<ICareManagerRepository, CareManagerRepository>();
 builder.Services.AddScoped<ICareManagerService, CareManagerService>();
+//Implementation of Caching,SignalR and Stopwatch
+builder.Services.AddMemoryCache();
+
+builder.Services.AddSingleton<UserConnectionManager>();
+
+
+builder.Services.AddSignalR();
+
+builder.Services.AddScoped<NotificationService>();
+
 var hospitalConnection =
     builder.Configuration.GetConnectionString("HospitalConnection")
     ?? throw new InvalidOperationException(
@@ -108,6 +119,23 @@ builder.Services.AddAuthentication("Bearer")
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
         };
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+
+                var path = context.HttpContext.Request.Path;
+
+                if (!string.IsNullOrEmpty(accessToken)
+                    && path.StartsWithSegments("/notificationHub"))
+                {
+                    context.Token = accessToken;
+                }
+
+                return Task.CompletedTask;
+            }
+        };
     });
 
 builder.Services.AddCors(options =>
@@ -117,7 +145,8 @@ builder.Services.AddCors(options =>
         policy
             .WithOrigins("http://localhost:5173")
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
@@ -179,18 +208,8 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-try
-{
-    app.MapControllers();
-}
-catch (ReflectionTypeLoadException ex)
-{
-    foreach (var e in ex.LoaderExceptions)
-    {
-        Console.WriteLine(e?.Message);
-    }
+app.MapControllers();
 
-    throw;
-}
+app.MapHub<NotificationHub>("/notificationHub");
 
 app.Run();
