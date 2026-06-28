@@ -2,6 +2,7 @@
 import {
     ref,
     onMounted,
+    onUnmounted,
     watch
 }
 from 'vue'
@@ -19,9 +20,10 @@ from '@/stores/patientAssignment'
 const toast =
     useToast()
 
-const store =
-    usePatientAssignmentStore()
-
+const store = usePatientAssignmentStore()
+const refreshAssignments = async () => {
+    await store.loadData()
+}
 const selectedManagers =
     ref({})
 
@@ -45,6 +47,20 @@ const assignedBy =
 onMounted(async () => {
 
     await store.loadData()
+
+    window.addEventListener(
+        "refresh-assignments",
+        refreshAssignments
+    )
+
+})
+
+onUnmounted(() => {
+
+    window.removeEventListener(
+        "refresh-assignments",
+        refreshAssignments
+    )
 
 })
 

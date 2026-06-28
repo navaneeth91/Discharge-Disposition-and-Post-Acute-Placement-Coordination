@@ -8,9 +8,11 @@ import AppButton from '@/components/common/AppButton.vue'
 import { useAuthStore } from '@/stores/auth'
 import * as authService from '@/services/authService'
 
+import { useNotificationStore } from '@/stores/notification'
+
 const router = useRouter()
 const authStore = useAuthStore()
-
+const notificationStore = useNotificationStore()
 const loading = ref(false)
 const error = ref('')
 
@@ -34,6 +36,8 @@ const submit = async () => {
             response.data.data
 
         authStore.login(user)
+        console.log("Login successful");
+        await notificationStore.initialize(user.token)
 
         switch (user.role) {
 

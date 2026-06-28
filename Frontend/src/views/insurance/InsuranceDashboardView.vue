@@ -1,5 +1,8 @@
 <script setup>
-import { onMounted } from 'vue'
+import {
+    onMounted,
+    onUnmounted
+} from 'vue'
 
 import InsuranceLayout from '@/layouts/InsuranceLayout.vue'
 import InsuranceChart from '@/components/dashboard/InsuranceChart.vue'
@@ -9,10 +12,33 @@ import RecentAuthorizationCard from '@/components/insurance/RecentAuthorizationC
 import { useDashboardStore } from '@/stores/dashboard'
 
 const dashboard = useDashboardStore()
+const refreshDashboard = async () => {
 
-onMounted(async () => {
     await dashboard.loadInsuranceDashboard()
+
     await dashboard.loadRecentInsuranceAuthorizations()
+
+}
+onMounted(async () => {
+
+    await dashboard.loadInsuranceDashboard()
+
+    await dashboard.loadRecentInsuranceAuthorizations()
+
+    window.addEventListener(
+        "refresh-dashboard",
+        refreshDashboard
+    )
+
+})
+
+onUnmounted(() => {
+
+    window.removeEventListener(
+        "refresh-dashboard",
+        refreshDashboard
+    )
+
 })
 </script>
 

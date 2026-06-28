@@ -1,6 +1,8 @@
 <script setup>
-import { onMounted }
-
+import {
+    onMounted,
+    onUnmounted
+}
 from 'vue'
 
 import HospitalLayout
@@ -31,13 +33,29 @@ sessionStorage.getItem("role")
 
 );
 
-const dashboard =
-    useDashboardStore()
+const dashboard = useDashboardStore()
+const refreshDashboard = () => {
 
+    dashboard.loadHospitalDashboard()
+
+}
 onMounted(() => {
 
-    dashboard
-        .loadHospitalDashboard()
+    dashboard.loadHospitalDashboard()
+
+    window.addEventListener(
+        "refresh-dashboard",
+        refreshDashboard
+    )
+
+})
+
+onUnmounted(() => {
+
+    window.removeEventListener(
+        "refresh-dashboard",
+        refreshDashboard
+    )
 
 })
 </script>

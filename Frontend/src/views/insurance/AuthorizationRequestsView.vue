@@ -1,5 +1,12 @@
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import {
+    computed,
+    onMounted,
+    onUnmounted,
+    ref,
+    watch
+}
+from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 
 import InsuranceLayout from '@/layouts/InsuranceLayout.vue'
@@ -20,7 +27,18 @@ from '@/stores/insuranceAuthorization'
 
 const store =
     useInsuranceAuthorizationStore()
+const refreshAuthorizations = async () => {
 
+    await store.loadAuthorizations({
+        search: search.value,
+        status: status.value,
+        page: page.value,
+        pageSize: store.pagination.pageSize
+    })
+
+    await store.loadRecentInsuranceAuthorizations()
+
+}
 const search = ref('')
 const status = ref('')
 const page = ref(1)
@@ -137,7 +155,23 @@ watch(
 onMounted(async () => {
 
     await store.loadAuthorizations()
+
     await store.loadRecentInsuranceAuthorizations()
+
+    window.addEventListener(
+        "refresh-authorizations",
+        refreshAuthorizations
+    )
+
+})
+
+onUnmounted(() => {
+
+    window.removeEventListener(
+        "refresh-authorizations",
+        refreshAuthorizations
+    )
+
 })
 </script>
 
