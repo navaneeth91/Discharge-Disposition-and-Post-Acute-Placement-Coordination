@@ -278,7 +278,7 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
             .FirstOrDefaultAsync(
                 p => p.UserId == userId);
 
-            if (provider.ProviderId == null)
+            if (provider?.ProviderId == null)
             {
                 return new List<Referral>();
             }
@@ -290,13 +290,13 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
         }
-        public async Task<HospitalPagedResponse<ReferralResponseDto>> GetByCareManagerIdAsync(
-          int careManagerId,
-          int page,
-          int pageSize,
-          string? search = null,
-          AuthorizationStatus? status = null,
-          CancellationToken cancellationToken = default)
+        public async Task<HospitalPagedResponse<ReferralTrackingResponseDto>> GetByCareManagerIdAsync(
+    int careManagerId,
+    int page,
+    int pageSize,
+    string? search = null,
+    AuthorizationStatus? status = null,
+    CancellationToken cancellationToken = default)
         {
             var query = _context.Referrals
                 .Include(r => r.patient)
@@ -305,7 +305,7 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
                 .Where(r => r.CareManagerId == careManagerId)
                 .AsNoTracking();
 
-            // Status filter
+            // Status Filter
             if (status.HasValue)
             {
                 query = query.Where(r => r.Status == status.Value);
@@ -330,31 +330,34 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
                 .OrderByDescending(r => r.CreatedDate)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
-                .Select(r => new ReferralResponseDto
+                .Select(r => new ReferralTrackingResponseDto
                 {
                     ReferralId = r.ReferralId,
+
                     PatientId = r.PatientId,
+
+                    PatientName = r.patient != null
+        ? $"{r.patient.FirstName} {r.patient.LastName}"
+        : string.Empty,
+
                     ProviderId = r.ProviderId,
-                    CareManagerId = r.CareManagerId,
-                    CreatedDate = r.CreatedDate,
+
+                    ProviderName = r.provider != null
+        ? r.provider.ProviderName
+        : string.Empty,
+
                     Status = r.Status.ToString(),
+
                     Priority = r.Priority.ToString(),
 
-                    PatientName = r.patient == null
-                        ? null
-                        : $"{r.patient.FirstName} {r.patient.LastName}",
+                    CreatedDate = r.CreatedDate,
 
-                    ProviderName = r.provider == null
-                        ? null
-                        : r.provider.ProviderName,
-
-                    CareManagerName = r.careManager == null
-                        ? null
-                        : $"{r.careManager.FirstName} {r.careManager.LastName}"
+                    AuthorizationCreated = _context.AuthorizationTrackings
+        .Any(a => a.ReferralId == r.ReferralId)
                 })
                 .ToListAsync(cancellationToken);
 
-            return new HospitalPagedResponse<ReferralResponseDto>
+            return new HospitalPagedResponse<ReferralTrackingResponseDto>
             {
                 Items = referrals,
                 Page = page,

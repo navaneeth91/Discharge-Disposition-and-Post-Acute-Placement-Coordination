@@ -28,7 +28,7 @@ export async function getProvidersByDisposition(
     dispositionTypeId
 ) {
     return await api.get(
-        `/post-acute-provider/disposition/${dispositionTypeId}`
+        `/post-acute-providers/disposition/${dispositionTypeId}`
     )
 }
 
@@ -82,5 +82,11 @@ export async function getAuthorizationTracking(
                 status
             }
         }
+    )
+}
+export async function createAuthorization(data) {
+    return await api.post(
+        '/authorizations',
+        data
     )
 }

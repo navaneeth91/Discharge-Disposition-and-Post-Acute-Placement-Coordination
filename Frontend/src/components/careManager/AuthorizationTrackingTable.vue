@@ -138,7 +138,7 @@ function statusClass(status) {
         flex
         flex-col
         lg:flex-row
-        lg:justify-end
+        lg:justify-start
         gap-3
         mb-6">
 

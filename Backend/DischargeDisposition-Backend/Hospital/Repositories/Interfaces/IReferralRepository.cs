@@ -21,7 +21,7 @@ namespace DischargeDisposition_Backend.Hospital.Repositories.Interfaces
         Task<ReferralDetailsDto?> GetReferralDetailsAsync(int UserId,int referralId);
 
         Task<ProviderDashboardDto> GetDashboardSummaryAsync(int userId);
-        Task<HospitalPagedResponse<ReferralResponseDto>> GetByCareManagerIdAsync(
+        Task<HospitalPagedResponse<ReferralTrackingResponseDto>> GetByCareManagerIdAsync(
             int careManagerId,
             int page,
             int pageSize,

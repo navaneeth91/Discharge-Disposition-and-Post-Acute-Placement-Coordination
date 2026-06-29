@@ -20,7 +20,7 @@ namespace DischargeDisposition_Backend.Controllers
         {
             _service = service;
         }
-
+        [Authorize(Roles ="Care Manager")]
         [HttpPost]
         public async Task<IActionResult>
             Create(

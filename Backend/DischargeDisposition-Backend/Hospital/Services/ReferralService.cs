@@ -428,13 +428,13 @@ namespace DischargeDisposition_Backend.Hospital.Services
             }
         }
 
-        public async Task<ApiResponse<HospitalPagedResponse<ReferralResponseDto>>> GetByCareManagerIdAsync(
-        int careManagerId,
-        int page,
-        int pageSize,
-        string? search = null,
-        AuthorizationStatus? status = null,
-        CancellationToken cancellationToken = default)
+        public async Task<ApiResponse<HospitalPagedResponse<ReferralTrackingResponseDto>>> GetByCareManagerIdAsync(
+      int careManagerId,
+      int page,
+      int pageSize,
+      string? search = null,
+      AuthorizationStatus? status = null,
+      CancellationToken cancellationToken = default)
         {
             try
             {
@@ -446,7 +446,7 @@ namespace DischargeDisposition_Backend.Hospital.Services
                     status,
                     cancellationToken);
 
-                return new ApiResponse<HospitalPagedResponse<ReferralResponseDto>>
+                return new ApiResponse<HospitalPagedResponse<ReferralTrackingResponseDto>>
                 {
                     Success = true,
                     StatusCode = 200,
@@ -456,7 +456,7 @@ namespace DischargeDisposition_Backend.Hospital.Services
             }
             catch (Exception ex)
             {
-                return new ApiResponse<HospitalPagedResponse<ReferralResponseDto>>
+                return new ApiResponse<HospitalPagedResponse<ReferralTrackingResponseDto>>
                 {
                     Success = false,
                     StatusCode = 500,
