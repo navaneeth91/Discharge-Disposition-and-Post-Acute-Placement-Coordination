@@ -38,7 +38,7 @@ const emit = defineEmits([
 
     'next',
 
-    'view'
+    'createAuthorization'
 
 ])
 
@@ -381,30 +381,101 @@ function statusClass(status) {
                         ) }}
 
                     </td>
+<td>
 
-                    <td>
+    <div
+        class="
+        flex
+        justify-center">
 
-                        <div
-                            class="
-                            flex
-                            justify-center">
+        <!-- Pending -->
 
-                            <AppButton
+        <button
 
-                                @click="
-                                    emit(
-                                        'view',
-                                        referral
-                                    )">
+            v-if="referral.status === 'Pending'"
 
-                                View
+            disabled
 
-                            </AppButton>
+            class="
+            rounded-xl
+            bg-slate-200
+            text-slate-500
+            px-4
+            py-2
+            font-medium
+            cursor-not-allowed">
 
-                        </div>
+            Waiting for Provider
 
-                    </td>
+        </button>
 
+        <!-- Approved & Authorization Not Created -->
+
+        <AppButton
+
+            v-else-if="
+                referral.status === 'Approved' &&
+                !referral.authorizationCreated
+            "
+
+            @click="
+                emit(
+                    'createAuthorization',
+                    referral
+                )">
+
+            Create Authorization
+
+        </AppButton>
+
+        <!-- Approved & Authorization Already Created -->
+
+        <button
+
+            v-else-if="
+                referral.status === 'Approved' &&
+                referral.authorizationCreated
+            "
+
+            disabled
+
+            class="
+            rounded-xl
+            bg-green-100
+            text-green-700
+            px-4
+            py-2
+            font-medium
+            cursor-not-allowed">
+
+            Authorization Created
+
+        </button>
+
+        <!-- Denied -->
+
+        <button
+
+            v-else
+
+            disabled
+
+            class="
+            rounded-xl
+            bg-red-100
+            text-red-600
+            px-4
+            py-2
+            font-medium
+            cursor-not-allowed">
+
+            Rejected
+
+        </button>
+
+    </div>
+
+</td>
                 </tr>
 
             </tbody>

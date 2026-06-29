@@ -41,7 +41,7 @@ namespace DischargeDisposition_Backend.Hospital.Services.Interfaces
                 int patientId,
                 CancellationToken cancellationToken = default);
         
-        Task<ApiResponse<HospitalPagedResponse<ReferralResponseDto>>> GetByCareManagerIdAsync(
+        Task<ApiResponse<HospitalPagedResponse<ReferralTrackingResponseDto>>> GetByCareManagerIdAsync(
             int careManagerId,
             int page,
             int pageSize,

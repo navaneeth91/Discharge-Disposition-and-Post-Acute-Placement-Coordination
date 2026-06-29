@@ -5,13 +5,12 @@ import { useAuthStore } from '@/stores/auth'
 import { useCareManagerStore } from '@/stores/careManager'
 
 import ReferralTable from '@/components/careManager/ReferralTable.vue'
-import ViewReferralModal from '@/components/careManager/ViewReferralModal.vue'
-
+import CreateAuthorizationModal from '@/components/careManager/CreateAuthorizationModal.vue'
 const auth = useAuthStore()
 
 const careManager = useCareManagerStore()
 
-const showViewModal =
+const showAuthorizationModal =
     ref(false)
 
 const selectedReferral =
@@ -25,21 +24,33 @@ onMounted(async () => {
 
 })
 
-function viewReferral(referral) {
+function openAuthorizationModal(referral) {
 
-    selectedReferral.value = {
-        patientId: referral.patientId
-    }
+    selectedReferral.value =
+        referral
 
-    showViewModal.value = true
+    showAuthorizationModal.value =
+        true
 
 }
 
-function closeModal() {
+function closeAuthorizationModal() {
 
-    showViewModal.value = false
+    showAuthorizationModal.value =
+        false
 
-    selectedReferral.value = null
+    selectedReferral.value =
+        null
+
+}
+
+async function authorizationCreated() {
+
+    closeAuthorizationModal()
+
+    await careManager.loadReferralTracking(
+        auth.userId
+    )
 
 }
 
@@ -100,7 +111,7 @@ async function nextPage() {
             style="
             color:var(--text-secondary);">
 
-            Monitor all referrals created for your assigned patients.
+            Monitor referrals and create insurance authorizations.
 
         </p>
 
@@ -132,19 +143,22 @@ async function nextPage() {
         @next="
             nextPage"
 
-        @view="
-            viewReferral" />
+        @createAuthorization="
+            openAuthorizationModal" />
 
-    <ViewReferralModal
+    <CreateAuthorizationModal
 
         :show="
-            showViewModal"
+            showAuthorizationModal"
 
-        :patient="
+        :referral="
             selectedReferral"
 
         @close="
-            closeModal" />
+            closeAuthorizationModal"
+
+        @created="
+            authorizationCreated" />
 
 </div>
 

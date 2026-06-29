@@ -103,29 +103,6 @@ function formatDate(date) {
         gap-4
         mb-6">
 
-        <div>
-
-            <h2
-                class="
-                text-2xl
-                font-bold"
-                style="
-                color:var(--text-primary);">
-
-                Assigned Patients
-
-            </h2>
-
-            <p
-                class="text-sm"
-                style="
-                color:var(--text-secondary);">
-
-                Patients currently assigned to you
-
-            </p>
-
-        </div>
 
         <!-- Search -->
 
