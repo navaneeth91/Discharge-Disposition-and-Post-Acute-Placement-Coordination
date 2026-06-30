@@ -162,7 +162,7 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
                 var totalRecords = await query.CountAsync();
 
                 var patients = await query
-                    .OrderBy(pa => pa.Patient.PatientId)
+                    .OrderByDescending(pa => pa.AssignedDate)
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
                     .Select(pa => new AssignedPatientDto
