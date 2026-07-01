@@ -34,6 +34,8 @@ const emit = defineEmits([
 
     'viewReferral',
 
+    'reportDelay',
+
     'search',
 
     'previous',
@@ -288,7 +290,10 @@ function formatDate(date) {
                         <div
                             class="
                             flex
-                            justify-center">
+                            justify-center
+                            gap-2
+                            px-2
+                            py-2">
 
                             <AppButton
 
@@ -303,6 +308,18 @@ function formatDate(date) {
                                 {{ patient.hasReferral
                                     ? 'View Referral'
                                     : 'Create Referral' }}
+
+                            </AppButton>
+
+                            <AppButton
+
+                                :loading="false"
+
+                                @click="emit('reportDelay', patient)">
+
+                                {{ patient.hasActiveDelay
+                                    ? 'Update Delay'
+                                    : 'Report Delay' }}
 
                             </AppButton>
 

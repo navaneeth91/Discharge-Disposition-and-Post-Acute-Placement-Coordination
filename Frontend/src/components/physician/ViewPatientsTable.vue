@@ -121,13 +121,15 @@
     <td class="px-5 py-4 text-center">
 
       <button
-        class="px-5 py-2 rounded-xl bg-[var(--primary)] text-white font-medium hover:bg-[var(--primary-hover)] transition"
-        @click="createDecision(patient)"
-      >
+            class="px-5 py-2 rounded-xl bg-[var(--primary)] text-white font-medium hover:bg-[var(--primary-hover)] transition"
+            @click="createDecision(patient)"
+        >
 
-        Create Decision
+            {{ patient.hasDecision
+                ? "Update Decision"
+                : "Create Decision" }}
 
-      </button>
+        </button>
 
     </td>
 
@@ -248,7 +250,10 @@
     <div
         v-if="showDrawer"
         class="fixed inset-0 bg-black/30 z-40"
-        @click="showDrawer=false">
+       @click="
+    resetDecision();
+    showDrawer = false;
+">
     </div>
 
 <!-- Right Drawer -->
@@ -264,12 +269,17 @@
         <h2
             class="text-xl font-bold text-[var(--primary)]">
 
-            Create Disposition Decision
+            {{ decision.decisionId
+                ? "Update Disposition Decision"
+                : "Create Disposition Decision" }}
 
         </h2>
 
         <button
-            @click="showDrawer=false"
+            @click="
+    resetDecision();
+    showDrawer = false;
+"
             class="text-2xl">
 
             ×
@@ -416,7 +426,10 @@
 
             <button
 
-                @click="showDrawer=false"
+                @click="
+    resetDecision();
+    showDrawer = false;
+"
 
                 class="px-5 py-2 rounded-lg border">
 
@@ -430,7 +443,9 @@
 
                 class="px-5 py-2 rounded-lg bg-[var(--primary)] text-white">
 
-                Save Decision
+                {{ decision.decisionId
+                    ? "Update Decision"
+                    : "Create Decision" }}
 
             </button>
 
@@ -470,6 +485,8 @@ const pageSize = 10;
 
 const decision = reactive({
 
+    decisionId: null,
+
     patientId: null,
 
     dispositionTypeId: "",
@@ -500,14 +517,19 @@ watch(search, (value) => {
 
 onMounted(async () => {
 
+    await loadPatients();
+
+});
+async function loadPatients(searchText = "") {
+
     const response =
-        await physicianService.getPatientsByDepartment();
+        await physicianService
+            .getPatientsByDepartment(searchText);
 
     patients.value =
         response.data.data;
 
-});
-
+}
 const filteredPatients = computed(() => {
 
     return patients.value.filter(patient => {
@@ -558,49 +580,163 @@ function statusClass(status){
 }
 
 
-function createDecision(patient){
+async function createDecision(patient) {
 
-    console.log(patient);
     selectedPatient.value = patient;
 
-    decision.patientId = patient.patientId;
+    decision.patientId =
+        patient.patientId;
 
-    decision.departmentId = patient.deptId;
+    decision.departmentId =
+        patient.deptId;
 
-    decision.clinicianId = Number(sessionStorage.getItem("userId"));
+    decision.clinicianId =
+        Number(sessionStorage.getItem("userId"));
+
+    decision.decisionId =
+        patient.decisionId;
+
+    if (!patient.hasDecision) {
+
+        decision.decisionId = null;
+
+        decision.dispositionTypeId = "";
+
+        decision.expectedTransitionDate = "";
+
+        decision.notes = "";
+
+        showDrawer.value = true;
+
+        return;
+
+    }
+
+    try {
+
+        const response =
+            await physicianService
+                .getPatientDetails(
+                    patient.patientId
+                );
+
+        const existing =
+            response.data.data;
+
+        decision.dispositionTypeId =
+            existing.dispositionTypeId;
+
+        decision.expectedTransitionDate =
+            existing.expectedTransitionDate;
+
+        decision.notes =
+            existing.notes ?? "";
+
+    }
+
+    catch (error) {
+
+       toast.error(
+            "Unable to load disposition details."
+        );
+
+    }
 
     showDrawer.value = true;
 
 }
 
-async function saveDecision(){
+async function saveDecision() {
 
-    try{
-        console.log(decision);
+    try {
 
         decision.clinicianId =
-            sessionStorage.getItem("userId");
+            Number(sessionStorage.getItem("userId"));
 
-        // decision.departmentId =
-        //     sessionStorage.getItem("departmentId");
+        if (decision.decisionId) {
 
         await physicianService
-            .createDispositionDecision(decision);
+            .updateDispositionDecision(
 
-        toast.success("Disposition Decision Created Successfully");
+                decision.decisionId,
 
-        showDrawer.value = false;
+                {
+
+                    dispositionTypeId:
+                        decision.dispositionTypeId,
+
+                    departmentId:
+                        decision.departmentId,
+
+                    expectedTransitionDate:
+                        decision.expectedTransitionDate,
+
+                    notes:
+                        decision.notes,
+
+                    status: 0
+
+                });
+
+        toast.success(
+            "Disposition Decision Updated Successfully"
+        );
+
+    }
+    else {
+
+        await physicianService
+            .createDispositionDecision(
+                decision
+            );
+
+        toast.success(
+            "Disposition Decision Created Successfully"
+        );
 
     }
 
-    catch(error){
-        console.log(error);
+        showDrawer.value = false;
+
+        selectedPatient.value = null;
+
+        await loadPatients(search.value);
+        
+        resetDecision();
+
+    }
+
+    catch (error) {
+
+        toast.error(
+    "Failed to save disposition decision."
+);
+
+console.error(error);
 
     }
 
 }
 
+function resetDecision() {
 
+    decision.decisionId = null;
+
+    decision.patientId = null;
+
+    decision.dispositionTypeId = "";
+
+    decision.clinicianId = "";
+
+    decision.departmentId = "";
+
+    decision.expectedTransitionDate = "";
+
+    decision.notes = "";
+
+    selectedPatient.value = null;
+
+}
 
 const showLeftDots = computed(() => {
 

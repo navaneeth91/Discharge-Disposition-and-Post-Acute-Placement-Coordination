@@ -8,10 +8,10 @@ import {
 import { useAuthStore } from '@/stores/auth'
 import { useCareManagerStore } from '@/stores/careManager'
 
-import PatientTable from '@/components/careManager/PatientTable.vue'
 import CreateReferralModal from '@/components/careManager/CreateReferralModal.vue'
 import ViewReferralModal from '@/components/careManager/ViewReferralModal.vue'
-
+import CreatePatientDelayModal from '@/components/careManager/CreatePatientDelayModal.vue'
+import PatientTable from '@/components/careManager/PatientTable.vue'
 const auth = useAuthStore()
 
 const careManager = useCareManagerStore()
@@ -19,6 +19,7 @@ const careManager = useCareManagerStore()
 const showReferralModal = ref(false)
 
 const showViewReferralModal = ref(false)
+const showDelayModal = ref(false)
 
 const selectedPatient = ref(null)
 const refreshAssignments = async () => {
@@ -44,7 +45,12 @@ onMounted(async () => {
     )
 
     window.addEventListener(
-        "refresh-assignments",
+    "refresh-assignments",
+    refreshAssignments
+    )
+
+    window.addEventListener(
+        "refresh-patient-delays",
         refreshAssignments
     )
 
@@ -53,7 +59,12 @@ onMounted(async () => {
 onUnmounted(() => {
 
     window.removeEventListener(
-        "refresh-assignments",
+    "refresh-assignments",
+    refreshAssignments
+    )
+
+    window.removeEventListener(
+        "refresh-patient-delays",
         refreshAssignments
     )
 
@@ -98,6 +109,31 @@ function closeViewReferralModal() {
     showViewReferralModal.value = false
 
     selectedPatient.value = null
+
+}
+function reportDelay(patient) {
+
+    selectedPatient.value = patient
+
+    showDelayModal.value = true
+
+}
+
+function closeDelayModal() {
+
+    showDelayModal.value = false
+
+    selectedPatient.value = null
+
+}
+
+async function delayCreated() {
+
+    closeDelayModal()
+
+    await careManager.loadPatients(
+        auth.userId
+    )
 
 }
 
@@ -153,23 +189,25 @@ async function nextPage() {
 
     <PatientTable
 
-        :patients="careManager.assignedPatients"
+    :patients="careManager.assignedPatients"
 
-        :loading="careManager.loading"
+    :loading="careManager.loading"
 
-        :page="careManager.page"
+    :page="careManager.page"
 
-        :total-pages="careManager.totalPages"
+    :total-pages="careManager.totalPages"
 
-        @createReferral="createReferral"
+    @createReferral="createReferral"
 
-        @viewReferral="viewReferral"
+    @viewReferral="viewReferral"
 
-        @search="searchPatients"
+    @reportDelay="reportDelay"
 
-        @previous="previousPage"
+    @search="searchPatients"
 
-        @next="nextPage" />
+    @previous="previousPage"
+
+    @next="nextPage" />
 
     <CreateReferralModal
 
@@ -181,6 +219,16 @@ async function nextPage() {
 
         @created="referralCreated" />
 
+    <CreatePatientDelayModal
+
+    :show="showDelayModal"
+
+    :patient="selectedPatient"
+
+    @close="closeDelayModal"
+
+    @created="delayCreated" />
+    
     <ViewReferralModal
 
         :show="showViewReferralModal"

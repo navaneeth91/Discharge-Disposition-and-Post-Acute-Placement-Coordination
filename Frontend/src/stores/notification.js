@@ -69,6 +69,15 @@ defineStore("notification", {
                                 new Event("refresh-authorizations"));
 
                         });
+                        this.connection.on(
+                            "RefreshPatientDelays",
+
+                            () => {
+
+                                window.dispatchEvent(
+                                    new Event("refresh-patient-delays"));
+
+                            });
         },
         clearUnread() {
 

@@ -39,25 +39,40 @@ const refreshDashboard = () => {
     dashboard.loadHospitalDashboard()
 
 }
+const refreshAssignments = () => {
+
+    dashboard.loadHospitalDashboard();
+
+}
 onMounted(() => {
 
-    dashboard.loadHospitalDashboard()
+    dashboard.loadHospitalDashboard();
 
     window.addEventListener(
         "refresh-dashboard",
         refreshDashboard
-    )
+    );
 
-})
+    window.addEventListener(
+        "refresh-assignments",
+        refreshAssignments
+    );
+
+});
 
 onUnmounted(() => {
 
     window.removeEventListener(
         "refresh-dashboard",
         refreshDashboard
-    )
+    );
 
-})
+    window.removeEventListener(
+        "refresh-assignments",
+        refreshAssignments
+    );
+
+});
 </script>
 
 <template>
