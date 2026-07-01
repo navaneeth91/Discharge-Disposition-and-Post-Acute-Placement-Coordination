@@ -190,10 +190,10 @@ namespace DischargeDisposition_Backend.Hospital.Services
                     "Authorization Coordinator",
                     new NotificationDto
                     {
-                        Title = "New Referral Received",
+                        Title = "New Request Received",
 
                         Message =
-                            $"A new referral has been created for Patient #{created.PatientId}.",
+                            $"A new request has been created for Patient #{created.PatientId}.",
 
                         Type = NotificationType.Referral,
 
@@ -203,6 +203,7 @@ namespace DischargeDisposition_Backend.Hospital.Services
 
                         PatientId = created.PatientId
                     });
+
                 return new ApiResponse<
                     ReferralResponseDto>
                 {
