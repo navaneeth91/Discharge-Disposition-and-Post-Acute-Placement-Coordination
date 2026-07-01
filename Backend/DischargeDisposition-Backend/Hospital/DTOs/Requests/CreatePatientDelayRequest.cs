@@ -10,7 +10,5 @@ namespace DischargeDisposition_Backend.Hospital.DTOs.Requests
         [Required]
         public byte DelayReasonId { get; set; }
 
-        [Required]
-        public int ReportedBy { get; set; }
     }
 }

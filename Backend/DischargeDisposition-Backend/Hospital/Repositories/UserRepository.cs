@@ -33,5 +33,23 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
 
             await _context.SaveChangesAsync();
         }
+        public async Task<List<User>> GetUsersByRoleAsync(string roleName)
+        {
+            return await _context.Users
+                .Include(u => u.role)
+                .Where(u => u.role.Name == roleName)
+                .ToListAsync();
+        }
+        public async Task<List<User>> GetAdministratorsAsync()
+        {
+            return await _context.Users
+
+                .Include(u => u.role)
+
+                .Where(u =>
+                    u.role.Name == "Administrator")
+
+                .ToListAsync();
+        }
     }
 }

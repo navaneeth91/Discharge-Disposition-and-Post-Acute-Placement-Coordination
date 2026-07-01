@@ -21,5 +21,11 @@
         public bool HasReferral { get; set; }
 
         public string? ReferralStatus { get; set; }
+
+        public bool HasActiveDelay { get; set; }
+
+        public byte? DelayReasonId { get; set; }
+
+        public string? DelayReason { get; set; }
     }
 }

@@ -1,7 +1,9 @@
 ﻿using DischargeDisposition_Backend.Data;
 using DischargeDisposition_Backend.Enums;
 using DischargeDisposition_Backend.Hospital.DTOs.Responses;
+using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
 using DischargeDisposition_Backend.Infrastructure.Caching;
+using DischargeDisposition_Backend.Infrastructure.Notifications;
 using DischargeDisposition_Backend.Infrastructure.SignalR;
 using DischargeDisposition_Backend.Insurance.DTOs.Responses;
 using DischargeDisposition_Backend.Insurance.Hospital.Services.Interfaces;
@@ -22,6 +24,7 @@ namespace DischargeDisposition_Backend.Insurance.Services
         private readonly ILogger<InsuranceAuthorizationService> _logger;
         private readonly IMemoryCache _cache;
         private readonly NotificationService _notificationService;
+        private readonly IAuthorizationRepository _authorizationRepository;
 
         public InsuranceAuthorizationService(
             IInsuranceAuthorizationRepository repository,
@@ -29,7 +32,8 @@ namespace DischargeDisposition_Backend.Insurance.Services
             IWebhookService webhookService,
             ILogger<InsuranceAuthorizationService> logger,
             IMemoryCache cache,
-            NotificationService notificationService)
+            NotificationService notificationService,
+            IAuthorizationRepository authorizationRepository)
         {
             _repository = repository;
             _context = context;
@@ -37,6 +41,7 @@ namespace DischargeDisposition_Backend.Insurance.Services
             _logger = logger;
             _cache = cache;
             _notificationService = notificationService;
+            _authorizationRepository = authorizationRepository;
         }
         public async Task<ApiResponse<InsurancePagedResponse<AuthorizationRequestListItemResponse>>> GetAuthorizationsAsync(
             string? search,
@@ -195,6 +200,36 @@ namespace DischargeDisposition_Backend.Insurance.Services
                 await _notificationService.RefreshDashboard();
 
                 await _notificationService.RefreshAuthorizations();
+
+                var tracking = await _authorizationRepository.GetByInsuranceRequestIdAsync(authorizationRequestId);
+
+                if (tracking != null)
+                {
+                    await _notificationService.SendToUserAsync(
+                        new NotificationDto
+                        {
+                            Title =
+                                dto.Status == AuthorizationStatus.Approved
+                                ? "Authorization Approved"
+                                : "Authorization Denied",
+
+                            Message =
+                                dto.Status == AuthorizationStatus.Approved
+                                ? $"Authorization approved for Patient #{tracking.PatientId}."
+                                : $"Authorization denied for Patient #{tracking.PatientId}.",
+
+                            Type = NotificationType.Authorization,
+
+                            Priority = NotificationPriority.High,
+
+                            CreatedAt = DateTime.UtcNow,
+
+                            PatientId = tracking.PatientId,
+
+                            TargetUserId =
+                                tracking.referral.CareManagerId
+                        });
+                }
 
                 await _webhookService.SendAuthorizationUpdateAsync(webhook);
                 stopwatch.Stop();

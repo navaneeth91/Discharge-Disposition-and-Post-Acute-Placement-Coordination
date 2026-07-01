@@ -8,9 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DischargeDisposition_Backend.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/patient-delays")]
-    [Authorize]
+    
     public class DelayController : ControllerBase
     {
         private readonly IPatientDelayService _patientDelayService;

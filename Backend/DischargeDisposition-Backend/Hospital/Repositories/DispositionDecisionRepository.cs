@@ -39,6 +39,16 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
                 .OrderByDescending(x => x.DecisionDate)
                 .FirstOrDefaultAsync(x => x.PatientId == patientId);
         }
+
+        public async Task<DispositionDecision?> GetByPatientIdWithTrackingAsync(
+            int patientId)
+        {
+            return await _context.DispositionDecisions
+
+                .FirstOrDefaultAsync(x =>
+                    x.PatientId == patientId);
+        }
+
         public async Task<DispositionDecision?> GetByDecisionIdAsync(
     int decisionId)
         {

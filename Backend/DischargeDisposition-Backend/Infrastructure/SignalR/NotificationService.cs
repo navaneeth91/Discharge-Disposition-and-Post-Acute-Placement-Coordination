@@ -1,5 +1,6 @@
 ﻿using DischargeDisposition_Backend.Infrastructure.Notifications;
 using Microsoft.AspNetCore.SignalR;
+using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
 
 namespace DischargeDisposition_Backend.Infrastructure.SignalR
 {
@@ -8,15 +9,18 @@ namespace DischargeDisposition_Backend.Infrastructure.SignalR
         private readonly IHubContext<NotificationHub> _hubContext;
         private readonly UserConnectionManager _connectionManager;
         private readonly ILogger<NotificationService> _logger;
+        private readonly IUserRepository _userRepository;
 
         public NotificationService(
             IHubContext<NotificationHub> hubContext,
             UserConnectionManager connectionManager,
-            ILogger<NotificationService> logger)
+            ILogger<NotificationService> logger,
+            IUserRepository userRepository)
         {
             _hubContext = hubContext;
             _connectionManager = connectionManager;
             _logger = logger;
+            _userRepository = userRepository;
         }
 
         public async Task SendToUserAsync(
@@ -76,6 +80,42 @@ namespace DischargeDisposition_Backend.Infrastructure.SignalR
             await _hubContext.Clients
                 .All
                 .SendAsync("RefreshAuthorizations");
+        }
+        public async Task RefreshPatientDelays()
+        {
+            await _hubContext.Clients
+                .All
+                .SendAsync("RefreshPatientDelays");
+
+            _logger.LogInformation(
+                "RefreshPatientDelays event sent.");
+        }
+        public async Task SendToRoleAsync(
+            string roleName,
+            NotificationDto notification)
+        {
+            var users =
+                await _userRepository
+                    .GetUsersByRoleAsync(roleName);
+
+            foreach (var user in users)
+            {
+                await SendToUserAsync(
+                    new NotificationDto
+                    {
+                        Title = notification.Title,
+                        Message = notification.Message,
+                        Type = notification.Type,
+                        Priority = notification.Priority,
+                        CreatedAt = notification.CreatedAt,
+                        PatientId = notification.PatientId,
+                        TargetUserId = user.UserId
+                    });
+            }
+
+            _logger.LogInformation(
+                "Notification sent to role {RoleName}.",
+                roleName);
         }
     }
 }
