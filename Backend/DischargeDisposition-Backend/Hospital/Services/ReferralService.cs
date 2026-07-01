@@ -7,10 +7,11 @@ using DischargeDisposition_Backend.Hospital.Models;
 using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
 using DischargeDisposition_Backend.Hospital.Services.Interfaces;
 using DischargeDisposition_Backend.Infrastructure.Caching;
+using DischargeDisposition_Backend.Infrastructure.Notifications;
 using DischargeDisposition_Backend.Infrastructure.SignalR;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
 using Microsoft.Extensions.Caching.Memory;
+using System.Diagnostics;
 namespace DischargeDisposition_Backend.Hospital.Services
 {
     public class ReferralService : IReferralService
@@ -185,6 +186,23 @@ namespace DischargeDisposition_Backend.Hospital.Services
                 await _notificationService.RefreshDashboard();
 
                 await _notificationService.RefreshReferrals();
+                await _notificationService.SendToRoleAsync(
+                    "Authorization Coordinator",
+                    new NotificationDto
+                    {
+                        Title = "New Referral Received",
+
+                        Message =
+                            $"A new referral has been created for Patient #{created.PatientId}.",
+
+                        Type = NotificationType.Referral,
+
+                        Priority = NotificationPriority.High,
+
+                        CreatedAt = DateTime.UtcNow,
+
+                        PatientId = created.PatientId
+                    });
                 return new ApiResponse<
                     ReferralResponseDto>
                 {
@@ -252,6 +270,24 @@ namespace DischargeDisposition_Backend.Hospital.Services
                 await _notificationService.RefreshDashboard();
 
                 await _notificationService.RefreshReferrals();
+                await _notificationService.SendToUserAsync(
+                    new NotificationDto
+                    {
+                        Title = "Referral Accepted",
+
+                        Message =
+                            $"Referral for Patient #{referral.PatientId} has been accepted by the Post-Acute Provider.",
+
+                        Type = NotificationType.Referral,
+
+                        Priority = NotificationPriority.Normal,
+
+                        CreatedAt = DateTime.UtcNow,
+
+                        PatientId = referral.PatientId,
+
+                        TargetUserId = referral.CareManagerId
+                    });
                 return new ApiResponse<object>
                 {
                     Success = true,

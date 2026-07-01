@@ -19,9 +19,7 @@ namespace DischargeDisposition_Backend.Hospital.Repositories.Interfaces
            AuthorizationStatus? status = null,
            CancellationToken cancellationToken = default);
 
-        Task<AuthorizationTracking?>
-            GetByInsuranceRequestIdAsync(
-                int authorizationRequestId);
+        Task<AuthorizationTracking?>GetByInsuranceRequestIdAsync(int authorizationRequestId);
 
         Task AddAsync(
             AuthorizationTracking authorization);

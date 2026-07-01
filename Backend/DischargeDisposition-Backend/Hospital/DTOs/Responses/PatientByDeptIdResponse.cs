@@ -9,5 +9,8 @@
 
         public byte Status { get; set; }
         public byte DeptId { get; set; }
+        public bool HasDecision { get; set; }
+
+        public int? DecisionId { get; set; }
     }
 }

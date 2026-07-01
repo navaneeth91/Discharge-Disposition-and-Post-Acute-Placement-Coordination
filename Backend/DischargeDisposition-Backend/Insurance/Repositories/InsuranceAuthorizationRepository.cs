@@ -1,5 +1,6 @@
 using DischargeDisposition_Backend.Data;
 using DischargeDisposition_Backend.Enums;
+using DischargeDisposition_Backend.Hospital.Models;
 using DischargeDisposition_Backend.Insurance.Models;
 using DischargeDisposition_Backend.Insurance.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -69,5 +70,6 @@ namespace DischargeDisposition_Backend.Insurance.Repositories
                 .Include(x => x.AuthorizationDecisions)
                 .FirstOrDefaultAsync(x => x.AuthorizationRequestId == authorizationRequestId);
         }
+        
     }
 }

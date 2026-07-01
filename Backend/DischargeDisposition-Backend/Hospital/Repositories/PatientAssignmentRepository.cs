@@ -63,12 +63,22 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
 
                 var query =
                     _context.Patients
+
                         .Include(p => p.Department)
+
                         .Where(p => p.IsActive == 1)
+
+                        // Must have a physician disposition decision
+                        .Where(p =>
+                            _context.DispositionDecisions.Any(dd =>
+                                dd.PatientId == p.PatientId))
+
+                        // Must NOT already be assigned
                         .Where(p =>
                             !_context.PatientAssignments.Any(pa =>
                                 pa.PatientId == p.PatientId &&
                                 pa.IsActive))
+
                         .AsNoTracking();
 
                 if (!string.IsNullOrWhiteSpace(search))
@@ -91,13 +101,23 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
                 var totalCount =
                     await query.CountAsync();
 
-                var patients =
-                    await query
-                        .OrderBy(p => p.FirstName)
-                        .ThenBy(p => p.LastName)
-                        .Skip((page - 1) * pageSize)
-                        .Take(pageSize)
-                        .ToListAsync();
+                var patients = await query
+
+                    .OrderByDescending(p =>
+                        _context.DispositionDecisions
+
+                            .Where(dd =>
+                                dd.PatientId == p.PatientId)
+
+                            .Select(dd => dd.DecisionDate)
+
+                            .FirstOrDefault())
+
+                    .Skip((page - 1) * pageSize)
+
+                    .Take(pageSize)
+
+                    .ToListAsync();
 
                 _logger.LogInformation(
                     "Repository: Retrieved {Count} patients out of {TotalCount}.",
@@ -195,6 +215,25 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
                         ReferralStatus = _context.Referrals
                             .Where(r => r.PatientId == pa.PatientId)
                             .Select(r => r.Status.ToString())
+                            .FirstOrDefault(),
+
+                        HasActiveDelay = _context.PatientDelays
+                            .Any(d =>
+                                d.PatientId == pa.PatientId &&
+                                d.EndDate == null),
+
+                                                DelayReasonId = _context.PatientDelays
+                            .Where(d =>
+                                d.PatientId == pa.PatientId &&
+                                d.EndDate == null)
+                            .Select(d => (byte?)d.DelayReasonId)
+                            .FirstOrDefault(),
+
+                                                DelayReason = _context.PatientDelays
+                            .Where(d =>
+                                d.PatientId == pa.PatientId &&
+                                d.EndDate == null)
+                            .Select(d => d.delayReason.ReasonName)
                             .FirstOrDefault()
                     })
                     .AsNoTracking()

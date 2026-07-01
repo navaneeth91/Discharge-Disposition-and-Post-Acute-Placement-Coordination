@@ -7,6 +7,11 @@ using DischargeDisposition_Backend.Hospital.Models;
 using DischargeDisposition_Backend.Hospital.Repositories.Interfaces;
 using DischargeDisposition_Backend.Hospital.Services.Interfaces;
 using System.Security.Claims;
+using DischargeDisposition_Backend.Infrastructure.Caching;
+using DischargeDisposition_Backend.Infrastructure.Notifications;
+using DischargeDisposition_Backend.Infrastructure.SignalR;
+using Microsoft.Extensions.Caching.Memory;
+using System.Diagnostics;
 
 namespace DischargeDisposition_Backend.Hospital.Services
 {
@@ -14,107 +19,216 @@ namespace DischargeDisposition_Backend.Hospital.Services
         : IDispositionDecisionService
     {
         private readonly IDispositionDecisionRepository _repository;
+
         private readonly IHttpContextAccessor _httpContextAccessor;
 
+        private readonly NotificationService _notificationService;
+
+        private readonly IMemoryCache _cache;
+
+        private readonly ILogger<DispositionDecisionService> _logger;
+
+        private readonly IUserRepository _userRepository;
+
         public DispositionDecisionService(
-            IDispositionDecisionRepository repository, IHttpContextAccessor httpContextAccessor)
+            IDispositionDecisionRepository repository,
+            IHttpContextAccessor httpContextAccessor,
+            NotificationService notificationService,
+            IMemoryCache cache,
+            ILogger<DispositionDecisionService> logger,
+            IUserRepository userRepository)
         {
             _repository = repository;
+
             _httpContextAccessor = httpContextAccessor;
+
+            _notificationService = notificationService;
+
+            _cache = cache;
+
+            _logger = logger;
+
+            _userRepository = userRepository;
         }
 
         public async Task<ApiResponse<DispositionDecisionResponse>> CreateAsync(
-        CreateDispositionDecisionRequest request)
+    CreateDispositionDecisionRequest request)
+{
+    var stopwatch = Stopwatch.StartNew();
+
+    try
+    {
+        var existingDecision =
+            await _repository
+                .GetByPatientIdWithTrackingAsync(
+                    request.PatientId);
+
+        DispositionDecision decision;
+
+        if (existingDecision == null)
         {
-            try
+            decision = new DispositionDecision
             {
-                var decision =
-                    new DispositionDecision
-                    {
-                        PatientId =
-                            request.PatientId,
+                PatientId = request.PatientId,
 
-                        DispositionTypeId =
-                            request.DispositionTypeId,
+                DispositionTypeId = request.DispositionTypeId,
 
-                        ClinicianId =
-                            request.ClinicianId,
+                ClinicianId = request.ClinicianId,
 
-                        DepartmentId =
-                            request.DepartmentId,
+                DepartmentId = request.DepartmentId,
 
-                        DecisionDate =
-                            DateTime.UtcNow,
+                DecisionDate = DateTime.UtcNow,
 
-                        Status =
-                            AuthorizationStatus.Pending,
+                Status = AuthorizationStatus.Pending,
 
-                        Notes =
-                            request.Notes,
+                Notes = request.Notes,
 
-                        ExpectedTransitionDate =
-                            request.ExpectedTransitionDate
-                    };
+                ExpectedTransitionDate =
+                    request.ExpectedTransitionDate
+            };
 
-                await _repository.AddAsync(decision);
-
-                return new ApiResponse<
-                    DispositionDecisionResponse>
-                {
-                    Success = true,
-                    StatusCode = 201,
-                    Message =
-                        "Disposition decision created successfully",
-
-                    Data =
-                        new DispositionDecisionResponse
-                        {
-                            DecisionId =
-                                decision.DecisionId,
-
-                            PatientId =
-                                decision.PatientId,
-
-                            DispositionTypeId =
-                                decision.DispositionTypeId,
-
-                            ClinicianId =
-                                decision.ClinicianId,
-
-                            DepartmentId =
-                                decision.DepartmentId,
-
-                            DecisionDate =
-                                decision.DecisionDate,
-
-                            Status =
-                                decision.Status.ToString(),
-
-                            Notes =
-                                decision.Notes,
-
-                            ExpectedTransitionDate =
-                                decision.ExpectedTransitionDate
-                        }
-                };
-            }
-            catch (Exception ex)
-            {
-                return new ApiResponse<
-                    DispositionDecisionResponse>
-                {
-                    Success = false,
-                    StatusCode = 500,
-                    Message =
-                        "Failed to create disposition decision",
-
-                    Errors = new()
-                    {
-                        ex.Message
-                    }
-                };
-            }
+            await _repository.AddAsync(decision);
         }
+        else
+        {
+            existingDecision.DispositionTypeId =
+                request.DispositionTypeId;
+
+            existingDecision.DepartmentId =
+                request.DepartmentId;
+
+            existingDecision.ExpectedTransitionDate =
+                request.ExpectedTransitionDate;
+
+            existingDecision.Notes =
+                request.Notes;
+
+            existingDecision.DecisionDate =
+                DateTime.UtcNow;
+
+            existingDecision.Status =
+                AuthorizationStatus.Pending;
+
+            await _repository.UpdateDecisionAsync(
+                existingDecision);
+
+            decision = existingDecision;
+        }
+
+        // ================= Cache =================
+
+        _cache.Remove(CacheKeys.HospitalDashboard);
+
+        _logger.LogInformation(
+            "Hospital Dashboard cache invalidated after disposition decision for Patient {PatientId}.",
+            decision.PatientId);
+
+        // ================= SignalR Refresh =================
+
+        await _notificationService.RefreshDashboard();
+
+        await _notificationService.RefreshAssignments();
+
+        // ================= Notifications =================
+
+        var administrators =
+            await _userRepository
+                .GetAdministratorsAsync();
+
+        foreach (var admin in administrators)
+        {
+            await _notificationService
+                .SendToUserAsync(
+                    new NotificationDto
+                    {
+                        Title = "Disposition Decision Submitted",
+
+                        Message =
+                            $"A physician has submitted a disposition decision for Patient #{decision.PatientId}.",
+
+                        Type = NotificationType.Assignment,
+
+                        Priority = NotificationPriority.Normal,
+
+                        CreatedAt = DateTime.UtcNow,
+
+                        PatientId = decision.PatientId,
+
+                        TargetUserId = admin.UserId
+                    });
+        }
+
+        // ================= Performance =================
+
+        stopwatch.Stop();
+
+        _logger.LogInformation(
+            "Performance | Service: DispositionDecisionService | Method: CreateAsync | Execution Time: {ElapsedMilliseconds} ms",
+            stopwatch.ElapsedMilliseconds);
+
+        if (stopwatch.ElapsedMilliseconds > 1000)
+        {
+            _logger.LogWarning(
+                "Performance Warning | DispositionDecisionService.CreateAsync took {ElapsedMilliseconds} ms",
+                stopwatch.ElapsedMilliseconds);
+        }
+
+        return new ApiResponse<DispositionDecisionResponse>
+        {
+            Success = true,
+            StatusCode = 201,
+            Message = existingDecision == null
+                ? "Disposition decision created successfully."
+                : "Disposition decision updated successfully.",
+
+            Data = new DispositionDecisionResponse
+            {
+                DecisionId = decision.DecisionId,
+
+                PatientId = decision.PatientId,
+
+                DispositionTypeId = decision.DispositionTypeId,
+
+                ClinicianId = decision.ClinicianId,
+
+                DepartmentId = decision.DepartmentId,
+
+                DecisionDate = decision.DecisionDate,
+
+                Status = decision.Status.ToString(),
+
+                Notes = decision.Notes,
+
+                ExpectedTransitionDate =
+                    decision.ExpectedTransitionDate
+            }
+        };
+    }
+    catch (Exception ex)
+    {
+        stopwatch.Stop();
+
+        _logger.LogError(
+            ex,
+            "Error creating/updating disposition decision.");
+
+        _logger.LogInformation(
+            "Performance | Service: DispositionDecisionService | Method: CreateAsync | Failed after {ElapsedMilliseconds} ms",
+            stopwatch.ElapsedMilliseconds);
+
+        return new ApiResponse<DispositionDecisionResponse>
+        {
+            Success = false,
+            StatusCode = 500,
+            Message = "Failed to save disposition decision.",
+
+            Errors = new()
+            {
+                ex.Message
+            }
+        };
+    }
+}
 
         public async Task<ApiResponse<DispositionDecisionDetailsResponse>>
     GetByPatientIdAsync(int patientId)

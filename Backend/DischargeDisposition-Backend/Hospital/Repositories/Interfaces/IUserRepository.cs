@@ -6,7 +6,8 @@ namespace DischargeDisposition_Backend.Hospital.Repositories.Interfaces
     {
         Task<User?> GetByEmailAsync(string email);
         Task<User?> GetByIdAsync(int id);
-
+        Task<List<User>> GetUsersByRoleAsync(string roleName);
+        Task<List<User>> GetAdministratorsAsync();
         Task AddAsync(User user);
     }
 }

@@ -50,6 +50,7 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
         public async Task<AuthorizationTracking?>GetByInsuranceRequestIdAsync(int authorizationRequestId)
         {
             return await _context.AuthorizationTrackings
+                .Include(x => x.referral)
                 .FirstOrDefaultAsync(x =>
                     x.InsuranceAuthorizationRequestId ==
                     authorizationRequestId);

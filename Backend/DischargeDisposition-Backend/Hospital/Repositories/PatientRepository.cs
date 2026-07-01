@@ -74,35 +74,79 @@ namespace DischargeDisposition_Backend.Hospital.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<PatientByDeptIdResponse>>GetPatientsByDeptIdAsync(int physicianId, string? search)
+        public async Task<List<PatientByDeptIdResponse>> GetPatientsByDeptIdAsync(
+            int physicianId,
+            string? search)
         {
-            
             var departmentId = await _context.Users
+
                 .Where(u => u.UserId == physicianId)
+
                 .Select(u => u.DeptId)
+
                 .FirstOrDefaultAsync();
+
             var query = _context.Patients
-                .Where(p => p.DeptId == departmentId);
+
+                .AsNoTracking()
+
+                .Where(p =>
+                    p.DeptId == departmentId &&
+                    p.IsActive == 1);
+
             if (!string.IsNullOrWhiteSpace(search))
             {
                 search = search.Trim();
 
                 query = query.Where(p =>
+
                     p.FirstName.Contains(search) ||
+
                     p.LastName.Contains(search) ||
+
+                    (p.FirstName + " " + p.LastName)
+                        .Contains(search) ||
+
                     p.Mrn.Contains(search));
             }
 
-            return await _context.Patients
-                .Where(p => p.DeptId == departmentId && p.IsActive == 1)
+            return await query
+
+                .OrderBy(p => p.FirstName)
+                .ThenBy(p => p.LastName)
+
                 .Select(p => new PatientByDeptIdResponse
                 {
                     PatientId = p.PatientId,
-                    PatientName = p.FirstName + " " + p.LastName,
+
+                    PatientName =
+                        p.FirstName + " " + p.LastName,
+
                     Dob = p.Dob,
+
                     Status = p.IsActive,
-                    DeptId = p.DeptId
+
+                    DeptId = p.DeptId,
+
+                    HasDecision =
+                        _context.DispositionDecisions
+                            .Any(d =>
+                                d.PatientId == p.PatientId),
+
+                    DecisionId =
+                        _context.DispositionDecisions
+
+                            .Where(d =>
+                                d.PatientId == p.PatientId)
+
+                            .OrderByDescending(d =>
+                                d.DecisionDate)
+
+                            .Select(d => (int?)d.DecisionId)
+
+                            .FirstOrDefault()
                 })
+
                 .ToListAsync();
         }
     }
