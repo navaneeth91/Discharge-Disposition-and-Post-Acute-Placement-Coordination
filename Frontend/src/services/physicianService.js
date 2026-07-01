@@ -19,6 +19,17 @@ export const createDispositionDecision = (decision) => {
     );
 
 };
+export const updateDispositionDecision = (
+    decisionId,
+    decision
+) => {
+
+    return api.put(
+        `/dispositions/decisions/${decisionId}`,
+        decision
+    );
+
+};
 
 export const getPatientsByDepartment = (search = "") => {
     return api.get("/Patient/patients/DeptId", {
@@ -35,3 +46,4 @@ export const getPatientDetails = (patientId) => {
     );
 
 };
+

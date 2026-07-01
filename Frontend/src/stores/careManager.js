@@ -4,7 +4,9 @@ import {
     getDashboard,
     getMyPatients,
     getReferralTracking,
-    getAuthorizationTracking
+    getAuthorizationTracking,
+    getDelayReasons,
+    createPatientDelay
 } from '@/services/careManagerService'
 
 export const useCareManagerStore = defineStore(
@@ -62,6 +64,9 @@ export const useCareManagerStore = defineStore(
             authorizationSearch: '',
 
             authorizationStatus: null,
+            // ---------------- Delay Reasons ----------------
+
+            delayReasons: [],
 
         }),
 
@@ -443,6 +448,45 @@ async previousAuthorizationPage(
     await this.loadAuthorizationTracking(
         careManagerId
     )
+
+},
+// ================= Delay Reasons =================
+
+async loadDelayReasons() {
+
+    try {
+
+        const response =
+            await getDelayReasons()
+
+        this.delayReasons =
+            response.data.data
+
+    }
+
+    catch (err) {
+
+        this.error =
+            err.response?.data?.message ||
+            "Failed to load delay reasons."
+
+    }
+
+},
+
+async createPatientDelay(data) {
+
+    try {
+
+        await createPatientDelay(data)
+
+    }
+
+    catch (err) {
+
+        throw err
+
+    }
 
 }
             

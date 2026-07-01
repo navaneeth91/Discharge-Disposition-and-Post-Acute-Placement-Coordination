@@ -90,3 +90,19 @@ export async function createAuthorization(data) {
         data
     )
 }
+export async function getDelayReasons() {
+
+    return await api.get(
+        "/delay-reason-codes"
+    )
+
+}
+
+export async function createPatientDelay(data) {
+
+    return await api.post(
+        "/patient-delays",
+        data
+    )
+
+}
